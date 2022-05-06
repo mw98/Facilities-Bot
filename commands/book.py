@@ -241,7 +241,7 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
                 # Offer to update previous booking
                 chat.send_message(
                     text = 
-                        'The time range you sent me conflicts with a previous booking you made:\n\n'
+                        'The time range you sent conflicts with a previous booking you made:\n\n'
                         f'{event_summary}\n\n'
                         "Select 'Update' to shift your previous booking to the new time range, or send me another time range.",
                     reply_markup = keyboards.update_button,
