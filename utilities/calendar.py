@@ -184,7 +184,9 @@ def list_conflicts(chat_data: dict) -> list:
                     'description': description[0][10:],
                     'POC': description[1][5:],
                     'htmlLink': booking['htmlLink'],
-                    'username': booking['extendedProperties']['shared']['username']
+                    'username': booking['extendedProperties']['shared']['username'],
+                    'user_id': booking['extendedProperties']['shared']['user_id'],
+                    'event_id': booking['id']
                 }
             )
         
@@ -225,12 +227,21 @@ def add_booking(user_id: int, user_data: dict, chat_data: dict) -> str:
     return new_booking.get('htmlLink')
 
 
-def patch_booking(event_id: str, event_data: dict, chat_data: dict) -> str:
+def patch_booking(chat_data: dict) -> str:
     
     patched_booking = service.events().patch(
         calendarId = config.CALENDAR_ID,
-        eventId = event_id,
-        body = {}
+        eventId = chat_data['event_id'],
+        body = {
+            "start": {
+                "dateTime": f"{chat_data['date']}T{chat_data['start_time']}:00+08:00",
+                "timeZone": "Asia/Singapore",
+            },
+            "end": {
+                "dateTime": f"{chat_data['date']}T{chat_data['end_time']}:00+08:00",
+                "timeZone": "Asia/Singapore",
+            },
+        }
     ).execute()
     
     return patched_booking.get('htmlLink')

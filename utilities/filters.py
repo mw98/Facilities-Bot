@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 '''
 DATE FILTER
-Ensures that user entered date matches DDMMYY format and is not in the past
+Ensures that date matches DDMMYY format and is not in the past.
 '''
 class DateFilter(MessageFilter):
     
@@ -33,7 +33,9 @@ date = DateFilter()
 
 '''
 TIME RANGE FILTER
-Ensures that user entered time range matches HHmm-HHmm format, is a valid range, and is not in the past
+Ensures that time range matches HHmm-HHmm format, is a valid range.
+DOES NOT ensure that time range is not in the past, because booking
+date can't be passed to this filter. That is done in the callback function.
 '''
 class TimeRangeFilter(MessageFilter):
     
@@ -48,13 +50,8 @@ class TimeRangeFilter(MessageFilter):
         except Exception as e:
             logger.debug(e)
             return False
-        
-        current_time = datetime.now(config.TIMEZONE).time()
-        
+                
         if start_time >= end_time:
-            return False
-        
-        elif end_time < current_time:
             return False
         
         else:

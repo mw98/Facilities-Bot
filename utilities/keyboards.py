@@ -38,6 +38,15 @@ confirm_or_cancel = InlineKeyboardMarkup([
 ])
 
 
+# Confirm / Cancel for Patch Booking
+patch_confirm_or_cancel = InlineKeyboardMarkup([
+    [
+        InlineKeyboardButton('Confirm', callback_data = 'confirm patch'),
+        InlineKeyboardButton('Cancel', callback_data = 'cancel patch')
+    ]
+])
+
+
 # Today Shortcut
 today = InlineKeyboardMarkup([
     [InlineKeyboardButton('Today', callback_data = 'today')]
@@ -53,16 +62,22 @@ def show_in_calendar(event_url: str) -> InlineKeyboardMarkup:
 
 
 # Contact POC
-def contact_poc(booking_conflicts: list) -> InlineKeyboardMarkup:
+def contact_poc(booking_conflicts: list, effective_username: str) -> InlineKeyboardMarkup:
     
     buttons = set()
     
     for conflict in booking_conflicts:
-        buttons.add(InlineKeyboardButton(f'Message {conflict["POC"]}', url=f'https://t.me/{conflict["username"]}'))
+        if conflict['username'] != effective_username:
+            buttons.add(InlineKeyboardButton(f'Message {conflict["POC"]}', url=f'https://t.me/{conflict["username"]}'))
     
     buttons = list(buttons)
     buttons = [[button] for button in buttons]
     return InlineKeyboardMarkup(buttons)
+
+# Update Booking
+update_button = InlineKeyboardMarkup([
+    [InlineKeyboardButton('Update', callback_data = 'update')]
+])
         
     
 
