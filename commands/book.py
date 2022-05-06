@@ -213,8 +213,8 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
                 
                 event_summary = (
                     f'*Facility:* {context.chat_data["facility"]}\n'
-                    f'*Time:* {conflict["start_time"]} - {conflict["end_time"]}\n'
                     f'*Date:* {context.chat_data["date"]}\n'
+                    f'*Time:* {conflict["start_time"]} - {conflict["end_time"]}\n'
                     f'*Description:* {conflict["description"]}\n'
                     f'[Event Link]({conflict["htmlLink"]})'
                 )
