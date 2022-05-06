@@ -39,6 +39,9 @@ def start(update: Update, context: CallbackContext) -> int:
 
 def profile(update: Update, context: CallbackContext) -> int:
     
+    # Save telegram username
+    context.user_data['username'] = update.message.from_user.username
+    
     # Ask for user's rank and name
     update.effective_chat.send_message(
         'Ok, now updating your user profile. Send /cancel to stop.\n\n'
@@ -104,7 +107,7 @@ def confirm(update: Update, context: CallbackContext) -> int:
     
     # Log new user registration
     logger.info(
-        'New User Registered - %s - %s - %s COMPANY', 
+        'User Registered - %s - %s - %s COMPANY', 
         query.from_user.id,
         context.user_data['rank_and_name'], 
         context.user_data['company']
