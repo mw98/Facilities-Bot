@@ -62,47 +62,64 @@ def save_facility(update: Update, context: CallbackContext) -> int:
 
 
 def save_date(update: Update, context: CallbackContext) -> int:
-        
+    
+    now = datetime.now(config.TIMEZONE)
+    current_date = now.date()
+    
     # If user taps 'Today' inline keyboard button
     if (query := update.callback_query):
-        
+                        
         # CallbackQueries need to be answered, even if no user notification is needed
         query.answer()
         
-        # Get today's date and save in gcal api event date format
-        context.chat_data['datetime_date'] = datetime.now(config.TIMEZONE).date()
+        # Save today's date in gcal api event date format
+        context.chat_data['datetime_date'] = current_date
         context.chat_data['date'] = context.chat_data['datetime_date'].strftime('%Y-%m-%d')
-        
-        today = True
-    
+            
     # If user sends a date
     else: 
-        
         # Save user entered booking date (retrieved from filters.date)
         context.chat_data['date'] = context.booking_date[0]
         context.chat_data['datetime_date'] = context.booking_date[1]
-        
-        today = False
+        message_date = f'on context.chat_data["date"]' # Contextualise bot response
     
-    # Check what time periods are available on the chosen date    
-    if (available_slots := calendar.list_available_slots(context.chat_data)):
+    # Check if/when the facility is in use on the chosen date
+    upcoming_bookings = calendar.list_bookings(context.chat_data['facility'], context.chat_data['date'])
+    
+    # If the chosen date is today
+    if context.chat_data['datetime_date'] == current_date:
+        
+        # If upcoming_bookings is not empty after removing bookings that have ended
+        if (ongoing_or_next := calendar.find_ongoing_or_next(upcoming_bookings, now.time())):
+            upcoming_bookings = upcoming_bookings[ongoing_or_next['idx']:]
+            message_date = 'today' # Contextualise bot response
+        
+        # No upcoming bookings left
+        else:
+            upcoming_bookings = None
+            message_date = 'for the rest of today' # Contextualise bot response
+    
+    # If there are upcoming bookings
+    if upcoming_bookings:
         
         # Contextualise bot response
-        message = f'*{context.chat_data["facility"]}* is available at these times '
-        if today: message += 'today:\n\n'
-        else: message += f'on {context.chat_data["date"]}:\n\n'
+        if len(upcoming_bookings) > 1: message_quantity = 'at these times'
+        else: message_quantity = 'during this period'
+        message = f'*{context.chat_data["facility"]}* will be in use {message_quantity} {message_date}:\n\n'
         
-        # Iteratively append each period of availability
-        for slot in available_slots:
-            message += f'{slot[0]} - {slot[1]}\n'
-    
+    # Append each upcoming booking
+        for booking in upcoming_bookings:
+            start_time = booking["start"]["dateTime"][11:16]
+            end_time = booking["end"]["dateTime"][11:16]
+            description = booking['description'].splitlines()[0][10:]
+            url = booking['htmlLink']
+            message += f'[{start_time}-{end_time}]({url}) {description}\n'
+        
+    # No upcoming bookings
     else:
-        
         # Contextualise bot response
-        message = f'*{context.chat_data["facility"]}* is fully available '
-        if today: message += 'for the rest of today.\n'
-        else: message += f'on {context.chat_data["date"]}.\n'
-    
+        message = f'*{context.chat_data["facility"]}* is fully available {message_date}.\n\n'
+            
     # Ask user for a time range
     update.effective_chat.send_message(
         text = f'{message}\nSend me a time range for your booking. Please use this format: `HHmm-HHmm` (e.g. 0930-1300).',
@@ -248,7 +265,7 @@ def date_error(update: Update, context: CallbackContext) -> int:
             
     # Ask user to send date again
     update.effective_chat.send_message(
-        text = 'Sorry, that is not a valid date. Please send me an upcoming date in the `DDMMYY` format.',
+        text = "Sorry, that is not a valid date. Please send me an upcoming date in the `DDMMYY` format.",
         parse_mode = ParseMode.MARKDOWN
     )
     
