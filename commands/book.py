@@ -84,11 +84,11 @@ def save_facility(update: Update, context: CallbackContext) -> int:
     
     query = update.callback_query
     
-    # Save user's facility selection
-    context.chat_data['facility'] = query.data
-    
     # CallbackQueries need to be answered, even if no user notification is needed
     query.answer()
+    
+    # Save user's facility selection
+    context.chat_data['facility'] = query.data
     
     # Ask user for date of booking
     update.effective_chat.send_message(
@@ -243,8 +243,8 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
                     text = 
                         'The time range you sent conflicts with a previous booking you made:\n\n'
                         f'{event_summary}\n\n'
-                        "Select 'Update' to shift your previous booking to the new time range, or send me another time range.",
-                    reply_markup = keyboards.update_button,
+                        "Move your previous booking to the new time range, or send me another time range to make a new booking.",
+                    reply_markup = keyboards.move_previous,
                     parse_mode = ParseMode.MARKDOWN
                 )
                 return PATCH
@@ -263,7 +263,7 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
         
         chat.send_message(
             text = f'{message_start}{message_end}',
-            reply_markup = keyboards.contact_poc(conflicts),
+            reply_markup = keyboards.contact_poc(conflicts, update.message.from_user.username),
             parse_mode = ParseMode.MARKDOWN
         )
         
@@ -428,7 +428,7 @@ handler = ConversationHandler(
         ],
         DESCRIPTION: [MessageHandler(Filters.text & (~Filters.command), save_description)],
         PATCH: [
-            CallbackQueryHandler(callback = patch_booking, pattern = 'update'),
+            CallbackQueryHandler(callback = patch_booking, pattern = 'patch'),
             MessageHandler(filters.time_range, save_time_range)
         ],
         CONFIRMATION: [

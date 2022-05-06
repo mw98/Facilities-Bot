@@ -74,9 +74,9 @@ def contact_poc(booking_conflicts: list, effective_username: str) -> InlineKeybo
     buttons = [[button] for button in buttons]
     return InlineKeyboardMarkup(buttons)
 
-# Update Booking
-update_button = InlineKeyboardMarkup([
-    [InlineKeyboardButton('Update', callback_data = 'update')]
+# Move Previous Booking
+move_previous = InlineKeyboardMarkup([
+    [InlineKeyboardButton('Move Previous Booking', callback_data = 'patch')]
 ])
         
     
