@@ -2,7 +2,7 @@ from datetime import datetime
 import logging
 from telegram import Update, ParseMode
 from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, MessageHandler, CallbackQueryHandler, Filters
-from utilities import keyboards, filters, calendar
+from utilities import actions, keyboards, filters, calendar
 import config, database
 
 logger = logging.getLogger(__name__)
@@ -13,6 +13,7 @@ FACILITY, DATE, TIME_RANGE, DESCRIPTION, CONFIRMATION = range(5)
 '''
 BOOKING ENTRY POINT
 '''
+@actions.send_typing_action
 def book(update: Update, context: CallbackContext) -> int:
     
     chat = update.effective_chat
@@ -39,6 +40,7 @@ def book(update: Update, context: CallbackContext) -> int:
 '''
 BOOKING CALLBACK FUNCTIONS
 '''
+@actions.send_typing_action
 def save_facility(update: Update, context: CallbackContext) -> int:
     
     query = update.callback_query
@@ -61,6 +63,7 @@ def save_facility(update: Update, context: CallbackContext) -> int:
     return DATE
 
 
+@actions.send_typing_action
 def save_date(update: Update, context: CallbackContext) -> int:
     
     now = datetime.now(config.TIMEZONE)
@@ -81,7 +84,7 @@ def save_date(update: Update, context: CallbackContext) -> int:
         # Save user entered booking date (retrieved from filters.date)
         context.chat_data['date'] = context.booking_date[0]
         context.chat_data['datetime_date'] = context.booking_date[1]
-        message_date = f'on context.chat_data["date"]' # Contextualise bot response
+        message_date = f'on {context.chat_data["date"]}' # Contextualise bot response
     
     # Check if/when the facility is in use on the chosen date
     upcoming_bookings = calendar.list_bookings(context.chat_data['facility'], context.chat_data['date'])
@@ -118,7 +121,7 @@ def save_date(update: Update, context: CallbackContext) -> int:
     # No upcoming bookings
     else:
         # Contextualise bot response
-        message = f'*{context.chat_data["facility"]}* is fully available {message_date}.\n\n'
+        message = f'*{context.chat_data["facility"]}* is fully available {message_date}.\n'
             
     # Ask user for a time range
     update.effective_chat.send_message(
@@ -129,6 +132,7 @@ def save_date(update: Update, context: CallbackContext) -> int:
     return TIME_RANGE
 
 
+@actions.send_typing_action
 def save_time_range(update: Update, context: CallbackContext) -> int:
         
     chat = update.effective_chat
@@ -197,10 +201,7 @@ def save_description(update: Update, context: CallbackContext) -> int:
 def confirm(update: Update, context: CallbackContext) -> int:
     
     query = update.callback_query
-    
-    # CallbackQueries need to be answered, even if no user notification is needed
-    query.answer()
-    
+        
     # Book facility on Google Calendar
     try: 
         event_url = calendar.add_booking(query.from_user.id, context.user_data, context.chat_data)
@@ -229,6 +230,9 @@ def confirm(update: Update, context: CallbackContext) -> int:
         parse_mode = ParseMode.MARKDOWN,
         reply_markup = keyboards.show_in_calendar(event_url)
     )
+    
+    # CallbackQueries need to be answered, even if no user notification is needed
+    query.answer()
     
     # Log new booking
     logger.info(
