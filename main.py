@@ -29,9 +29,9 @@ def main():
         print('Bot token file not found.')
         return
     updater = Updater(token)
-    dispatcher = updater.dispatcher
 
     # Attach handlers
+    dispatcher = updater.dispatcher
     dispatcher.add_handler(start.handler)
     dispatcher.add_handler(help.handler)
     dispatcher.add_handler(book.handler)
