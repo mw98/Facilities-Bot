@@ -9,7 +9,7 @@ BOT_COMMANDS = (
     '/book - Book facilities in 5 SIR\n'
     '/change - Change or cancel a booking\n'
     '/check - Check facility availability\n'
-    '/list - List your upcoming bookings\n\n'
+    '/mybookings - List your upcoming bookings\n\n'
     '*Bot Settings*\n'
     '/profile - Update your user profile\n'
     '/help - Show this list of commands'
