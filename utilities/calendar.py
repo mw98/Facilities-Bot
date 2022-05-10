@@ -26,7 +26,7 @@ except HttpError as error:
 '''
 BACKBONE FUNCTIONS
 '''
-def list_bookings(facility: str, date: str) -> list:
+def find_bookings_for_facility_by_date(facility: str, date: str) -> list:
     
     bookings = service.events().list(
         calendarId = config.CALENDAR_ID,
@@ -37,7 +37,7 @@ def list_bookings(facility: str, date: str) -> list:
         sharedExtendedProperty = f'facility={facility}',
     ).execute()
     
-    return bookings['items']
+    return bookings['items']    
 
 
 def find_ongoing_or_next(bookings_today: list, current_time: datetime.time):
@@ -79,13 +79,91 @@ def find_ongoing_or_next(bookings_today: list, current_time: datetime.time):
     return
 
 
+def find_upcoming_bookings_by_user(user_id: int) -> list:
+    
+    now = datetime.now(config.TIMEZONE)
+    current_date = now.strftime('%Y-%m-%d')
+    current_time = now.time()
+    
+    bookings = service.events().list(
+        calendarId = config.CALENDAR_ID,
+        orderBy = 'startTime',
+        singleEvents = True,
+        timeMin = f'{current_date}T00:00:00+08:00',
+        sharedExtendedProperty = f'user_id={user_id}',
+    ).execute()['items']
+    
+    result = {'ongoing': [], 'later_today': [], 'after_today': []}
+    
+    remainder_idx = None
+    
+    for idx, booking in enumerate(bookings):
+        date = booking['start']['dateTime'][:10]
+        if date == current_date:
+            
+            start_time = datetime.strptime(booking['start']['dateTime'][11:16], '%H:%M').time()
+            end_time = datetime.strptime(booking['end']['dateTime'][11:16], '%H:%M').time()
+            
+            if start_time <= current_time and end_time >= current_time:
+                result['ongoing'].append(booking)
+        
+            elif start_time > current_time:
+                result['later_today'].append(booking)
+        
+        else:
+            result['after_today'].append(booking)
+            remainder_idx = idx + 1
+            break
+    
+    if remainder_idx:
+        result['after_today'] += bookings[remainder_idx:]
+    
+    return result
+
+
+
 '''
 DECONFLICT BOOKINGS
 '''
+def list_conflicts(chat_data: dict) -> list:
+    
+    existing_bookings = find_bookings_for_facility_by_date(chat_data['facility'], chat_data['date'])
+    
+    conflicts = []
+    
+    for booking in existing_bookings:
+        
+        start_time = booking['start']['dateTime'][11:16]
+        end_time = booking['end']['dateTime'][11:16]
+        datetime_start_time = datetime.strptime(start_time, '%H:%M').time()
+        datetime_end_time = datetime.strptime(end_time, '%H:%M').time()        
+        
+        if (
+            (chat_data['datetime_start_time'] > datetime_start_time and chat_data['datetime_start_time'] < datetime_end_time)
+            or (chat_data['datetime_end_time'] > datetime_start_time and chat_data['datetime_end_time'] < datetime_end_time)
+            or (chat_data['datetime_start_time'] <= datetime_start_time and chat_data['datetime_end_time'] >= datetime_end_time)
+        ):
+            description = booking['description'].splitlines()
+            conflicts.append(
+                {
+                    'start_time': start_time,
+                    'end_time': end_time,
+                    'description': description[0][10:],
+                    'POC': description[1][5:],
+                    'htmlLink': booking['htmlLink'],
+                    'username': booking['extendedProperties']['shared']['username'],
+                    'user_id': booking['extendedProperties']['shared']['user_id'],
+                    'event_id': booking['id']
+                }
+            )
+        
+    return conflicts
+
+
 def list_available_slots(chat_data: dict):
     
     # Get a list of bookings on the chosen date
-    existing_bookings = list_bookings(chat_data['facility'], chat_data['date'])
+    existing_bookings = find_bookings_for_facility_by_date(chat_data['facility'], chat_data['date'])
     
     # If no bookings are found, the facility is fully available
     if not existing_bookings: return
@@ -156,41 +234,6 @@ def list_available_slots(chat_data: dict):
         available_slots.append((slot_start_time, '23:59'))
     
     return available_slots
-
-
-def list_conflicts(chat_data: dict) -> list:
-    
-    existing_bookings = list_bookings(chat_data['facility'], chat_data['date'])
-    
-    conflicts = []
-    
-    for booking in existing_bookings:
-        
-        start_time = booking['start']['dateTime'][11:16]
-        end_time = booking['end']['dateTime'][11:16]
-        datetime_start_time = datetime.strptime(start_time, '%H:%M').time()
-        datetime_end_time = datetime.strptime(end_time, '%H:%M').time()        
-        
-        if (
-            (chat_data['datetime_start_time'] > datetime_start_time and chat_data['datetime_start_time'] < datetime_end_time)
-            or (chat_data['datetime_end_time'] > datetime_start_time and chat_data['datetime_end_time'] < datetime_end_time)
-            or (chat_data['datetime_start_time'] <= datetime_start_time and chat_data['datetime_end_time'] >= datetime_end_time)
-        ):
-            description = booking['description'].splitlines()
-            conflicts.append(
-                {
-                    'start_time': start_time,
-                    'end_time': end_time,
-                    'description': description[0][10:],
-                    'POC': description[1][5:],
-                    'htmlLink': booking['htmlLink'],
-                    'username': booking['extendedProperties']['shared']['username'],
-                    'user_id': booking['extendedProperties']['shared']['user_id'],
-                    'event_id': booking['id']
-                }
-            )
-        
-    return conflicts
 
 
 '''
