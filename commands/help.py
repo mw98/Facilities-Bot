@@ -13,6 +13,8 @@ def show_help(update: Update, context: CallbackContext) -> None:
         text = f"{config.BOT_COMMANDS}\n\nIf you experience technical issues, please contact S3 branch.",
         parse_mode = ParseMode.MARKDOWN
     )
+    
+    return
 
 '''
 HELP HANDLER
