@@ -48,8 +48,8 @@ patch_confirm_or_cancel = InlineKeyboardMarkup([
 
 
 # Today Shortcut
-today = InlineKeyboardMarkup([
-    [InlineKeyboardButton('Today', callback_data = 'today')]
+today_tomorrow = InlineKeyboardMarkup([
+    [InlineKeyboardButton('Today', callback_data = 'today'), InlineKeyboardButton('Tomorrow', callback_data = 'tomorrow')]
 ])
 
 

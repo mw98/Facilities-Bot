@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, timedelta
 import logging
 from telegram import Update, ParseMode
 from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, MessageHandler, CallbackQueryHandler, Filters
@@ -94,8 +94,8 @@ def save_facility(update: Update, context: CallbackContext) -> int:
     update.effective_chat.send_message(
         text = 
             f'Ok, now booking *{context.chat_data["facility"]}* for you. Use /cancel to stop.\n\n'
-            "Send me a date for this booking or select 'Today'. Please use the `DDMMYY` format.",
-        reply_markup = keyboards.today,
+            "Send me a date for this booking or select one of the options below. Please use the `DDMMYY` format.",
+        reply_markup = keyboards.today_tomorrow,
         parse_mode = ParseMode.MARKDOWN
     )
     
@@ -110,13 +110,16 @@ def save_date(update: Update, context: CallbackContext) -> int:
     
     # If user taps 'Today' inline keyboard button
     if (query := update.callback_query):
-                        
+                
+        # Save today/tomorrow's date in gcal api event date format
+        if query.data == 'today':
+            context.chat_data['datetime_date'] = current_date
+        else:
+            context.chat_data['datetime_date'] = current_date + timedelta(days=1)
+        context.chat_data['date'] = context.chat_data['datetime_date'].strftime('%Y-%m-%d')
+        
         # CallbackQueries need to be answered, even if no user notification is needed
         query.answer()
-        
-        # Save today's date in gcal api event date format
-        context.chat_data['datetime_date'] = current_date
-        context.chat_data['date'] = context.chat_data['datetime_date'].strftime('%Y-%m-%d')
             
     # If user sends a date
     else: 
@@ -128,7 +131,7 @@ def save_date(update: Update, context: CallbackContext) -> int:
         message_date = f'on {context.chat_data["date"]}' # Contextualise bot response
     
     # Check if/when the facility is in use on the chosen date
-    upcoming_bookings = calendar.list_bookings(context.chat_data['facility'], context.chat_data['date'])
+    upcoming_bookings = calendar.find_bookings_for_facility_by_date(context.chat_data['facility'], context.chat_data['date'])
     
     # If the chosen date is today
     if context.chat_data['datetime_date'] == current_date:
@@ -167,7 +170,7 @@ def save_date(update: Update, context: CallbackContext) -> int:
      
     # Ask user for a time range
     update.effective_chat.send_message(
-        text = 'Send me a time range for your booking. Please use this format:\n\n`HHmm-HHmm` (e.g. 0930-1300).',
+        text = 'Send me a time range for your booking. Please use this format:\n\n`HHmm-HHmm` (e.g. 0930-1300)',
         parse_mode = ParseMode.MARKDOWN
     )
     
@@ -418,7 +421,7 @@ handler = ConversationHandler(
     states = {
         FACILITY: [CallbackQueryHandler(save_facility)],
         DATE: [
-            CallbackQueryHandler(callback = save_date, pattern = 'today'),
+            CallbackQueryHandler(callback = save_date, pattern = 'today|tomorrow'),
             MessageHandler(filters.date, save_date),
             MessageHandler(Filters.all & (~Filters.command), date_error)
         ],
