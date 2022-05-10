@@ -1,6 +1,5 @@
 from telegram import Update, ParseMode
 from telegram.ext import CallbackContext, CommandHandler
-
 import config
 
 '''
