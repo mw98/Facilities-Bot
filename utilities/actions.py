@@ -35,7 +35,7 @@ def load_user_profile(func):
         if (user_data := database.retrieve_user(update.message.from_user.id)):
             context.user_data.update(user_data)
         else:
-            context.effective_chat.send_message("Sorry, I can't find your user profile. Send /profile to create a new profile.")
+            context.effective_chat.send_message("⚠ Sorry, I can't find your user profile. Send /profile to create a new profile.")
             logger.debug('User Not Found - %s - %s', update.message.from_user.id, update.message.from_user.username)
             return ConversationHandler.END # -1
         
@@ -51,7 +51,7 @@ def send_date_error(update, context, logger) -> None:
             
     # Ask user to send date again
     update.effective_chat.send_message(
-        text = "Sorry, that is not a valid date. Please send me an upcoming date in the `DDMMYY` format.",
+        text = "⚠ Sorry, that is not a valid date. Please send me an upcoming date in the `DDMMYY` format.",
         parse_mode = ParseMode.MARKDOWN
     )
     
@@ -69,7 +69,7 @@ def send_time_range_error(update, context, logger) -> None:
             
     # Ask user to send time range again
     update.effective_chat.send_message(
-        text = 'Sorry, that is not a valid time range. Please send me an upcoming time range in the format `HHmm-HHmm`.',
+        text = '⚠ Sorry, that is not a valid time range. Please send me an upcoming time range in the format `HHmm-HHmm`.',
         parse_mode = ParseMode.MARKDOWN
     )
 

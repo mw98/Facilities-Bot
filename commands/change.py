@@ -16,24 +16,26 @@ CHANGE ENTRY POINT
 @actions.send_typing_action
 @actions.load_user_profile
 def change(update: Update, context: CallbackContext) -> int:
-    
-    chat = update.effective_chat
-    
+        
     # Retrieve user's bookings
-    bookings = calendar.find_upcoming_bookings_by_user(update.message.from_user.id)
+    try: 
+        bookings = calendar.find_upcoming_bookings_by_user(update.message.from_user.id)
+    except Exception as error:
+        update.effective_chat.send_message('⚠ Sorry, I could not connect to Google Calendar. Send /change to try again.')
+    
     bookings = bookings['ongoing'] + bookings['later_today'] + bookings['after_today']
     
     if bookings:
     
         # Ask user to choose booking to change
-        chat.send_message(
+        update.effective_chat.send_message(
             text = "Ok, here are your bookings. Choose one to change or delete. Send /cancel to stop.",
             reply_markup = keyboards.user_bookings(bookings),
         )
         return BOOKING
     
     else:
-        chat.send_message("You have no ongoing or upcoming bookings")
+        update.effective_chat.send_message("You have no ongoing or upcoming bookings")
         return ConversationHandler.END # -1
 
 
@@ -119,7 +121,7 @@ def show_delete_prompt(update: Update, context: CallbackContext) -> int:
             f"*Date:* {context.chat_data['date']}\n"
             f"*Time:* {context.chat_data['start_time']} - {context.chat_data['end_time']}\n"
             f"*Description:* {context.chat_data['description']}\n\n"
-            "Are you sure you want to delete it? This cannot be undone.",
+            "‼ Are you sure you want to delete it? This cannot be undone.",
         parse_mode = ParseMode.MARKDOWN,
         reply_markup = keyboards.confirm_or_cancel
     )
@@ -413,7 +415,7 @@ def confirm_change(update: Update, context: CallbackContext) -> int:
         )
     except Exception as error:
         update.effective_chat.send_message(
-            text = 'Sorry, I could not connect to Google Calendar. Try again?',
+            text = '⚠ Sorry, I could not connect to Google Calendar. Try again?',
             reply_markup = keyboards.confirm_or_cancel
         )
         update.callback_query.answer()
@@ -462,7 +464,7 @@ def confirm_delete(update: Update, context: CallbackContext) -> int:
         ).execute()
     except Exception as error:
         update.effective_chat.send_message(
-            text = 'Sorry, I could not connect to Google Calendar. Try again?',
+            text = '⚠ Sorry, I could not connect to Google Calendar. Try again?',
             reply_markup = keyboards.confirm_or_cancel
         )
         update.callback_query.answer()

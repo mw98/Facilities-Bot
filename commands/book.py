@@ -252,7 +252,7 @@ def confirm(update: Update, context: CallbackContext) -> int:
             event_url = calendar.add_booking(query.from_user.id, context.user_data, context.chat_data)
         except Exception as error:
             update.effective_chat.send_message(
-                text = 'Sorry, I could not connect to Google Calendar. Try again?',
+                text = '⚠ Sorry, I could not connect to Google Calendar. Try again?',
                 reply_markup = keyboards.confirm_or_cancel
             )
             logger.exception(
@@ -277,7 +277,7 @@ def confirm(update: Update, context: CallbackContext) -> int:
             )
         except Exception as error:
             update.effective_chat.send_message(
-                text = 'Sorry, I could not connect to Google Calendar. Try again?',
+                text = '⚠ Sorry, I could not connect to Google Calendar. Try again?',
                 reply_markup = keyboards.patch_confirm_or_cancel
             )
             logger.exception(
