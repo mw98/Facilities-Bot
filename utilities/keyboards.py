@@ -1,4 +1,5 @@
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
+import config
 
 # Company Selector
 companies = InlineKeyboardMarkup([
@@ -86,12 +87,16 @@ today_tomorrow = InlineKeyboardMarkup([
 ])
 
 
-# Show in Google Calendar
+# Show Booking in Google Calendar
 def show_in_calendar(event_url: str) -> InlineKeyboardMarkup:
     
     return InlineKeyboardMarkup([
         [InlineKeyboardButton('Show in Google Calendar', url=event_url)]
     ])
+
+
+# View Google Calendar
+view_calendar = InlineKeyboardMarkup([[InlineKeyboardButton('Open Bookings Calendar', url=config.CALENDAR_URL)]])
 
 
 # Contact POC
