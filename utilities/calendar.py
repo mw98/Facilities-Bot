@@ -98,11 +98,11 @@ def find_upcoming_bookings_by_user(user_id: int) -> list:
     remainder_idx = None
     
     for idx, booking in enumerate(bookings):
-        date = booking['extendedProperties']['shared']['date']
-        if date == current_date:
+        booking_details = booking['extendedProperties']['shared']
+        if booking_details['date'] == current_date:
             
-            start_time = datetime.strptime(booking['extendedProperties']['shared']['start_time'], '%H:%M').time()
-            end_time = datetime.strptime(booking['extendedProperties']['shared']['end_time'], '%H:%M').time()
+            start_time = datetime.strptime(booking_details['start_time'], '%H:%M').time()
+            end_time = datetime.strptime(booking_details['end_time'], '%H:%M').time()
             
             if start_time <= current_time and end_time >= current_time:
                 result['ongoing'].append(booking)
@@ -110,7 +110,7 @@ def find_upcoming_bookings_by_user(user_id: int) -> list:
             elif start_time > current_time:
                 result['later_today'].append(booking)
         
-        else:
+        else: # Since bookings are arranged by start time, all subsequent items are after today
             result['after_today'].append(booking)
             remainder_idx = idx + 1
             break
@@ -120,6 +120,46 @@ def find_upcoming_bookings_by_user(user_id: int) -> list:
     
     return result
 
+
+def find_upcoming_bookings_by_facility(facility: str) -> list:
+    
+    now = datetime.now(config.TIMEZONE)
+    current_date = now.strftime('%Y-%m-%d')
+    current_time = now.time()
+    
+    bookings = service.events().list(
+        calendarId = config.CALENDAR_ID,
+        orderBy = 'startTime',
+        singleEvents = True,
+        timeMin = f'{current_date}T00:00:00+08:00',
+        sharedExtendedProperty = f'facility={facility}'
+    ).execute()['items']
+    
+    result = {'ongoing': [], 'later_today': [], 'after_today': []}
+    remainder_idx = None
+    
+    for idx, booking in enumerate(bookings):
+        booking_details = booking['extendedProperties']['shared']
+        if booking_details['date'] == current_date:
+            
+            start_time = datetime.strptime(booking_details['start_time'], '%H:%M').time()
+            end_time = datetime.strptime(booking_details['end_time'], '%H:%M').time()
+            
+            if start_time <= current_time and end_time >= current_time:
+                result['ongoing'].append(booking)
+            
+            elif start_time > current_time:
+                result['later_today'].append(booking)
+            
+        else: # Since bookings are arranged by start time, all subsequent items are after today
+            result['after_today'].append(booking)
+            remainder_idx = idx + 1
+            break
+        
+    if remainder_idx:
+        result['after_today'] += bookings[remainder_idx:]
+    
+    return result
 
 
 '''
@@ -298,14 +338,12 @@ def patch_booking(user_id: int, user_data: dict, chat_data: dict) -> str:
     return patched_booking.get('htmlLink')
     
 
-def delete_booking(event_id: str) -> None:
+def delete_booking(event_id: str):
     
-    service.events().delete(
+    return service.events().delete(
         calendarId = config.CALENDAR_ID, 
         eventId = event_id
     ).execute()
-    
-    return
     
     
     
