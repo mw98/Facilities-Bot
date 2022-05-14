@@ -43,7 +43,7 @@ def show_upcoming_user_bookings(update: Update, context: CallbackContext) -> Non
             )
     
     else:
-        message = "You don't have any ongoing or upcoming bookings"
+        message = "You don't have any ongoing or upcoming bookings."
     
     update.effective_chat.send_message(
         text = message,
