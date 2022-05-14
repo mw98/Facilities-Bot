@@ -44,9 +44,9 @@ def find_ongoing_or_next(bookings_today: list, current_time: datetime.time):
         
     for idx, booking in enumerate(bookings_today):
         
-        start_time = booking['start']['dateTime'][11:16]
+        start_time = booking['extendedProperties']['shared']['start_time']
         datetime_start_time = datetime.strptime(start_time, '%H:%M').time()
-        end_time = booking['end']['dateTime'][11:16]
+        end_time = booking['extendedProperties']['shared']['end_time']
         datetime_end_time = datetime.strptime(end_time, '%H:%M').time()
         
         # If a booking is currently happening
@@ -98,11 +98,11 @@ def find_upcoming_bookings_by_user(user_id: int) -> list:
     remainder_idx = None
     
     for idx, booking in enumerate(bookings):
-        date = booking['start']['dateTime'][:10]
+        date = booking['extendedProperties']['shared']['date']
         if date == current_date:
             
-            start_time = datetime.strptime(booking['start']['dateTime'][11:16], '%H:%M').time()
-            end_time = datetime.strptime(booking['end']['dateTime'][11:16], '%H:%M').time()
+            start_time = datetime.strptime(booking['extendedProperties']['shared']['start_time'], '%H:%M').time()
+            end_time = datetime.strptime(booking['extendedProperties']['shared']['end_time'], '%H:%M').time()
             
             if start_time <= current_time and end_time >= current_time:
                 result['ongoing'].append(booking)
@@ -133,29 +133,15 @@ def list_conflicts(chat_data: dict) -> list:
     
     for booking in existing_bookings:
         
-        start_time = booking['start']['dateTime'][11:16]
-        end_time = booking['end']['dateTime'][11:16]
-        datetime_start_time = datetime.strptime(start_time, '%H:%M').time()
-        datetime_end_time = datetime.strptime(end_time, '%H:%M').time()        
+        datetime_start_time = datetime.strptime(booking['extendedProperties']['shared']['start_time'], '%H:%M').time()
+        datetime_end_time = datetime.strptime(booking['extendedProperties']['shared']['end_time'], '%H:%M').time()        
         
         if (
             (chat_data['datetime_start_time'] > datetime_start_time and chat_data['datetime_start_time'] < datetime_end_time)
             or (chat_data['datetime_end_time'] > datetime_start_time and chat_data['datetime_end_time'] < datetime_end_time)
             or (chat_data['datetime_start_time'] <= datetime_start_time and chat_data['datetime_end_time'] >= datetime_end_time)
         ):
-            description = booking['description'].splitlines()
-            conflicts.append(
-                {
-                    'start_time': start_time,
-                    'end_time': end_time,
-                    'description': description[0][10:],
-                    'POC': description[1][5:],
-                    'htmlLink': booking['htmlLink'],
-                    'username': booking['extendedProperties']['shared']['username'],
-                    'user_id': booking['extendedProperties']['shared']['user_id'],
-                    'event_id': booking['id']
-                }
-            )
+            conflicts.append(booking)
         
     return conflicts
 
@@ -201,9 +187,9 @@ def list_available_slots(chat_data: dict):
     else:
         
         first_booking = existing_bookings[0]
-        start_time = first_booking['start']['dateTime'][11:16]
+        start_time = booking['extendedProperties']['shared']['start_time']
         datetime_start_time = datetime.strptime(start_time, '%H:%M').time()
-        end_time = first_booking['end']['dateTime'][11:16]
+        end_time = booking['extendedProperties']['shared']['end_time']
         
         # If the first booking starts at midnight
         if datetime_start_time == datetime.time(0,0,0):
@@ -224,8 +210,8 @@ def list_available_slots(chat_data: dict):
     
     # Iteratively append subsequent slots
     for booking in existing_bookings[start_iteration_idx:]:
-        available_slots.append((slot_start_time, booking['start']['dateTime'][11:16]))
-        slot_start_time = booking['end']['dateTime'][11:16]
+        available_slots.append((slot_start_time, booking['extendedProperties']['shared']['start_time']))
+        slot_start_time = booking['extendedProperties']['shared']['end_time']
     
     # If the last booking ends before 23:59
     if slot_start_time != '23:59':
@@ -260,6 +246,11 @@ def add_booking(user_id: int, user_data: dict, chat_data: dict) -> str:
             "extendedProperties": {
                 "shared": {
                    "facility": chat_data["facility"],
+                   "date": chat_data["date"],
+                   "start_time": chat_data["start_time"],
+                   "end_time": chat_data["end_time"],
+                   "description": chat_data["description"],
+                   "name_and_company": f"{user_data['rank_and_name']} ({user_data['company']})",
                    "user_id": str(user_id),
                    "username": user_data["username"]
                 },
@@ -270,12 +261,16 @@ def add_booking(user_id: int, user_data: dict, chat_data: dict) -> str:
     return new_booking.get('htmlLink')
 
 
-def patch_booking(chat_data: dict) -> str:
+def patch_booking(user_id: int, user_data: dict, chat_data: dict) -> str:
     
     patched_booking = service.events().patch(
         calendarId = config.CALENDAR_ID,
         eventId = chat_data['event_id'],
         body = {
+            "summary": f"{chat_data['facility']} ({user_data['company']})",
+            "description": 
+                f"Activity: {chat_data['description']}\n"
+                f"POC: {user_data['rank_and_name']} ({user_data['company']})",
             "start": {
                 "dateTime": f"{chat_data['date']}T{chat_data['start_time']}:00+08:00",
                 "timeZone": "Asia/Singapore",
@@ -283,6 +278,19 @@ def patch_booking(chat_data: dict) -> str:
             "end": {
                 "dateTime": f"{chat_data['date']}T{chat_data['end_time']}:00+08:00",
                 "timeZone": "Asia/Singapore",
+            },
+            "colorId": config.EVENT_COLOUR_CODES[chat_data['facility']],
+            "extendedProperties": {
+                "shared": {
+                   "facility": chat_data["facility"],
+                   "date": chat_data["date"],
+                   "start_time": chat_data["start_time"],
+                   "end_time": chat_data["end_time"],
+                   "description": chat_data["description"],
+                   "name_and_company": f"{user_data['rank_and_name']} ({user_data['company']})",
+                   "user_id": str(user_id),
+                   "username": user_data["username"]
+                },
             },
         }
     ).execute()

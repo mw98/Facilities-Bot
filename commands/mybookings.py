@@ -7,6 +7,7 @@ from utilities import calendar, actions
 MYBOOKINGS CALLBACK FUNCTION
 '''
 @actions.send_typing_action
+@actions.load_user_profile
 def show_upcoming_user_bookings(update: Update, context: CallbackContext) -> None:
     
     bookings = calendar.find_upcoming_bookings_by_user(update.message.from_user.id)
@@ -16,27 +17,29 @@ def show_upcoming_user_bookings(update: Update, context: CallbackContext) -> Non
     if bookings['ongoing']:
         message += "\n*Ongoing*\n"
         for booking in bookings['ongoing']:
+            booking_details = booking['extendedProperties']['shared']
             message += (
-                f"{booking['start']['dateTime'][11:16]}-{booking['end']['dateTime'][11:16]} {booking['extendedProperties']['shared']['facility']} ([Link]({booking['htmlLink']}))\n"
+                f"[{booking_details['start_time']}-{booking_details['end_time']}]({booking['htmlLink']}) {booking_details['facility']}\n"
             )
     
     if bookings['later_today']:
         message += "\n*Later Today*\n"
         for booking in bookings['later_today']:
+            booking_details = booking['extendedProperties']['shared']
             message += (
-                f"{booking['start']['dateTime'][11:16]}-{booking['end']['dateTime'][11:16]} {booking['extendedProperties']['shared']['facility']} ([Link]({booking['htmlLink']}))\n"
+                f"[{booking_details['start_time']}-{booking_details['end_time']}]({booking['htmlLink']}) {booking_details['facility']}\n"
             )
     
     if bookings['after_today']:
         date = None
         for booking in bookings['after_today']:
-            booking_date = booking['start']['dateTime'][:10]
+            booking_details = booking['extendedProperties']['shared']
+            booking_date = booking_details['date']
             if booking_date != date:
                 date = booking_date
-                booking_date = datetime.strptime(booking_date, '%Y-%m-%d').strftime('%d %b %Y')
-                message += f"\n*{booking_date}*\n"
+                message += f"\n*{datetime.strptime(booking_date, '%Y-%m-%d').strftime('%d %b %Y')}*\n"
             message += (
-                f"{booking['start']['dateTime'][11:16]}-{booking['end']['dateTime'][11:16]} {booking['extendedProperties']['shared']['facility']} ([Link]({booking['htmlLink']}))\n"
+                f"[{booking_details['start_time']}-{booking_details['end_time']}]({booking['htmlLink']}) {booking_details['facility']}\n"
             )
     
     else:
