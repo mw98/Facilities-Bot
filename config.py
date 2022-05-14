@@ -1,5 +1,8 @@
 from datetime import timezone, timedelta
 
+# DATABASE
+USER_DB_NAME = 'data/users.db'
+
 # TELEGRAM BOT
 TIMEZONE = timezone(timedelta(hours=8)) # UTC+8
 BOT_TOKEN_FILE = 'keys/bot_token.txt'
@@ -20,6 +23,7 @@ BOT_COMMANDS = (
 SERVICE_ACCOUNT_SCOPES = ['https://www.googleapis.com/auth/calendar.events']
 SERVICE_ACCOUNT_FILE = 'keys/service_account.json'
 CALENDAR_ID = 'begpgae3aecell7h163qoek9l0@group.calendar.google.com'
+CALENDAR_URL = 'https://calendar.google.com/calendar/u/0?cid=YmVncGdhZTNhZWNlbGw3aDE2M3FvZWs5bDBAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ'
 EVENT_COLOUR_CODES = {
     'LT 1': '1',
     'LT 2': '7',
@@ -45,6 +49,3 @@ ID | Name      | Hex Code
 10 | Basil     | #0b8043
 11 | Tomato    | #d60000
 '''
-
-# DATABASE
-USER_DB_NAME = 'data/users.db'
