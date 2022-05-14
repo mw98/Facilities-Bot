@@ -1,12 +1,13 @@
 from functools import wraps
 from telegram import ChatAction, ParseMode
+from telegram.ext import ConversationHandler
 from utilities import calendar
 import database
 
 '''
-TYPING ACTION
-Decorate callback function to send typing action while processing
+DECORATORS
 '''
+# Decorate callback function to send typing action while processing
 def send_typing_action(func):
 
     @wraps(func)
@@ -19,11 +20,8 @@ def send_typing_action(func):
     return wrapper
 
 
-'''
-LOAD USER PROFILE
-Decorate callback function to load user profile before proceeding
-Prompts user to create profile if it does not exist
-'''
+#Decorate callback function to load user profile before proceeding
+#Prompts user to create profile if it does not exist
 def load_user_profile(func):
     
     @wraps(func)
@@ -81,3 +79,10 @@ def send_time_range_error(update, context, logger) -> None:
     )
     
     return
+
+
+'''
+SHARED CALLBACK FUNCTIONS
+'''
+def silent_cancel(update, context) -> int:
+    return ConversationHandler.END

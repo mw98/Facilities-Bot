@@ -327,17 +327,17 @@ def cancel(update: Update, context: CallbackContext) -> int:
     if (query := update.callback_query): 
                 
         if query.data == 'cancel':
-            query.edit_message_text('Ok, no booking was made.\n\nSend /book to make a new booking, or /change to manage your existing bookings.')
+            query.edit_message_text('Ok, no booking was made. Send /book to make a new booking.')
         
         elif query.data == 'cancel patch':
-            query.edit_message_text('Ok, no changes were made.\n\nSend /book to make a new booking, or /change to manage your existing bookings.')
+            query.edit_message_text('Ok, no changes were made. Send /book to make a new booking, or /change to manage your existing bookings.')
         
         # CallbackQueries need to be answered, even if no user notification is needed
         query.answer()
     
     # Cancelling via /cancel command
     else:
-        update.effective_chat.send_message('Ok, no booking was made.\n\nSend /book to make a new booking, or /change to manage your existing bookings.')
+        update.effective_chat.send_message('Ok, no booking was made. Send /book to make a new booking.')
     
     return ConversationHandler.END # -1
     
@@ -370,6 +370,7 @@ handler = ConversationHandler(
     },
     fallbacks = [
         CommandHandler('cancel', cancel),
-        CommandHandler('book', book)
-    ]
+        MessageHandler(Filters.command, actions.silent_cancel)
+    ],
+    allow_reentry = True
 )

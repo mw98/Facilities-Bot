@@ -498,13 +498,13 @@ def cancel(update: Update, context: CallbackContext) -> int:
 
     # Cancelling via inline keyboard
     if update.callback_query:
-        update.callback_query.edit_message_text('Ok, no changes were made.\n\nSend /change to edit or delete a different booking.')
+        update.callback_query.edit_message_text('Ok, no changes were made. Send /change to manage a different booking.')
          # CallbackQueries need to be answered, even if no user notification is needed
         update.callback_query.answer()
     
     # Cancelling via /cancel command
     else:
-        update.effective_chat.send_message('Ok, no changes were made.\n\nSend /change to edit or delete a different booking.')
+        update.effective_chat.send_message('Ok, no changes were made. Send /change to manage a different booking.')
     
     return ConversationHandler.END # -1
 
@@ -547,6 +547,7 @@ handler = ConversationHandler(
     },
     fallbacks = [
         CommandHandler('cancel', cancel),
-        CommandHandler('change', change)
-    ]
+        MessageHandler(Filters.command, actions.silent_cancel)
+    ],
+    allow_reentry = True
 )

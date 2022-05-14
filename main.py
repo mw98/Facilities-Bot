@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
 from telegram.ext import Updater
-from commands import start, help, book, change, mybookings
+from commands import start, help, book, change, check, mybookings
 import config, database
 
 # Enable logging
@@ -9,7 +9,6 @@ logging.basicConfig(
     format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s', 
     level = logging.INFO
 )
-
 
 def main():
 
@@ -34,15 +33,14 @@ def main():
     dispatcher = updater.dispatcher
     dispatcher.add_handler(start.handler)
     dispatcher.add_handler(help.handler)
-    dispatcher.add_handler(book.handler)
-    dispatcher.add_handler(change.handler)
+    dispatcher.add_handler(book.handler, 0)
+    dispatcher.add_handler(change.handler, 1)
+    dispatcher.add_handler(check.handler, 2)
     dispatcher.add_handler(mybookings.handler)
 
     # Run bot
     updater.start_polling()
     updater.idle()
 
-
 if __name__ == '__main__':
     main()
-
