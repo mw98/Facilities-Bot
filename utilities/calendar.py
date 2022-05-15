@@ -187,7 +187,7 @@ def list_conflicts(chat_data: dict) -> list:
 
 
 '''
-MAKE OR CHANGE BOOKINGS
+MAKE/CHANGE/DELETE BOOKINGS
 '''
 def add_booking(user_id: int, user_data: dict, chat_data: dict) -> str:
     
@@ -268,21 +268,3 @@ def delete_booking(event_id: str):
         calendarId = config.CALENDAR_ID, 
         eventId = event_id
     ).execute()
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-

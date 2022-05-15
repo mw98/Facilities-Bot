@@ -51,6 +51,10 @@ confirm_or_cancel = InlineKeyboardMarkup([
 ])
 
 
+# Continue with Booking
+continue_with_booking = InlineKeyboardMarkup([[InlineKeyboardButton('Continue with Booking', callback_data = 'continue')]])
+
+
 # Confirm / Cancel for Patch Booking
 patch_confirm_or_cancel = InlineKeyboardMarkup([
     [
@@ -105,7 +109,9 @@ def contact_poc(booking_conflicts: list, effective_username: str) -> InlineKeybo
     buttons = set()
     
     for conflict in booking_conflicts:
-        if conflict['extendedProperties']['shared']['username'] != effective_username:
+        if (conflict['extendedProperties']['shared']['username'] != effective_username
+            and conflict['extendedProperties']['shared']['username'] != 'NULL'
+        ):
             buttons.add(InlineKeyboardButton(f'Message {conflict["extendedProperties"]["shared"]["name_and_company"]}', url=f'https://t.me/{conflict["extendedProperties"]["shared"]["username"]}'))
     
     buttons = list(buttons)
@@ -134,14 +140,3 @@ def user_bookings(bookings):
         )
     
     return InlineKeyboardMarkup(buttons)
-    
-
-
-
-
-
-
-
-
-
-
