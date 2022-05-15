@@ -42,7 +42,6 @@ def change(update: Update, context: CallbackContext) -> int:
 '''
 LOAD EXISTING BOOKING
 '''
-@actions.send_typing_action
 def load_booking(update: Update, context: CallbackContext) -> int:
     
     query = update.callback_query
@@ -67,7 +66,7 @@ def load_booking(update: Update, context: CallbackContext) -> int:
     context.chat_data['description'] = booking['extendedProperties']['shared']['description']
     
     # Ask user change or delete the booking
-    update.effective_chat.send_message(
+    update.callback_query.edit_message_text(
         text = 
             "Here's the booking you selected.\n\n"
             f"*Facility:* {context.chat_data['facility']}\n"
@@ -477,7 +476,7 @@ def confirm_delete(update: Update, context: CallbackContext) -> int:
         return CONFIRM_DELETE
     
     # Inform user booking has been deleted
-    update.callback_query.edit_message_text("Booking deleted. Send /book to make a new booking.")
+    update.callback_query.edit_message_text("Booking deleted. Send /change to edit another booking.")
     update.callback_query.answer()
     
     # Log new booking
