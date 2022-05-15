@@ -24,7 +24,7 @@ except HttpError as error:
     logger.exception(error)
 
 '''
-BACKBONE FUNCTIONS
+LIST BOOKINGS
 '''
 def find_bookings_for_facility_by_date(facility: str, date: str) -> list:
     
@@ -184,82 +184,6 @@ def list_conflicts(chat_data: dict) -> list:
             conflicts.append(booking)
         
     return conflicts
-
-
-def list_available_slots(chat_data: dict):
-    
-    # Get a list of bookings on the chosen date
-    existing_bookings = find_bookings_for_facility_by_date(chat_data['facility'], chat_data['date'])
-    
-    # If no bookings are found, the facility is fully available
-    if not existing_bookings: return
-    
-    available_slots = []
-    now = datetime.now(config.TIMEZONE)
-    
-    # If the chosen date is today
-    if chat_data['datetime_date'] == now.date():
-        
-        # Check if there are ongoing or upcoming bookings
-        if (ongoing_or_next := find_ongoing_or_next(existing_bookings, now.time())):
-            
-            # If there is an ongoing booking
-            if ongoing_or_next['ongoing']:
-                
-                # Then the next slot starts when the ongoing booking ends
-                slot_start_time = ongoing_or_next['end_time']
-                start_iteration_idx = ongoing_or_next['idx'] + 1
-            
-            # Else if there is an upcoming booking
-            else:
-                
-                # Then the first slot is between now and when the upcoming booking starts
-                available_slots.append(('Now', ongoing_or_next['start_time']))
-                
-                # And the subsequent slot starts when the upcoming booking ends
-                slot_start_time = ongoing_or_next['end_time']
-                start_iteration_idx = ongoing_or_next['idx'] + 1
-        
-        # Else if there are no ongoing or upcoming bookings, the facility is fully available
-        else: return
-    
-    # If the chosen date is after today
-    else:
-        
-        first_booking = existing_bookings[0]
-        start_time = booking['extendedProperties']['shared']['start_time']
-        datetime_start_time = datetime.strptime(start_time, '%H:%M').time()
-        end_time = booking['extendedProperties']['shared']['end_time']
-        
-        # If the first booking starts at midnight
-        if datetime_start_time == datetime.time(0,0,0):
-            
-            # The first slot starts after the first booking ends
-            slot_start_time = end_time
-            start_interation_idx = 1
-        
-        # If the first booking starts after midnight
-        else: 
-            
-            # The first slot is between 00:00 and when the first booking starts
-            available_slots.append('00:00', start_time)
-            
-            # The next slot starts when the first booking ends
-            slot_start_time = end_time
-            start_iteration_idx = 1
-    
-    # Iteratively append subsequent slots
-    for booking in existing_bookings[start_iteration_idx:]:
-        available_slots.append((slot_start_time, booking['extendedProperties']['shared']['start_time']))
-        slot_start_time = booking['extendedProperties']['shared']['end_time']
-    
-    # If the last booking ends before 23:59
-    if slot_start_time != '23:59':
-        
-        # The last slot is between the end of the last booking and 23:59
-        available_slots.append((slot_start_time, '23:59'))
-    
-    return available_slots
 
 
 '''
