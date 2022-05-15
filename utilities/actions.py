@@ -43,7 +43,7 @@ def load_user_profile(func):
 
 
 '''
-CALLBACK ERROR REPLIES
+SHARED CALLBACK FUNCTIONS
 '''             
 def send_date_error(update, context, logger) -> None:
             
@@ -81,8 +81,5 @@ def send_time_range_error(update, context, logger) -> None:
     return
 
 
-'''
-SHARED CALLBACK FUNCTIONS
-'''
 def silent_cancel(update, context) -> int:
     return ConversationHandler.END

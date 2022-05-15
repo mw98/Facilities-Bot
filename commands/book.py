@@ -35,7 +35,7 @@ def date_error(update: Update, context: CallbackContext) -> int:
 
 
 def time_range_error(update: Update, context: CallbackContext) -> int:
-    action.send_time_range_error(update, context, logger)    
+    actions.send_time_range_error(update, context, logger)    
     return TIME_RANGE
 
 
@@ -162,7 +162,7 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
                 # Save the previous booking details
                 context.chat_data['old_start_time'] = conflict_details['start_time']
                 context.chat_data['old_end_time'] = conflict_details['end_time']
-                context.chat_data['event_id'] = conflict_details['event_id']
+                context.chat_data['event_id'] = conflict['id']
                 context.chat_data['description'] = conflict_details['description']
                 
                 # Offer to update previous booking
@@ -361,7 +361,8 @@ handler = ConversationHandler(
         DESCRIPTION: [MessageHandler(Filters.text & (~Filters.command), save_description)],
         PATCH: [
             CallbackQueryHandler(callback = patch_booking, pattern = 'patch'),
-            MessageHandler(filters.time_range, save_time_range)
+            MessageHandler(filters.time_range, save_time_range),
+            MessageHandler(Filters.all & (~Filters.command), time_range_error)
         ],
         CONFIRMATION: [
             CallbackQueryHandler(callback = confirm, pattern = 'confirm'),
