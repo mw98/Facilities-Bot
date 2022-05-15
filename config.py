@@ -17,7 +17,14 @@ BOT_COMMANDS = (
     '/profile - Update your user profile\n'
     '/help - Show this list of commands'
 )
-
+ADMIN_UID_LIST = [782292950]
+FACILITIES_LIST = [
+    'LT 1', 
+    'LT 2', 
+    'CONF ROOM', 
+    'RTS', 
+    'STINGRAY SQ'
+]
 
 # GOOGLE CALENDAR API
 SERVICE_ACCOUNT_SCOPES = ['https://www.googleapis.com/auth/calendar.events']
