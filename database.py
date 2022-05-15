@@ -12,7 +12,8 @@ def create_if_not_exists() -> None:
                 user_id INTEGER PRIMARY KEY,
                 rank_and_name TEXT NOT NULL,
                 company TEXT NOT NULL,
-                username TEXT NOT NULL
+                username TEXT NOT NULL,
+                UNIQUE (rank_and_name, company)
             ) WITHOUT ROWID;"""
         )
     
@@ -50,11 +51,37 @@ def retrieve_user(user_id: int) -> dict:
     )
     
     if (user_data := cursor.fetchone()):
+        connection.close()
         return {
             'rank_and_name': user_data[0],
             'company': user_data[1],
             'username': user_data[2]
         }
     
-    else: 
-        return {}
+    connection.close()
+    return {}
+
+
+# Retrieve users by rank and name and company
+def retrieve_user_by_rank_name_company(rank_and_name: str, company: str) -> list:
+    
+    connection = sqlite3.connect(config.USER_DB_NAME)
+    cursor = connection.cursor()
+    
+    cursor.execute(
+        """SELECT user_id, username
+        FROM users
+        WHERE rank_and_name = :rank_and_name
+        AND company = :company""",
+        (rank_and_name, company) # (user_id) is an int while (user_id,) is a tuple containing an int
+    )
+    
+    if (data := cursor.fetchone()):
+        connection.close()
+        return {
+            'id': data[0],
+            'username': data[1]
+        }
+        
+    connection.close()
+    return data
