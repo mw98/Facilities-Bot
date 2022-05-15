@@ -7,7 +7,7 @@ import config, database
 logger = logging.getLogger(__name__)
 
 
-NAME, COMPANY, CONFIRMATION = range(3)
+NAME, COMPANY, RETRY_NAME, CONFIRMATION = range(4)
 
 '''
 REGISTRATION ENTRY POINTS
@@ -74,9 +74,54 @@ def save_coy(update: Update, context: CallbackContext) -> int:
     
     # Save user's company
     context.user_data['company'] = query.data
+    
+    # Check if user's rank and name + company are unique
+    if database.retrieve_user_by_rank_name_company(
+        context.user_data['rank_and_name'],
+        context.user_data['company']
+    ):
+        update.effective_chat.send_message(
+            text = 
+                f"Sorry, there's already a user registered as *{context.user_data['rank_and_name']}* in *{context.user_data['company']}*. "
+                'Please send me your rank and name again. Consider using your full name, or another variation of your name.',
+            parse_mode = ParseMode.MARKDOWN
+        )
+        # CallbackQueries need to be answered, even if no user notification is needed
+        query.answer()
+        return RETRY_NAME
         
+    # Ask user to confirm user profile
+    update.effective_chat.send_message(
+        text = f"Ok, I'll register you as *{context.user_data['rank_and_name']} ({context.user_data['company']})*. Is this correct?",
+        reply_markup = keyboards.confirm_or_cancel,
+        parse_mode = ParseMode.MARKDOWN
+    )
+    
     # CallbackQueries need to be answered, even if no user notification is needed
     query.answer()
+    
+    return CONFIRMATION
+
+
+def retry_name(update: Update, context: CallbackContext) -> int:
+    
+    # Save new rank and name
+    context.user_data['rank_and_name'] = update.message.text
+    
+    # Check if user's rank and name + company are unique
+    if database.retrieve_user_by_rank_name_company(
+        context.user_data['rank_and_name'],
+        context.user_data['company']
+    ):
+        update.effective_chat.send_message(
+            text = 
+                f"Sorry, there's also a user registered as *{context.user_data['rank_and_name']}* in *{context.user_data['company']}*. "
+                'Please send me your rank and name again. Consider using another variation of your name.',
+            parse_mode = ParseMode.MARKDOWN
+        )
+        # CallbackQueries need to be answered, even if no user notification is needed
+        query.answer()
+        return RETRY_NAME
     
     # Ask user to confirm user profile
     update.effective_chat.send_message(
@@ -143,6 +188,7 @@ handler = ConversationHandler(
     states = {
         NAME: [MessageHandler(Filters.text, save_name)],
         COMPANY: [CallbackQueryHandler(save_coy)],
+        RETRY_NAME: [MessageHandler(Filters.text, retry_name)],
         CONFIRMATION: [
             CallbackQueryHandler(callback = confirm, pattern = 'confirm'),
             CallbackQueryHandler(callback = cancel, pattern = 'cancel')
