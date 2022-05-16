@@ -1,6 +1,7 @@
 from datetime import datetime
 import logging
 from google.oauth2 import service_account
+import sys
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import config
@@ -11,10 +12,15 @@ logger = logging.getLogger(__name__)
 ACCESS CALENDAR API
 '''
 # Authenticate service account
-credentials = service_account.Credentials.from_service_account_file(
-    filename = config.SERVICE_ACCOUNT_FILE,
-    scopes = config.SERVICE_ACCOUNT_SCOPES
-)
+try:
+    credentials = service_account.Credentials.from_service_account_file(
+        filename = config.SERVICE_ACCOUNT_FILE,
+        scopes = config.SERVICE_ACCOUNT_SCOPES
+    )
+except FileNotFoundError as e:
+    logger.debug(error)
+    print('Service account key not found.')
+    sys.exit()
 
 # Create service object
 try: 
