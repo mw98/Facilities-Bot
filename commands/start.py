@@ -20,8 +20,12 @@ def start(update: Update, context: CallbackContext) -> int:
     if (user_data := database.retrieve_user(update.message.from_user.id)):
         context.user_data.update(user_data)
         chat.send_message(
-            text = f'Hi, *{context.user_data["rank_and_name"]} ({context.user_data["company"]})*.\n\n{config.BOT_COMMANDS}',
+            text = 
+                f'Hi, *{context.user_data["rank_and_name"]} ({context.user_data["company"]})*.\n\n'
+                f'{config.BOT_COMMANDS}\n\n'
+                'Tap the link below to see the bookings calendar.',
             parse_mode = ParseMode.MARKDOWN
+            reply_markup = keyboards.view_calendar
         )
         return ConversationHandler.END # -1
     
@@ -146,8 +150,11 @@ def confirm(update: Update, context: CallbackContext) -> int:
     # Confirm registration and introduce user to bot commands
     query.edit_message_text(
         text = 
-            f'Profile created! Hi *{context.user_data["rank_and_name"]} ({context.user_data["company"]})*.\n\n{config.BOT_COMMANDS}',
-        parse_mode = ParseMode.MARKDOWN
+            f'Profile created! Hi *{context.user_data["rank_and_name"]} ({context.user_data["company"]})*.\n\n'
+            f'{config.BOT_COMMANDS}\n\n'
+            'Tap the link below to see the bookings calendar.',
+        parse_mode = ParseMode.MARKDOWN,
+        reply_markup = keyboards.view_calendar
     )
     
     # Log new user registration
