@@ -30,10 +30,7 @@ def show_bookings(update: Update, context: CallbackContext) -> int:
     bookings = calendar.find_upcoming_bookings_by_facility(facility)
     
     if not bookings['ongoing'] and not bookings['later_today'] and not bookings['after_today']:
-        update.effective_chat.send_message(
-            text = f"*{facility}* has no ongoing or upcoming bookings.\n\nUse /book to make a new booking.",
-            parse_mode = ParseMode.MARKDOWN
-        )
+        message = f"*{facility}* has no ongoing or upcoming bookings.\n\nUse /book to make a new booking, or access the bookings calendar by tapping the link below."
     
     else:
         message = f"Here's a list of upcoming *{facility}* bookings and their respective POCs:\n"
@@ -58,15 +55,15 @@ def show_bookings(update: Update, context: CallbackContext) -> int:
                     message += f"\n*{datetime.strptime(booking_details['date'], '%Y-%m-%d').strftime('%d %b %Y')}*\n"
                 message += f"[{booking_details['start_time']}-{booking_details['end_time']}]({booking['htmlLink']}) {booking_details['name_and_company']}\n"
         
-        message += '\nUse /book to make a new booking.'
+        message += '\nUse /book to make a new booking, or access the bookings calendar by tapping the link below.'
                 
-        update.effective_chat.send_message(
-            text = message,
-            parse_mode = ParseMode.MARKDOWN,
-            reply_markup = keyboards.view_calendar
-        )
-                
+    update.callback_query.edit_message_text(
+        text = message,
+        parse_mode = ParseMode.MARKDOWN,
+        reply_markup = keyboards.view_calendar
+    )
     update.callback_query.answer()
+    
     return ConversationHandler.END
 
 
