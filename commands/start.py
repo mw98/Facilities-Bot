@@ -24,7 +24,7 @@ def start(update: Update, context: CallbackContext) -> int:
                 f'Hi, *{context.user_data["rank_and_name"]} ({context.user_data["company"]})*.\n\n'
                 f'{config.BOT_COMMANDS}\n\n'
                 'Tap the link below to see the bookings calendar.',
-            parse_mode = ParseMode.MARKDOWN
+            parse_mode = ParseMode.MARKDOWN,
             reply_markup = keyboards.view_calendar
         )
         return ConversationHandler.END # -1
