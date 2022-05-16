@@ -17,7 +17,7 @@ try:
         filename = config.SERVICE_ACCOUNT_FILE,
         scopes = config.SERVICE_ACCOUNT_SCOPES
     )
-except FileNotFoundError as e:
+except FileNotFoundError as error:
     logger.debug(error)
     print('Service account key not found.')
     sys.exit()
