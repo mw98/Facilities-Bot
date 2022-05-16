@@ -243,5 +243,7 @@ handler = ConversationHandler(
         CommandHandler('cancel', cancel),
         MessageHandler(Filters.command, actions.silent_cancel)
     ],
-    allow_reentry = True
+    allow_reentry = True,
+    name = 'admin',
+    persistent = True
 )

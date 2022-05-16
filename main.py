@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from telegram.ext import Updater
+from telegram.ext import Updater, PicklePersistence
 from commands import start, help, book, change, check, mybookings, admin
 import config, database
 
@@ -27,7 +27,8 @@ def main():
     except FileNotFoundError as error:
         print('Bot token file not found.')
         return
-    updater = Updater(token)
+    persistence = PicklePersistence(filename = 'data/persistence')
+    updater = Updater(token, persistence = persistence)
 
     # Attach handlers
     dispatcher = updater.dispatcher

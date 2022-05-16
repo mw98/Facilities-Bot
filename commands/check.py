@@ -77,5 +77,7 @@ handler = ConversationHandler(
     entry_points = [CommandHandler('check', check)],
     states = {SHOW_BOOKINGS: [CallbackQueryHandler(show_bookings)]},
     fallbacks = [MessageHandler(Filters.command, actions.silent_cancel)],
-    allow_reentry = True
+    allow_reentry = True,
+    name = 'check',
+    persistent = True
 )
