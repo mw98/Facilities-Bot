@@ -55,7 +55,7 @@ def show_bookings(update: Update, context: CallbackContext) -> int:
                     message += f"\n*{datetime.strptime(booking_details['date'], '%Y-%m-%d').strftime('%d %b %Y')}*\n"
                 message += f"[{booking_details['start_time']}-{booking_details['end_time']}]({booking['htmlLink']}) {booking_details['name_and_company']}\n"
         
-        message += '\nUse /book to make a new booking, or access the bookings calendar by tapping the link below.'
+        message += '\nUse /book to make a new booking, or tap the link below to open the bookings calendar.'
                 
     update.callback_query.edit_message_text(
         text = message,

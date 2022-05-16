@@ -1,7 +1,7 @@
 from datetime import datetime
 from telegram import Update, ParseMode
 from telegram.ext import CallbackContext, CommandHandler
-from utilities import calendar, actions
+from utilities import calendar, actions, keyboards
 
 '''
 MYBOOKINGS CALLBACK FUNCTION
@@ -43,11 +43,14 @@ def show_upcoming_user_bookings(update: Update, context: CallbackContext) -> Non
             )
     
     else:
-        message = "You don't have any ongoing or upcoming bookings."
+        message = "You don't have any ongoing or upcoming bookings.\n"
+    
+    message += "\nTap the link below to open the bookings calendar."
     
     update.effective_chat.send_message(
         text = message,
-        parse_mode = ParseMode.MARKDOWN
+        parse_mode = ParseMode.MARKDOWN,
+        reply_markup = keyboards.view_calendar
     )
     
     return
