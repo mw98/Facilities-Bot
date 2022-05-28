@@ -17,7 +17,7 @@ BOT_COMMANDS = (
     '/profile - Update your user profile\n'
     '/help - Show this list of commands'
 )
-ADMIN_UID_LIST = [782292950]
+ADMIN_UID_LIST = 'data/admins.txt'
 FACILITIES_LIST = [
     'LT 1', 
     'LT 2', 
