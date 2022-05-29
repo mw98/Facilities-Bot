@@ -22,7 +22,7 @@ def create_if_not_exists() -> None:
 
 
 # Create a new user or replace an existing one  
-def add_user(user_id: int, user_data: dict) -> bool:
+def add_user(user_id: int, user_data: dict):
     
     connection = sqlite3.connect(config.USER_DB_NAME)
     
