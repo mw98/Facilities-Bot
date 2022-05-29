@@ -29,8 +29,8 @@ FACILITIES_LIST = [
 # GOOGLE CALENDAR API
 SERVICE_ACCOUNT_SCOPES = ['https://www.googleapis.com/auth/calendar.events']
 SERVICE_ACCOUNT_FILE = 'keys/service_account.json'
-CALENDAR_ID = 'begpgae3aecell7h163qoek9l0@group.calendar.google.com'
-CALENDAR_URL = 'https://calendar.google.com/calendar/u/0?cid=YmVncGdhZTNhZWNlbGw3aDE2M3FvZWs5bDBAZ3JvdXAuY2FsZW5kYXIuZ29vZ2xlLmNvbQ'
+CALENDAR_ID = 'mui51q6orvum7s22r2civ3hmps@group.calendar.google.com'
+CALENDAR_URL = 'https://calendar.google.com/calendar/embed?src=begpgae3aecell7h163qoek9l0%40group.calendar.google.com&ctz=Asia%2FSingapore'
 EVENT_COLOUR_CODES = {
     'LT 1': '1',
     'LT 2': '7',
