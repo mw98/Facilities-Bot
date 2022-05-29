@@ -193,9 +193,9 @@ handler = ConversationHandler(
         CommandHandler('profile', profile)
     ],
     states = {
-        NAME: [MessageHandler(Filters.text, save_name)],
+        NAME: [MessageHandler(Filters.text & (~Filters.command), save_name)],
         COMPANY: [CallbackQueryHandler(save_coy)],
-        RETRY_NAME: [MessageHandler(Filters.text, retry_name)],
+        RETRY_NAME: [MessageHandler(Filters.text & (~Filters.command), retry_name)],
         CONFIRMATION: [
             CallbackQueryHandler(callback = confirm, pattern = 'confirm'),
             CallbackQueryHandler(callback = cancel, pattern = 'cancel')
