@@ -2,7 +2,7 @@ import os
 import psycopg2
 
 # Retrieve database url from environment variable
-# Set environment variable before running bot with:
+# Outside Heroku runtime, set environment variable before running bot with:
 # export DATABASE_URL=$(heroku config:get DATABASE_URL -a facilities-bot)
 DATABASE_URL = os.environ['DATABASE_URL']
 
