@@ -1,8 +1,5 @@
 from datetime import timezone, timedelta
 
-# DATABASE
-USER_DB_NAME = 'data/users.db'
-
 # TELEGRAM BOT
 TIMEZONE = timezone(timedelta(hours=8)) # UTC+8
 BOT_TOKEN_FILE = 'keys/bot_token.txt'
