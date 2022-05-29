@@ -1,8 +1,16 @@
+import os
 from datetime import timezone, timedelta
 
+# DATABASE
+# Outside Heroku runtime, set environment variable before running bot with:
+# export DATABASE_URL=$(heroku config:get DATABASE_URL -a facilities-bot)
+USER_DATABASE_URL = os.environ['DATABASE_URL']
+
 # TELEGRAM BOT
+BOT_TOKEN = os.environ['BOT_TOKEN']
+WEBHOOK_PORT = os.environ.get('PORT', 5000)
+ADMIN_UID_LIST = os.environ['ADMIN_UID_LIST']
 TIMEZONE = timezone(timedelta(hours=8)) # UTC+8
-BOT_TOKEN_FILE = 'keys/bot_token.txt'
 BOT_COMMANDS = (
     'Interact with me using these commands:\n\n'
     '*Manage Facility Bookings*\n'
@@ -14,7 +22,6 @@ BOT_COMMANDS = (
     '/profile - Update your user profile\n'
     '/help - Show this list of commands'
 )
-ADMIN_UID_LIST = 'data/admins.txt'
 FACILITIES_LIST = [
     'LT 1', 
     'LT 2', 
@@ -24,10 +31,9 @@ FACILITIES_LIST = [
 ]
 
 # GOOGLE CALENDAR API
-SERVICE_ACCOUNT_SCOPES = ['https://www.googleapis.com/auth/calendar.events']
-SERVICE_ACCOUNT_FILE = 'keys/service_account.json'
-CALENDAR_ID = 'mui51q6orvum7s22r2civ3hmps@group.calendar.google.com'
-CALENDAR_URL = 'https://calendar.google.com/calendar/embed?src=begpgae3aecell7h163qoek9l0%40group.calendar.google.com&ctz=Asia%2FSingapore'
+SERVICE_ACCOUNT_INFO = os.environ['SERVICE_ACCOUNT_INFO']
+CALENDAR_ID = os.environ['CALENDAR_ID']
+CALENDAR_URL = os.environ['CALENDAR_URL']
 EVENT_COLOUR_CODES = {
     'LT 1': '1',
     'LT 2': '7',
