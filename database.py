@@ -71,6 +71,7 @@ def add_user(user_id: int, user_data: dict):
 # Retrieve an existing user profile
 def retrieve_user(user_id: int):
     
+    user_data = None
     connection = psycopg2.connect(config.USER_DATABASE_URL, sslmode = 'require')
     try:
         with connection.cursor() as cursor:
@@ -100,6 +101,7 @@ def retrieve_user(user_id: int):
 # Retrieve users by rank and name and company
 def retrieve_user_by_rank_name_company(rank_and_name: str, company: str) -> list:
     
+    user_data = None
     connection = psycopg2.connect(config.USER_DATABASE_URL, sslmode = 'require')
     try:
         with connection.cursor() as cursor:
