@@ -373,7 +373,5 @@ handler = ConversationHandler(
         CommandHandler('cancel', cancel),
         MessageHandler(Filters.command, actions.silent_cancel)
     ],
-    allow_reentry = True,
-    name = 'book',
-    persistent = True
+    allow_reentry = True
 )
