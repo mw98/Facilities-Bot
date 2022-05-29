@@ -6,3 +6,5 @@ Telegram bot for managing 5 SIR facility bookings
 2. Add keys/service_account.json to root, containing Google service account JSON public key
 3. Update Google Calendar ID and URL values in config.py
 4. Add data/admins.txt to root, containing newline separated list of admin Telegram user ids
+
+File paths can be modified in config.py
