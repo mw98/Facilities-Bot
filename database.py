@@ -1,17 +1,11 @@
-import os
 import psycopg2
+import config
 
-# Retrieve database url from environment variable
-# Outside Heroku runtime, set environment variable before running bot with:
-# export DATABASE_URL=$(heroku config:get DATABASE_URL -a facilities-bot)
-DATABASE_URL = os.environ['DATABASE_URL']
-
-
-# Execute command wrapper
+# SQL command wrapper
 def execute(command: str):
     
     data = None
-    connection = psycopg2.connect(DATABASE_URL, sslmode = 'require')
+    connection = psycopg2.connect(config.USER_DATABASE_URL, sslmode = 'require')
     try:
         with connection.cursor() as cursor:
             cursor.execute(command)
@@ -31,7 +25,7 @@ def execute(command: str):
 # Create table of users if it does not exist
 def create_if_not_exists() -> None:
     
-    connection = psycopg2.connect(DATABASE_URL, sslmode = 'require')
+    connection = psycopg2.connect(config.USER_DATABASE_URL, sslmode = 'require')
     try:
         with connection.cursor() as cursor:
             cursor.execute(
@@ -55,7 +49,7 @@ def create_if_not_exists() -> None:
 # Create a new user or replace an existing one  
 def add_user(user_id: int, user_data: dict):
     
-    connection = psycopg2.connect(DATABASE_URL, sslmode = 'require')
+    connection = psycopg2.connect(config.USER_DATABASE_URL, sslmode = 'require')
     try:
         with connection.cursor() as cursor:
             cursor.execute(
@@ -77,7 +71,7 @@ def add_user(user_id: int, user_data: dict):
 # Retrieve an existing user profile
 def retrieve_user(user_id: int):
     
-    connection = psycopg2.connect(DATABASE_URL, sslmode = 'require')
+    connection = psycopg2.connect(config.USER_DATABASE_URL, sslmode = 'require')
     try:
         with connection.cursor() as cursor:
             cursor.execute(
@@ -106,7 +100,7 @@ def retrieve_user(user_id: int):
 # Retrieve users by rank and name and company
 def retrieve_user_by_rank_name_company(rank_and_name: str, company: str) -> list:
     
-    connection = psycopg2.connect(DATABASE_URL, sslmode = 'require')
+    connection = psycopg2.connect(config.USER_DATABASE_URL, sslmode = 'require')
     try:
         with connection.cursor() as cursor:
             cursor.execute(

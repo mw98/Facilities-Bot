@@ -15,13 +15,8 @@ ADMIN ENTRY POINT
 @actions.send_typing_action
 def admin(update: Update, context: CallbackContext) -> int:
     
-    try:
-        with open(config.ADMIN_UID_LIST) as admins_file:
-            admins = admins_file.readlines()
-    except FileNotFoundError as error:
-        print('Admin users file not found.')
-        return ConversationHandler.END
-    
+    admins = config.ADMIN_UID_LIST.splitlines()
+        
     if update.message.from_user.id in admins:
         
         update.effective_chat.send_message(

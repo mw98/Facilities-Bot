@@ -1,7 +1,6 @@
 from datetime import datetime
-import logging
+import logging, json, sys
 from google.oauth2 import service_account
-import sys
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import config
@@ -13,9 +12,10 @@ ACCESS CALENDAR API
 '''
 # Authenticate service account
 try:
-    credentials = service_account.Credentials.from_service_account_file(
-        filename = config.SERVICE_ACCOUNT_FILE,
-        scopes = config.SERVICE_ACCOUNT_SCOPES
+    service_account_info = json.loads(config.SERVICE_ACCOUNT_INFO)
+    credentials = service_account.Credentials.from_service_account_info(
+        info = service_account_info,
+        scopes = ['https://www.googleapis.com/auth/calendar.events']
     )
 except FileNotFoundError as error:
     logger.debug(error)

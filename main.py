@@ -1,4 +1,4 @@
-import logging, os
+import logging
 from pathlib import Path
 from telegram.ext import Updater, PicklePersistence
 from commands import start, help, book, change, check, mybookings, admin
@@ -21,13 +21,7 @@ def main():
     database.create_if_not_exists()
 
     # Create bot updater
-    try:
-        with open(config.BOT_TOKEN_FILE, 'r') as token_file:
-            token = token_file.read()
-    except FileNotFoundError as error:
-        print('Bot token file not found.')
-        return
-    updater = Updater(token)
+    updater = Updater(config.BOT_TOKEN)
 
     # Attach handlers
     dispatcher = updater.dispatcher
@@ -40,13 +34,13 @@ def main():
     dispatcher.add_handler(admin.handler, 3)
 
     # Run bot
-    port = int(os.environ.get('PORT', 5000))
+    port = int(config.WEBHOOK_PORT)
     updater.start_webhook(
         listen = '0.0.0.0',
         port = port,
-        url_path = token
+        url_path = config.BOT_TOKEN
     )
-    updater.bot.setWebhook(f'https://facilities-bot.herokuapp.com/{token}')
+    updater.bot.setWebhook(f'https://facilities-bot.herokuapp.com/{config.BOT_TOKEN}')
     updater.idle()
 
 if __name__ == '__main__':
