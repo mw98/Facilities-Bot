@@ -8,7 +8,7 @@ USER_DATABASE_URL = os.environ['DATABASE_URL']
 
 # TELEGRAM BOT
 BOT_TOKEN = os.environ['BOT_TOKEN']
-WEBHOOK_PORT = os.environ.get('PORT', 5000)
+WEBHOOK_PORT = os.environ.get('PORT', 8443)
 ADMIN_UID_LIST = os.environ['ADMIN_UID_LIST']
 TIMEZONE = timezone(timedelta(hours=8)) # UTC+8
 BOT_COMMANDS = (

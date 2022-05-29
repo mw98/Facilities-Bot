@@ -34,10 +34,9 @@ def main():
     dispatcher.add_handler(admin.handler, 3)
 
     # Run bot
-    port = int(config.WEBHOOK_PORT)
     updater.start_webhook(
         listen = '0.0.0.0',
-        port = port,
+        port = int(config.WEBHOOK_PORT),
         url_path = config.BOT_TOKEN
     )
     updater.bot.setWebhook(f'https://facilities-bot.herokuapp.com/{config.BOT_TOKEN}')
