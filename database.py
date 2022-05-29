@@ -73,7 +73,7 @@ def retrieve_user_by_rank_name_company(rank_and_name: str, company: str) -> list
         FROM users
         WHERE rank_and_name = :rank_and_name
         AND company = :company""",
-        (rank_and_name, company) # (user_id) is an int while (user_id,) is a tuple containing an int
+        (rank_and_name, company)
     )
     
     if (data := cursor.fetchone()):
