@@ -37,9 +37,9 @@ def main():
     updater.start_webhook(
         listen = '0.0.0.0',
         port = int(config.WEBHOOK_PORT),
-        url_path = config.BOT_TOKEN
+        url_path = config.BOT_TOKEN,
+        webhook_url = f'https://facilities-bot.herokuapp.com/{config.BOT_TOKEN}'
     )
-    updater.bot.setWebhook(f'https://facilities-bot.herokuapp.com/{config.BOT_TOKEN}')
     updater.idle()
 
 if __name__ == '__main__':
