@@ -170,17 +170,29 @@ def confirm(update: Update, context: CallbackContext) -> int:
 
 def cancel(update: Update, context: CallbackContext) -> int:
     
-    query = update.callback_query
+    if update.callback_query:
+        update.callback_query.answer()
+        
+        if database.retrieve_user(update.message.from_user.id):
+            update.callback_query.edit_message_text('Ok, no changes were made.')
+            return ConversationHandler.END
+        
+        update.callback_query.edit_message_text(
+            'User registration cancelled.\n\n'
+            "You'll need to create a user profile to book facilities through me. Please send me your rank and name."
+        )
     
-    # CallbackQueries need to be answered, even if no user notification is needed
-    query.answer()
-    
-    # Restart registration process
-    query.edit_message_text(
-        'User registration cancelled.\n\n'
-        "You'll need to create a user profile to book facilities through me. Please send me your rank and name."
-    )
-    
+    else:
+        
+        if database.retrieve_user(update.message.from_user.id):
+            update.effective_chat.send_message('Ok, no changes were made.')
+            return ConversationHandler.END
+        
+        update.effective_chat.send_message(
+            'User registration cancelled.\n\n'
+            "You'll need to create a user profile to book facilities through me. Please send me your rank and name."
+        )
+        
     return NAME
 
 
