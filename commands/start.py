@@ -34,8 +34,10 @@ def start(update: Update, context: CallbackContext) -> int:
     
     # Introduce bot and ask for user's rank and name
     chat.send_message(
-        'Hi! I can help you book 5 SIR facilities, manage your existing bookings, and check facility availability.\n\n'
-        "You'll need to create a user profile first. Please send me your rank and name."
+        text = 
+            'Hi! I can help you book 5 SIR facilities, manage your existing bookings, and check facility availability.\n\n'
+            "*You'll need to create a user profile first.* Please send me your rank and name.",
+        parse_mode = ParseMode.MARKDOWN
     )
     
     return NAME
@@ -80,16 +82,22 @@ def save_coy(update: Update, context: CallbackContext) -> int:
     context.user_data['company'] = query.data
     
     # Check if user's rank and name + company are unique
-    if database.retrieve_user_by_rank_name_company(
+    if (existing_user := database.retrieve_user_by_rank_name_company(
         context.user_data['rank_and_name'],
         context.user_data['company']
-    ):
-        update.effective_chat.send_message(
-            text = 
-                f"Sorry, there's already a user registered as *{context.user_data['rank_and_name']}* in *{context.user_data['company']}*. "
-                'Please send me your rank and name again. Consider using your full name, or another variation of your name.',
-            parse_mode = ParseMode.MARKDOWN
-        )
+    )):
+        if existing_user.id == query.from_user.id:
+            update.effective_chat.send_message(
+                text = f"You're already registered as *{context.user_data['rank_and_name']} ({context.user_data['company']})*.",
+                parse_mode = ParseMode.MARKDOWN
+            )
+        else:
+            update.effective_chat.send_message(
+                text = 
+                    f"Sorry, there's already a user registered as *{context.user_data['rank_and_name']}* in *{context.user_data['company']}*.\n\n"
+                    'Please send me your rank and name again. Consider using your full name, or another variation of your name.',
+                parse_mode = ParseMode.MARKDOWN
+            )
         # CallbackQueries need to be answered, even if no user notification is needed
         query.answer()
         return RETRY_NAME
