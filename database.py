@@ -122,7 +122,7 @@ def retrieve_user_by_rank_name_company(rank_and_name: str, company: str) -> list
     
     if user_data:
         return {
-            'id': data[0],
-            'username': data[1]
+            'id': user_data[0],
+            'username': user_data[1]
         }
     return
