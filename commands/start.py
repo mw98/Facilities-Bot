@@ -86,11 +86,16 @@ def save_coy(update: Update, context: CallbackContext) -> int:
         context.user_data['rank_and_name'],
         context.user_data['company']
     )):
+        # CallbackQueries need to be answered, even if no user notification is needed
+        query.answer()
+        
         if existing_user['id'] == query.from_user.id:
             update.effective_chat.send_message(
-                text = f"You're already registered as *{context.user_data['rank_and_name']} ({context.user_data['company']})*.",
+                text = f"You're already registered as *{context.user_data['rank_and_name']} ({context.user_data['company']})*",
                 parse_mode = ParseMode.MARKDOWN
             )
+            return ConversationHandler.END
+        
         else:
             update.effective_chat.send_message(
                 text = 
@@ -98,9 +103,7 @@ def save_coy(update: Update, context: CallbackContext) -> int:
                     'Please send me your rank and name again. Consider using your full name, or another variation of your name.',
                 parse_mode = ParseMode.MARKDOWN
             )
-        # CallbackQueries need to be answered, even if no user notification is needed
-        query.answer()
-        return RETRY_NAME
+            return RETRY_NAME
         
     # Ask user to confirm user profile
     update.effective_chat.send_message(
