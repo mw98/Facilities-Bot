@@ -86,7 +86,7 @@ def save_coy(update: Update, context: CallbackContext) -> int:
         context.user_data['rank_and_name'],
         context.user_data['company']
     )):
-        if existing_user.id == query.from_user.id:
+        if existing_user['id'] == query.from_user.id:
             update.effective_chat.send_message(
                 text = f"You're already registered as *{context.user_data['rank_and_name']} ({context.user_data['company']})*.",
                 parse_mode = ParseMode.MARKDOWN
