@@ -173,7 +173,7 @@ def cancel(update: Update, context: CallbackContext) -> int:
     if update.callback_query:
         update.callback_query.answer()
         
-        if database.retrieve_user(update.message.from_user.id):
+        if database.retrieve_user(update.callback_query.from_user.id):
             update.callback_query.edit_message_text('Ok, no changes were made.')
             return ConversationHandler.END
         
