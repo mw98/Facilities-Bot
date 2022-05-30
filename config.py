@@ -11,17 +11,7 @@ BOT_TOKEN = os.environ['BOT_TOKEN']
 WEBHOOK_PORT = os.environ.get('PORT', 8443)
 ADMIN_UID_LIST = os.environ['ADMIN_UID_LIST']
 TIMEZONE = timezone(timedelta(hours=8)) # UTC+8
-BOT_COMMANDS = (
-    'Interact with me using these commands:\n\n'
-    '*Manage Facility Bookings*\n'
-    '/book - Book facilities in 5 SIR\n'
-    '/change - Change or cancel a booking\n'
-    '/check - Check facility availability\n'
-    '/mybookings - List your upcoming bookings\n\n'
-    '*Bot Settings*\n'
-    '/profile - Update your user profile\n'
-    '/help - Show this list of commands'
-)
+BOT_COMMANDS = os.environ['BOT_COMMANDS']
 FACILITIES_LIST = [
     'LT 1', 
     'LT 2', 
