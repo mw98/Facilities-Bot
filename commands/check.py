@@ -37,7 +37,7 @@ def show_bookings(update: Update, context: CallbackContext) -> int:
         
         if bookings['ongoing']:
             message += '\n*Ongoing*\n'
-            for booking in bookings['upcoming']:
+            for booking in bookings['ongoing']:
                 booking_details = booking['extendedProperties']['shared']
                 message += f"[{booking_details['start_time']}-{booking_details['end_time']}]({booking['htmlLink']}) {booking_details['name_and_company']}\n"
         
