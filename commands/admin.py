@@ -17,7 +17,7 @@ def admin(update: Update, context: CallbackContext) -> int:
     
     admins = config.ADMIN_UID_LIST.splitlines()
         
-    if update.message.from_user.id in admins:
+    if str(update.message.from_user.id) in admins:
         
         update.effective_chat.send_message(
             text = 
