@@ -25,12 +25,12 @@ def main():
 
     # Attach handlers
     dispatcher = updater.dispatcher
-    dispatcher.add_handler(start.handler)
-    dispatcher.add_handler(help.handler)
+    dispatcher.add_handler(start.handler, 6)
+    dispatcher.add_handler(help.handler, 5)
     dispatcher.add_handler(book.handler, 0)
     dispatcher.add_handler(change.handler, 1)
     dispatcher.add_handler(check.handler, 2)
-    dispatcher.add_handler(mybookings.handler)
+    dispatcher.add_handler(mybookings.handler, 4)
     dispatcher.add_handler(admin.handler, 3)
 
     # Run bot
