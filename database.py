@@ -48,6 +48,11 @@ def create_if_not_exists() -> None:
 
 # Create a new user or replace an existing one  
 def add_user(user_id: int, user_data: dict):
+<<<<<<< HEAD
+=======
+    
+    connection = sqlite3.connect(config.USER_DB_NAME)
+>>>>>>> ec944495ce0424686b541b760a97a2044d80f696
     
     try:
         with psycopg2.connect(config.USER_DATABASE_URL, sslmode = 'require') as connection:
