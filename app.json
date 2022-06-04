@@ -1,0 +1,42 @@
+{
+  "name": "5SIR Facilities Bot",
+  "description": "Manages 5 SIR facility bookings via telegram bot",
+  "repository": "https://github.com/mw98/5SIR-Facilities-Bot/",
+  "env": {
+    "BOT_TOKEN": {
+      "description": "Telegram bot token."
+    },
+    "SERVICE_ACCOUNT_INFO": {
+      "description": "Google service account JSON public key."
+    },
+    "CALENDAR_ID": {
+      "description": "Google calendar id."
+    },
+    "CALENDAR_URL": {
+      "description": "Google calendar URL."
+    },
+    "HEROKU_APP_URL": {
+      "description": "Heroku web app URL, include / at the end."
+    },
+    "ADMIN_UID_LIST": {
+      "description": "Newline separated list of Telegram user ids with admin rights."
+    },
+    "PORT": {
+      "description": "Port for Telegram webhook requests. Acceptable values: 443, 80, 88 or 8443.",
+      "value": "8443"
+    },
+    "BOT_COMMANDS": {
+      "description": "Description of bot commands used in /help and elsewhere.",
+      "value": "Interact with me using these commands:\n\n*Manage Facility Bookings*\n/book - Book facilities in 5 SIR\n/change - Change or cancel a booking\n/check - Check facility availability\n/mybookings - List your upcoming bookings\n\n*Bot Settings*\n/profile - Update your user profile\n/help - Show this list of commands"
+    },
+  },
+  "addons": [
+    "heroku-postgresql:hobby-dev",
+    "scheduler:standard"
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ]
+}
