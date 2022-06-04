@@ -38,7 +38,7 @@ def main():
         listen = '0.0.0.0',
         port = int(config.WEBHOOK_PORT),
         url_path = config.BOT_TOKEN,
-        webhook_url = f'{config.HEROKU_APP_URL}/{config.BOT_TOKEN}'
+        webhook_url = f'{config.HEROKU_APP_URL}{config.BOT_TOKEN}'
     )
     updater.idle()
 
