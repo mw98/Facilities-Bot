@@ -28,7 +28,7 @@
     "BOT_COMMANDS": {
       "description": "Description of bot commands used in /help and elsewhere.",
       "value": "Interact with me using these commands:\n\n*Manage Facility Bookings*\n/book - Book facilities in 5 SIR\n/change - Change or cancel a booking\n/check - Check facility availability\n/mybookings - List your upcoming bookings\n\n*Bot Settings*\n/profile - Update your user profile\n/help - Show this list of commands"
-    },
+    }
   },
   "addons": [
     "heroku-postgresql:hobby-dev",
