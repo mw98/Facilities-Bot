@@ -1,10 +1,9 @@
 import os
 from datetime import timezone, timedelta
 
-# DATABASE
-# Outside Heroku runtime, set environment variable before running bot with:
-# export DATABASE_URL=$(heroku config:get DATABASE_URL -a facilities-bot)
+# HEROKU
 USER_DATABASE_URL = os.environ['DATABASE_URL']
+HEROKU_APP_URL = os.environ['HEROKU_APP_URL']
 
 # TELEGRAM BOT
 BOT_TOKEN = os.environ['BOT_TOKEN']
