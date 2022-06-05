@@ -1,8 +1,11 @@
+import logging
 from functools import wraps
 from telegram import ChatAction, ParseMode
 from telegram.ext import ConversationHandler
 from utilities import calendar
 import database
+
+logger = logging.getLogger(__name__)
 
 '''
 DECORATORS
