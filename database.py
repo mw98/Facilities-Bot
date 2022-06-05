@@ -31,7 +31,7 @@ def create_if_not_exists() -> None:
                 cursor.execute(
                     """
                     CREATE TABLE IF NOT EXISTS users (
-                        user_id        INTEGER PRIMARY KEY,
+                        user_id        BIGINT PRIMARY KEY,
                         rank_and_name  TEXT NOT NULL,
                         company        TEXT NOT NULL,
                         username       TEXT NOT NULL,
@@ -47,8 +47,9 @@ def create_if_not_exists() -> None:
 
 
 # Create a new user or replace an existing one  
-def add_user(user_id: int, user_data: dict):
+def add_user(user_id: int, user_data: dict) -> int:
     
+    state = 0
     try:
         with psycopg2.connect(config.USER_DATABASE_URL, sslmode = 'require') as connection:
             with connection.cursor() as cursor:
@@ -63,9 +64,10 @@ def add_user(user_id: int, user_data: dict):
                 )
     except Exception as error:
         print(f'Could not add user to db: {error}')
+        state = -1
     finally:
         connection.close()
-    return
+    return state
 
 
 # Retrieve an existing user profile
