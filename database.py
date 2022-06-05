@@ -34,7 +34,7 @@ def create_if_not_exists() -> None:
                         user_id        BIGINT PRIMARY KEY,
                         rank_and_name  TEXT NOT NULL,
                         company        TEXT NOT NULL,
-                        username       TEXT NOT NULL,
+                        username       TEXT,
                         UNIQUE (rank_and_name, company)
                     );
                     """
