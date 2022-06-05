@@ -156,7 +156,9 @@ def confirm(update: Update, context: CallbackContext) -> int:
     query.answer()
     
     # Add new user profile to database
-    database.add_user(query.from_user.id, context.user_data)
+    if database.add_user(query.from_user.id, context.user_data) < 0:
+        query.edit_message_text("⚠ Sorry, I couldn't register you due to an error. Please contact S3 branch for assistance.")
+        return ConversationHandler.END # -1
         
     # Confirm registration and introduce user to bot commands
     query.edit_message_text(
