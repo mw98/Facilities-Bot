@@ -1,7 +1,7 @@
 import logging
 from telegram import Update, ParseMode
 from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, MessageHandler, CallbackQueryHandler, Filters
-from utilities import keyboards
+from utilities import keyboards, actions
 import config, database
 
 logger = logging.getLogger(__name__)
@@ -226,5 +226,8 @@ handler = ConversationHandler(
             CallbackQueryHandler(callback = cancel, pattern = 'cancel')
         ]
     },
-    fallbacks = [CommandHandler('cancel', cancel)]
+    fallbacks = [
+        CommandHandler('cancel', cancel),
+        MessageHandler(Filters.command, actions.silent_cancel)
+    ]
 )
