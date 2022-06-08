@@ -160,8 +160,8 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
                     return ConversationHandler.END
                 
                 # Save the previous booking details
-                context.chat_data['old_start_time'] = f"<s>conflict_details['start_time'] "
-                context.chat_data['old_end_time'] = f"conflict_details['end_time']</s> "
+                context.chat_data['old_start_time'] = f"<s>{conflict_details['start_time']} "
+                context.chat_data['old_end_time'] = f"{conflict_details['end_time']}</s> "
                 context.chat_data['event_id'] = conflict['id']
                 context.chat_data['description'] = conflict_details['description']
                 
