@@ -230,12 +230,12 @@ def add_booking(user_id: int, user_data: dict, chat_data: dict) -> str:
     ).execute()
     
     actions.update_facilities_channel(
-        "<b>New Booking</b>\n\n"
-        f"<b>Facility:</b> {chat_data['facility']}\n"
-        f"<b>Date:</b> {chat_data['date']}\n"
-        f"<b>Time:</b> {chat_data['start_time']} - {chat_data['end_time']}\n"
-        f"<b>Description:</b> {chat_data['description']}\n"
-        f"<b>POC:</b> {user_data['rank_and_name']} ({user_data['company']})"
+        "<b>New Booking</b>\n"
+        f"<u>Facility</u>: {chat_data['facility']}\n"
+        f"<u>Date</u>: {chat_data['date']}\n"
+        f"<u>Time</u>: {chat_data['start_time']} - {chat_data['end_time']}\n"
+        f"<u>Description</u>: {chat_data['description']}\n"
+        f"<u>POC</u>: {user_data['rank_and_name']} ({user_data['company']})\n"
         f'<a href="{new_booking["htmlLink"]}">Event Link</a>'
     )
     
@@ -277,12 +277,12 @@ def patch_booking(user_id: int, user_data: dict, chat_data: dict) -> str:
     ).execute()
     
     actions.update_facilities_channel(
-        "<b>Booking Updated</b>\n\n"
-        f"<b>Facility:</b> {chat_data['old_facility']}{chat_data['facility']}\n"
-        f"<b>Date:</b> {chat_data['old_date']}{chat_data['date']}\n"
-        f"<b>Time:</b> {chat_data['old_start_time']}{chat_data['old_end_time']}{chat_data['start_time']} - {chat_data['end_time']}\n"
-        f"<b>Description:</b> {chat_data['old_description']}{chat_data['description']}\n"
-        f"<b>POC:</b> {user_data['rank_and_name']} ({user_data['company']})"
+        "<b>Booking Updated</b>\n"
+        f"<u>Facility</u>: {chat_data['old_facility']}{chat_data['facility']}\n"
+        f"<u>Date</u>: {chat_data['old_date']}{chat_data['date']}\n"
+        f"<u>Time</u>: {chat_data['old_start_time']}{chat_data['old_end_time']}{chat_data['start_time']} - {chat_data['end_time']}\n"
+        f"<u>Description</u>: {chat_data['old_description']}{chat_data['description']}\n"
+        f"<u>POC</u>: {user_data['rank_and_name']} ({user_data['company']})\n"
         f'<a href="{patched_booking["htmlLink"]}">Event Link</a>'
     )
     
@@ -297,12 +297,12 @@ def delete_booking(user_data: dict, chat_data: dict) -> None:
     ).execute()
     
     actions.update_facilities_channel(
-        "<b>Booking Cancelled</b>\n\n"
-        f"<b>Facility:</b> {chat_data['facility']}\n"
-        f"<b>Date:</b> {chat_data['date']}\n"
-        f"<b>Time:</b> {chat_data['start_time']} - {chat_data['end_time']}\n"
-        f"<b>Description:</b> {chat_data['description']}\n"
-        f"<b>POC:</b> {user_data['rank_and_name']} ({user_data['company']})"
+        "<b>Booking Cancelled</b>\n"
+        f"<u>Facility</u>: {chat_data['facility']}\n"
+        f"<u>Date</u>: {chat_data['date']}\n"
+        f"<u>Time</u>: {chat_data['start_time']} - {chat_data['end_time']}\n"
+        f"<u>Description</u>: {chat_data['description']}\n"
+        f"<u>POC</u>: {user_data['rank_and_name']} ({user_data['company']})"
     )
     
     return
