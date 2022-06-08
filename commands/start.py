@@ -1,8 +1,8 @@
 import logging
 from telegram import Update, ParseMode
 from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, MessageHandler, CallbackQueryHandler, Filters
-from utilities import keyboards, actions
-import config, database
+from utilities import keyboards, actions, database
+import config
 
 logger = logging.getLogger(__name__)
 

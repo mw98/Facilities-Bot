@@ -2,7 +2,8 @@ import logging
 from pathlib import Path
 from telegram.ext import Updater, PicklePersistence
 from commands import start, help, book, change, check, mybookings, admin
-import config, database
+from utilities import database
+import config
 
 # Enable logging
 logging.basicConfig(
