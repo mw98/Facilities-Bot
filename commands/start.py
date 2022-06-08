@@ -12,6 +12,7 @@ NAME, COMPANY, RETRY_NAME, CONFIRMATION = range(4)
 '''
 REGISTRATION ENTRY POINTS
 '''
+@actions.send_typing_action
 def start(update: Update, context: CallbackContext) -> int:
     
     chat = update.effective_chat
@@ -43,7 +44,8 @@ def start(update: Update, context: CallbackContext) -> int:
     
     return NAME
 
-
+@actions.send_typing_action
+@actions.load_user_profile
 def profile(update: Update, context: CallbackContext) -> int:
     
     # Save telegram username
@@ -66,6 +68,7 @@ def profile(update: Update, context: CallbackContext) -> int:
 """
 REGISTRATION CALLBACK FUNCTIONS
 """
+@actions.send_typing_action
 def save_name(update: Update, context: CallbackContext) -> int:
     
     # Save user's rank and name
@@ -80,6 +83,7 @@ def save_name(update: Update, context: CallbackContext) -> int:
     return COMPANY
 
 
+@actions.send_typing_action
 def save_coy(update: Update, context: CallbackContext) -> int:
     
     query = update.callback_query
@@ -124,6 +128,7 @@ def save_coy(update: Update, context: CallbackContext) -> int:
     return CONFIRMATION
 
 
+@actions.send_typing_action
 def retry_name(update: Update, context: CallbackContext) -> int:
     
     # Save new rank and name
