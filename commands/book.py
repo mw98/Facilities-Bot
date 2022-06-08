@@ -160,11 +160,16 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
                     return ConversationHandler.END
                 
                 # Save the previous booking details
-                context.chat_data['old_start_time'] = conflict_details['start_time']
-                context.chat_data['old_end_time'] = conflict_details['end_time']
+                context.chat_data['old_start_time'] = f"<s>{conflict_details['start_time']} "
+                context.chat_data['old_end_time'] = f"{conflict_details['end_time']}</s> "
                 context.chat_data['event_id'] = conflict['id']
                 context.chat_data['description'] = conflict_details['description']
                 
+                # Create empty chat_data entries for compatibility with /change
+                context.chat_data['old_facility'] = ''
+                context.chat_data['old_date'] = ''
+                context.chat_data['old_description'] = ''
+                                
                 # Offer to update previous booking
                 chat.send_message(
                     text = 
@@ -231,7 +236,7 @@ def patch_booking(update: Update, context: CallbackContext) -> int:
             "Ok. Here's what your updated booking will look like.\n\n"
             f'<b>Facility:</b> {context.chat_data["facility"]}\n'
             f'<b>Date:</b> {context.chat_data["date"]}\n'
-            f'<b>Time:</b> <s>{context.chat_data["old_start_time"]} {context.chat_data["old_end_time"]}</s> {context.chat_data["start_time"]} - {context.chat_data["end_time"]}\n'
+            f'<b>Time:</b> {context.chat_data["old_start_time"]}{context.chat_data["old_end_time"]}{context.chat_data["start_time"]} - {context.chat_data["end_time"]}\n'
             f'<b>Description:</b> {context.chat_data["description"]}\n\n'
             'Do you want to proceed?',
         reply_markup = keyboards.patch_confirm_or_cancel,

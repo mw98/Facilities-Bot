@@ -30,7 +30,10 @@ def start(update: Update, context: CallbackContext) -> int:
         return ConversationHandler.END # -1
     
     # Save telegram username
-    context.user_data['username'] = update.message.from_user.username
+    if (username := update.message.from_user.username):
+        context.user_data['username'] = username
+    else:
+        context.user_data['username'] = 'NULL'
     
     # Introduce bot and ask for user's rank and name
     chat.send_message(
@@ -46,7 +49,10 @@ def start(update: Update, context: CallbackContext) -> int:
 def profile(update: Update, context: CallbackContext) -> int:
     
     # Save telegram username
-    context.user_data['username'] = update.message.from_user.username
+    if (username := update.message.from_user.username):
+        context.user_data['username'] = username
+    else:
+        context.user_data['username'] = 'NULL'
     
     # Ask for user's rank and name
     update.effective_chat.send_message(

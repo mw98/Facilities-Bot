@@ -3,6 +3,7 @@ import logging, json, sys
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from utilities import actions
 import config
 
 logger = logging.getLogger(__name__)
@@ -228,7 +229,17 @@ def add_booking(user_id: int, user_data: dict, chat_data: dict) -> str:
         }
     ).execute()
     
-    return new_booking.get('htmlLink')
+    actions.update_facilities_channel(
+        "<b>New Booking</b>\n"
+        f"<u>Facility</u>: {chat_data['facility']}\n"
+        f"<u>Date</u>: {chat_data['date']}\n"
+        f"<u>Time</u>: {chat_data['start_time']} - {chat_data['end_time']}\n"
+        f"<u>Description</u>: {chat_data['description']}\n"
+        f"<u>POC</u>: {user_data['rank_and_name']} ({user_data['company']})\n"
+        f'<a href="{new_booking["htmlLink"]}">Event Link</a>'
+    )
+    
+    return new_booking['htmlLink']
 
 
 def patch_booking(user_id: int, user_data: dict, chat_data: dict) -> str:
@@ -265,12 +276,33 @@ def patch_booking(user_id: int, user_data: dict, chat_data: dict) -> str:
         }
     ).execute()
     
-    return patched_booking.get('htmlLink')
+    actions.update_facilities_channel(
+        "<b>Booking Updated</b>\n"
+        f"<u>Facility</u>: {chat_data['old_facility']}{chat_data['facility']}\n"
+        f"<u>Date</u>: {chat_data['old_date']}{chat_data['date']}\n"
+        f"<u>Time</u>: {chat_data['old_start_time']}{chat_data['old_end_time']}{chat_data['start_time']} - {chat_data['end_time']}\n"
+        f"<u>Description</u>: {chat_data['old_description']}{chat_data['description']}\n"
+        f"<u>POC</u>: {user_data['rank_and_name']} ({user_data['company']})\n"
+        f'<a href="{patched_booking["htmlLink"]}">Event Link</a>'
+    )
+    
+    return patched_booking['htmlLink']
     
 
-def delete_booking(event_id: str):
+def delete_booking(user_data: dict, chat_data: dict) -> None:
     
-    return service.events().delete(
+    service.events().delete(
         calendarId = config.CALENDAR_ID, 
-        eventId = event_id
+        eventId = chat_data['event_id']
     ).execute()
+    
+    actions.update_facilities_channel(
+        "<b>Booking Cancelled</b>\n"
+        f"<u>Facility</u>: {chat_data['facility']}\n"
+        f"<u>Date</u>: {chat_data['date']}\n"
+        f"<u>Time</u>: {chat_data['start_time']} - {chat_data['end_time']}\n"
+        f"<u>Description</u>: {chat_data['description']}\n"
+        f"<u>POC</u>: {user_data['rank_and_name']} ({user_data['company']})"
+    )
+    
+    return
