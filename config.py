@@ -7,6 +7,7 @@ HEROKU_APP_URL = os.environ['HEROKU_APP_URL']
 
 # TELEGRAM BOT
 BOT_TOKEN = os.environ['BOT_TOKEN']
+CHANNEL_ID = os.environ['CHANNEL_ID']
 WEBHOOK_PORT = os.environ.get('PORT', 8443)
 ADMIN_UID_LIST = os.environ['ADMIN_UID_LIST']
 TIMEZONE = timezone(timedelta(hours=8)) # UTC+8
