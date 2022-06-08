@@ -15,9 +15,9 @@ def send_typing_action(func):
 
     @wraps(func)
     def wrapper(update, context, *args, **kwargs):
-        context.bot.send_chat_action(chat_id=update.effective_message.chat_id, action=ChatAction.TYPING)
         kwargs['update'] = update
         kwargs['context'] = context
+        context.bot.send_chat_action(chat_id=update.effective_message.chat_id, action=ChatAction.TYPING)
         return func(**kwargs)
 
     return wrapper
