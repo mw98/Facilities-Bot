@@ -37,9 +37,7 @@ def start(update: Update, context: CallbackContext) -> int:
     
     # Introduce bot and ask for user's rank and name
     chat.send_message(
-        text = 
-            'Hi! I can help you book 5 SIR facilities, manage your existing bookings, and check facility availability.\n\n'
-            "*You'll need to create a user profile first.* Please send me your rank and name.",
+        text = "*You'll need to create a user profile first.* Please send me your rank and name.",
         parse_mode = ParseMode.MARKDOWN
     )
     
@@ -56,8 +54,10 @@ def profile(update: Update, context: CallbackContext) -> int:
     
     # Ask for user's rank and name
     update.effective_chat.send_message(
-        'Ok, now updating your user profile. Send /cancel to stop.\n\n'
-        'Please send me your rank and name.'
+        text = 
+            'Ok, now updating your user profile. Send /cancel to stop.\n\n'
+            f"You're currently registered as {context.user_data['rank_and_name']} ({context.user_data['company']}). *Please send me your new rank and name.*",
+        parse_mode = ParseMode.MARKDOWN
     )
     
     return NAME
