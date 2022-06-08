@@ -1,6 +1,6 @@
 import logging
 from functools import wraps
-from telegram import ChatAction, ParseMode
+from telegram import Bot, ChatAction, ParseMode
 from telegram.ext import ConversationHandler
 from utilities import calendar
 import database
@@ -86,3 +86,21 @@ def send_time_range_error(update, context, logger) -> None:
 
 def silent_cancel(update, context) -> int:
     return ConversationHandler.END
+
+
+'''
+ADDITIONAL API REQUESTS
+'''
+def update_facilities_channel(text: str) -> None:
+    
+    try:
+        Bot(config.BOT_TOKEN).send_message(
+            chat_id = config.CHANNEL_ID,
+            text = text,
+            parse_mode = ParseMode.HTML,
+            disable_notification = True
+        )
+    except Exception as error:
+        logger.exception('Channel Update Failure - %s', error)
+    
+    return
