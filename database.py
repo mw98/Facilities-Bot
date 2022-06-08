@@ -1,26 +1,5 @@
 import psycopg2
-import config
-
-# SQL command wrapper
-def execute(command: str):
-    
-    data = None
-    try:
-        with psycopg2.connect(config.USER_DATABASE_URL, sslmode = 'require') as connection:
-            with connection.cursor() as cursor:
-                cursor.execute(command)
-                try:
-                    data = cursor.fetchall()
-                except psycopg2.ProgrammingError as error:
-                    pass
-                except Exception as error:
-                    print(error)
-    except Exception as error:
-        print(error)
-    finally:
-        connection.close()
-    return data
-    
+import config    
 
 # Create table of users if it does not exist
 def create_if_not_exists() -> None:
