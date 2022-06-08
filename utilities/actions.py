@@ -3,7 +3,7 @@ from functools import wraps
 from telegram import Bot, ChatAction, ParseMode
 from telegram.ext import ConversationHandler
 from utilities import calendar
-import database
+import config, database
 
 logger = logging.getLogger(__name__)
 
