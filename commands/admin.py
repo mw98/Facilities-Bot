@@ -152,8 +152,8 @@ def confirm(update: Update, context: CallbackContext) -> int:
             f'**POC:** {context.chat_data["admin_user_data"]["rank_and_name"]} ({context.chat_data["admin_user_data"]["company"]})\n`'
             f"*Username:* @{context.chat_data['admin_user_data']['username']}\n"
             f"*User ID:* {context.chat_data['admin_user_data']['id']}\n\n"
-            f"⚠ Update log: {config.CHANNEL_ID}\n"
-            "Book again: /admin\n\n"
+            f"⚠ Update log: {config.CHANNEL_ID}\n\n"
+            "Book again: /admin\n"
             "Tap to copy next day template:\n"
             f"`{context.chat_data['admin_chat_data']['facility']}\n"
             f"{(context.chat_data['admin_chat_data']['datetime_date'] + timedelta(days=1)).strftime('%d%m%y')}\n"
