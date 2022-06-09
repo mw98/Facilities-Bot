@@ -76,7 +76,7 @@ class AdminBookingDetailsFilter(MessageFilter):
         
         # Test facility
         try:
-            facility = booking_details[0]
+            facility = booking_details[0].upper()
         except IndexError as e:
             logger.debug(e)
             return False
