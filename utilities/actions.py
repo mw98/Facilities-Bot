@@ -93,14 +93,14 @@ ADDITIONAL API REQUESTS
 '''
 def update_facilities_channel(text: str) -> None:
     
-    try:
-        Bot(config.BOT_TOKEN).send_message(
-            chat_id = config.CHANNEL_ID,
-            text = text,
-            parse_mode = ParseMode.HTML,
-            disable_notification = config.CHANNEL_MUTED
-        )
-    except Exception as error:
-        logger.exception('Channel Update Failure - %s', error)
-    
+    if config.CHANNEL_ID:
+        try:
+            Bot(config.BOT_TOKEN).send_message(
+                chat_id = config.CHANNEL_ID,
+                text = text,
+                parse_mode = ParseMode.HTML,
+                disable_notification = config.CHANNEL_MUTED
+            )
+        except Exception as error:
+            logger.exception('Channel Update Failure - %s', error)
     return
