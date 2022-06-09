@@ -5,7 +5,7 @@ import config
 def create_if_not_exists() -> None:
     
     try:
-        with psycopg2.connect(config.USER_DATABASE_URL, sslmode = 'require') as connection:
+        with psycopg2.connect(config.DATABASE_URL, sslmode = 'require') as connection:
             with connection.cursor() as cursor:
                 cursor.execute(
                     """
@@ -30,7 +30,7 @@ def add_user(user_id: int, user_data: dict) -> int:
     
     state = 0
     try:
-        with psycopg2.connect(config.USER_DATABASE_URL, sslmode = 'require') as connection:
+        with psycopg2.connect(config.DATABASE_URL, sslmode = 'require') as connection:
             with connection.cursor() as cursor:
                 cursor.execute(
                     """
@@ -54,7 +54,7 @@ def retrieve_user(user_id: int):
     
     user_data = None
     try:
-        with psycopg2.connect(config.USER_DATABASE_URL, sslmode = 'require') as connection:
+        with psycopg2.connect(config.DATABASE_URL, sslmode = 'require') as connection:
             with connection.cursor() as cursor:
                 cursor.execute(
                     """
@@ -84,7 +84,7 @@ def retrieve_user_by_rank_name_company(rank_and_name: str, company: str) -> list
     
     user_data = None
     try:
-        with psycopg2.connect(config.USER_DATABASE_URL, sslmode = 'require') as connection:
+        with psycopg2.connect(config.DATABASE_URL, sslmode = 'require') as connection:
             with connection.cursor() as cursor:
                 cursor.execute(
                     """
