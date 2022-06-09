@@ -211,7 +211,7 @@ handler = ConversationHandler(
     states = {
         BOOKING_DETAILS: [
             MessageHandler(filters.admin_booking_details, save_booking_details),
-            CallbackQueryHandler(continue_with_unregistered_user, pattern = 'continue')
+            CallbackQueryHandler(continue_with_unregistered_user, pattern = 'continue'),
             MessageHandler(Filters.all & (~Filters.command), booking_details_error)
         ],
         CONFIRMATION: [
