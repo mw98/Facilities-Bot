@@ -119,7 +119,8 @@ def confirm(update: Update, context: CallbackContext) -> int:
         event_url = calendar.add_booking(
             user_id = context.chat_data['admin_user_data']['id'],
             user_data = context.chat_data['admin_user_data'],
-            chat_data = context.chat_data['admin_chat_data']
+            chat_data = context.chat_data['admin_chat_data'],
+            update_channel = False
         )
     except Exception as error:
         update.effective_chat.send_message(
@@ -141,14 +142,16 @@ def confirm(update: Update, context: CallbackContext) -> int:
     update.callback_query.answer()
     update.callback_query.edit_message_text(
         text =
-            'Booking confirmed:\n'
+            "Booking confirmed:\n\n"
             f"*Facility:* {context.chat_data['admin_chat_data']['facility']}\n"
             f"*Date:* {context.chat_data['admin_chat_data']['date']}\n"
             f"*Time:* {context.chat_data['admin_chat_data']['start_time']} - {context.chat_data['admin_chat_data']['end_time']}\n"
             f"*Description:* {context.chat_data['admin_chat_data']['description']}\n"
             f'*POC:* {context.chat_data["admin_user_data"]["rank_and_name"]} ({context.chat_data["admin_user_data"]["company"]})\n'
             f"*Username:* @{context.chat_data['admin_user_data']['username']}\n"
-            f"*User ID:* {context.chat_data['admin_user_data']['id']}\n\n",
+            f"*User ID:* {context.chat_data['admin_user_data']['id']}\n\n"
+            f"⚠ Facilities Log not updated: {config.CHANNEL_ID}\n"
+            "Tap to book again: /admin",
         parse_mode = ParseMode.MARKDOWN,
         reply_markup = keyboards.show_in_calendar(event_url)
     )
@@ -189,8 +192,9 @@ def booking_details_error(update: Update, context: CallbackContext) -> int:
     
     update.effective_chat.send_message(
         text =
-            "*⚠ Conflict checking disabled*\n\n"
-            'Booking details invalid, reenter in this format:\n'
+            "*⚠ Conflict checking disabled*\n"
+            '*‼ Booking details invalid*\n\n'
+            'Re-enter in this format:\n'
             '`FACILITY`\n'
             '`DDMMYY`\n'
             '`HHmm-HHmm`\n'
@@ -221,7 +225,7 @@ handler = ConversationHandler(
     },
     fallbacks = [
         CommandHandler('cancel', cancel),
-        MessageHandler(Filters.command, lambda :ConversationHander.END)
+        MessageHandler(Filters.command, actions.silent_cancel)
     ],
     allow_reentry = True
 )
