@@ -12,16 +12,11 @@ logger = logging.getLogger(__name__)
 ACCESS CALENDAR API
 '''
 # Authenticate service account
-try:
-    service_account_info = json.loads(config.SERVICE_ACCOUNT_INFO)
-    credentials = service_account.Credentials.from_service_account_info(
-        info = service_account_info,
-        scopes = ['https://www.googleapis.com/auth/calendar.events']
-    )
-except FileNotFoundError as error:
-    logger.debug(error)
-    print('Service account key not found.')
-    sys.exit()
+service_account_info = json.loads(config.SERVICE_ACCOUNT_INFO)
+credentials = service_account.Credentials.from_service_account_info(
+    info = service_account_info,
+    scopes = ['https://www.googleapis.com/auth/calendar.events']
+)
 
 # Create service object
 try: 
