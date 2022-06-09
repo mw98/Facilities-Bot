@@ -1,3 +1,4 @@
+from datetime import timedelta
 import logging
 from telegram import Update, ParseMode
 from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, MessageHandler, CallbackQueryHandler, Filters
@@ -43,8 +44,10 @@ def save_booking_details(update: Update, context: CallbackContext) -> int:
     context.chat_data['admin_chat_data'] = {
         'facility': context.facility[0],
         'date': context.date[0],
+        'datetime_date': context.datetime_date[0],
         'start_time': context.time_range[0],
         'end_time': context.time_range[1],
+        'time_range_imput': context.time_range_input[0],
         'description': context.description[0]
     }
     context.chat_data['admin_user_data'] = {
@@ -139,7 +142,6 @@ def confirm(update: Update, context: CallbackContext) -> int:
         )
         return CONFIRMATION
     
-    update.callback_query.answer()
     update.callback_query.edit_message_text(
         text =
             "Booking confirmed. Tap to copy:\n\n"
@@ -151,10 +153,18 @@ def confirm(update: Update, context: CallbackContext) -> int:
             f"*Username:* @{context.chat_data['admin_user_data']['username']}\n"
             f"*User ID:* {context.chat_data['admin_user_data']['id']}\n\n"
             f"⚠ Update log: {config.CHANNEL_ID}\n"
-            "Book again: /admin",
+            "Book again: /admin\n\n"
+            "Tap to copy next day template:\n"
+            f"`{context.chat_data['admin_chat_data']['facility']}\n"
+            f"{(context.chat_data['admin_chat_data']['datetime_date'] + timedelta(days=1)).strftime('%d%m%y')}\n"
+            f"{context.chat_data['admin_chat_data']['time_range_input']}"
+            f"{context.chat_data['admin_chat_data']['description']}"
+            f"{context.chat_data['admin_user_data']['rank_and_name']}"
+            f"{context.chat_data['admin_user_data']['company']}`",
         parse_mode = ParseMode.MARKDOWN,
         reply_markup = keyboards.show_in_calendar(event_url)
     )
+    update.callback_query.answer()
     
     # Log new booking
     logger.info(
