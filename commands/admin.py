@@ -145,7 +145,7 @@ def confirm(update: Update, context: CallbackContext) -> int:
     update.callback_query.edit_message_text(
         text =
             "Booking confirmed.\n\n"
-            "f⚠ Update log: {config.CHANNEL_ID}\n"
+            f"⚠ Update log: {config.CHANNEL_ID}\n"
             "Tap to copy booking details:\n\n"
             f"`**Facility:** {context.chat_data['admin_chat_data']['facility']}\n"
             f"**Date:** {context.chat_data['admin_chat_data']['date']}\n"
