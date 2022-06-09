@@ -85,7 +85,8 @@ class AdminBookingDetailsFilter(MessageFilter):
         
         # Test date
         try:
-            date = datetime.strptime(booking_details[1], '%d%m%y').strftime('%Y-%m-%d')
+            datetime_date = datetime.strptime(booking_details[1], '%d%m%y').date()
+            date = datetime_date.strftime('%Y-%m-%d')
         except Exception as e:
             logger.debug(e)
             return False
@@ -125,7 +126,9 @@ class AdminBookingDetailsFilter(MessageFilter):
         return {
             'facility': [facility],
             'date': [date],
+            'datetime_date': [datetime_date],
             'time_range': [start_time, end_time],
+            'time_range_input': [time_range],
             'description': [description],
             'rank_and_name': [rank_and_name],
             'company': [company]
