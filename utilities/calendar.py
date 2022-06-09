@@ -191,7 +191,7 @@ def list_conflicts(chat_data: dict) -> list:
 '''
 MAKE/CHANGE/DELETE BOOKINGS
 '''
-def add_booking(user_id: int, user_data: dict, chat_data: dict) -> str:
+def add_booking(user_id: int, user_data: dict, chat_data: dict, update_channel = True) -> str:
     
     new_booking = service.events().insert(
         calendarId = config.CALENDAR_ID, 
@@ -224,14 +224,15 @@ def add_booking(user_id: int, user_data: dict, chat_data: dict) -> str:
         }
     ).execute()
     
-    actions.update_facilities_channel(
-        f'<b><a href="{new_booking["htmlLink"]}">New Booking</a></b>\n'
-        f"<b>Facility</b>: {chat_data['facility']}\n"
-        f"<b>Date</b>: {chat_data['date']}\n"
-        f"<b>Time</b>: {chat_data['start_time']} - {chat_data['end_time']}\n"
-        f"<b>Description</b>: {chat_data['description']}\n"
-        f"<b>POC</b>: {user_data['rank_and_name']} ({user_data['company']})\n"
-    )
+    if update_channel:
+        actions.update_facilities_channel(
+            f'<b><a href="{new_booking["htmlLink"]}">New Booking</a></b>\n'
+            f"<b>Facility</b>: {chat_data['facility']}\n"
+            f"<b>Date</b>: {chat_data['date']}\n"
+            f"<b>Time</b>: {chat_data['start_time']} - {chat_data['end_time']}\n"
+            f"<b>Description</b>: {chat_data['description']}\n"
+            f"<b>POC</b>: {user_data['rank_and_name']} ({user_data['company']})\n"
+        )
     
     return new_booking['htmlLink']
 
