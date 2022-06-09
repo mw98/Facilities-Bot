@@ -142,16 +142,16 @@ def confirm(update: Update, context: CallbackContext) -> int:
     update.callback_query.answer()
     update.callback_query.edit_message_text(
         text =
-            "Booking confirmed:\n\n"
-            f"`*Facility:* {context.chat_data['admin_chat_data']['facility']}\n"
-            f"*Date:* {context.chat_data['admin_chat_data']['date']}\n"
-            f"*Time:* {context.chat_data['admin_chat_data']['start_time']} - {context.chat_data['admin_chat_data']['end_time']}\n"
-            f"*Description:* {context.chat_data['admin_chat_data']['description']}\n"
-            f'*POC:* {context.chat_data["admin_user_data"]["rank_and_name"]} ({context.chat_data["admin_user_data"]["company"]})\n`'
+            "Booking confirmed. Tap to copy:\n\n"
+            f"`**Facility:** {context.chat_data['admin_chat_data']['facility']}\n"
+            f"**Date:** {context.chat_data['admin_chat_data']['date']}\n"
+            f"**Time:** {context.chat_data['admin_chat_data']['start_time']} - {context.chat_data['admin_chat_data']['end_time']}\n"
+            f"**Description:** {context.chat_data['admin_chat_data']['description']}\n"
+            f'**POC:** {context.chat_data["admin_user_data"]["rank_and_name"]} ({context.chat_data["admin_user_data"]["company"]})\n`'
             f"*Username:* @{context.chat_data['admin_user_data']['username']}\n"
             f"*User ID:* {context.chat_data['admin_user_data']['id']}\n\n"
             f"⚠ Update log: {config.CHANNEL_ID}\n"
-            "Tap to book again: /admin",
+            "Book again: /admin",
         parse_mode = ParseMode.MARKDOWN,
         reply_markup = keyboards.show_in_calendar(event_url)
     )
