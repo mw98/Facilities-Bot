@@ -63,8 +63,8 @@ class TimeRangeFilter(MessageFilter):
 time_range = TimeRangeFilter()
 
 '''
-ADMIN BOOKING FILTERS
-Ensures that booking and user details submitted in admin mode fit required format
+ADMIN BOOKING FILTER
+Basic checks for format of booking details sent in /admin
 '''
 class AdminBookingDetailsFilter(MessageFilter):
     
@@ -74,7 +74,7 @@ class AdminBookingDetailsFilter(MessageFilter):
     def filter(self, message: Message):
         booking_details = message.text.splitlines()
         
-        # Test facility input
+        # Test facility
         try:
             facility = booking_details[0]
         except IndexError as e:
@@ -83,14 +83,14 @@ class AdminBookingDetailsFilter(MessageFilter):
         if facility not in config.FACILITIES_LIST:
             return False
         
-        # Test date input
+        # Test date
         try:
             date = datetime.strptime(booking_details[1], '%d%m%y').strftime('%Y-%m-%d')
         except Exception as e:
             logger.debug(e)
             return False
         
-        # Test time input
+        # Test time
         try:
             time_range = booking_details[2]
             start_time = datetime.strptime(time_range[:4], '%H%M').strftime('%H:%M')
@@ -106,64 +106,29 @@ class AdminBookingDetailsFilter(MessageFilter):
             logger.debug(e)
             return False
         
+        # Test rank/name
+        try: 
+            rank_and_name = booking_details[4].upper()
+        except IndexError as e:
+            logger.debug(e)
+            return False
+        
+        # Test company
+        try: 
+            company = booking_details[5].upper()
+        except IndexError as e:
+            logger.debug(e)
+            return False
+        if company not in config.COMPANIES_LIST:
+            return False
+        
         return {
             'facility': [facility],
             'date': [date],
             'time_range': [start_time, end_time],
-            'description': [description]
-        }
-
-admin_booking_details = AdminBookingDetailsFilter()
-
-
-class AdminUserDetailsFilter(MessageFilter):
-    
-    name = 'filters.admin_user_details'
-    data_filter = True
-    
-    def filter(self, message: Message):
-        admin_details = message.text.splitlines()        
-        
-        # Test rank/name input
-        try: 
-            rank_and_name = admin_details[0].upper()
-        except IndexError as e:
-            logger.debug(e)
-            return False
-        
-        # Test company input
-        try:
-            company = admin_details[1].upper()
-        except IndexError as e:
-            logger.debug(e)
-            return False
-        
-        return {
+            'description': [description],
             'rank_and_name': [rank_and_name],
             'company': [company]
         }
 
-admin_user_details = AdminUserDetailsFilter()
-            
-        
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+admin_booking_details = AdminBookingDetailsFilter()
