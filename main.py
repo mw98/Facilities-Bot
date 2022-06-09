@@ -7,7 +7,7 @@ import config
 
 # Enable logging
 logging.basicConfig(
-    format = '[%(levelname)s / %(name)s] %(message)s', 
+    format = '[%(levelname)s/%(name)s] %(message)s', 
     level = logging.INFO
 )
 
