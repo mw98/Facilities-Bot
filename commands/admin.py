@@ -157,9 +157,9 @@ def confirm(update: Update, context: CallbackContext) -> int:
             "Tap to copy next day template:\n"
             f"`{context.chat_data['admin_chat_data']['facility']}\n"
             f"{(context.chat_data['admin_chat_data']['datetime_date'] + timedelta(days=1)).strftime('%d%m%y')}\n"
-            f"{context.chat_data['admin_chat_data']['time_range_input']}"
-            f"{context.chat_data['admin_chat_data']['description']}"
-            f"{context.chat_data['admin_user_data']['rank_and_name']}"
+            f"{context.chat_data['admin_chat_data']['time_range_input']}\n"
+            f"{context.chat_data['admin_chat_data']['description']}\n"
+            f"{context.chat_data['admin_user_data']['rank_and_name']}\n"
             f"{context.chat_data['admin_user_data']['company']}`",
         parse_mode = ParseMode.MARKDOWN,
         reply_markup = keyboards.show_in_calendar(event_url)
