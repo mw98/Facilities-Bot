@@ -47,7 +47,7 @@ def save_booking_details(update: Update, context: CallbackContext) -> int:
         'datetime_date': context.datetime_date[0],
         'start_time': context.time_range[0],
         'end_time': context.time_range[1],
-        'time_range_imput': context.time_range_input[0],
+        'time_range_input': context.time_range_input[0],
         'description': context.description[0]
     }
     context.chat_data['admin_user_data'] = {
