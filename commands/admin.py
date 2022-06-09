@@ -146,7 +146,7 @@ def confirm(update: Update, context: CallbackContext) -> int:
         text =
             "Booking confirmed.\n\n"
             f"⚠ Update log: {config.CHANNEL_ID}\n"
-            "Tap to copy booking details:\n\n"
+            "Tap to copy booking details:\n"
             f"`**Facility:** {context.chat_data['admin_chat_data']['facility']}\n"
             f"**Date:** {context.chat_data['admin_chat_data']['date']}\n"
             f"**Time:** {context.chat_data['admin_chat_data']['start_time']} - {context.chat_data['admin_chat_data']['end_time']}\n"
@@ -155,7 +155,7 @@ def confirm(update: Update, context: CallbackContext) -> int:
             f"*Username:* @{context.chat_data['admin_user_data']['username']}\n"
             f"*User ID:* {context.chat_data['admin_user_data']['id']}\n\n"
             "Book again: /admin\n"
-            "Tap to copy next day template:\n\n"
+            "Tap to copy next day template:\n"
             f"`{context.chat_data['admin_chat_data']['facility']}\n"
             f"{(context.chat_data['admin_chat_data']['datetime_date'] + timedelta(days=1)).strftime('%d%m%y')}\n"
             f"{context.chat_data['admin_chat_data']['time_range_input']}\n"
