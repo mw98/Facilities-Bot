@@ -31,6 +31,10 @@
     },
     "CHANNEL_ID": {
       "description": "@UserName of public telegram channel for logging bookings."
+    },
+    "CHANNEL_MUTED": {
+      "description": "Whether log channel updates are delivered silently (bool; case insensitive 'true' evaluates as True, all other values evaluate as False.)",
+      "value": "true"
     }
   },
   "addons": [
