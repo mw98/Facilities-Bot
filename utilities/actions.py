@@ -36,7 +36,7 @@ def load_user_profile(func):
         if (user_data := database.retrieve_user(update.message.from_user.id)):
             context.user_data.update(user_data)
         else:
-            update.effective_chat.send_message("⚠ Sorry, I can't find your user profile. Send /profile to create a new profile.")
+            update.effective_chat.send_message("⚠ Sorry, I can't find your user profile. Send /start to create a new profile.")
             logger.debug('User Not Found - %s - %s', update.message.from_user.id, update.message.from_user.username)
             return ConversationHandler.END # -1
         
