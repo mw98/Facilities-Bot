@@ -38,7 +38,7 @@ def start(update: Update, context: CallbackContext) -> int:
     
     # Introduce bot and ask for user's rank and name
     chat.send_message(
-        text = "*You'll need to create a user profile first.* Please send me your rank and name.",
+        text = "You'll need to create a user profile first. *Please send me your rank and name.*",
         parse_mode = ParseMode.MARKDOWN
     )
     
