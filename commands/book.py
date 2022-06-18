@@ -218,14 +218,16 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
                 if not message_end: 
                     message_end = context.chat_data['conflict_message_end']
                 
+        context.chat_data['conflicts_message'] = ''
         for conflict in conflicts:
             conflict_details = conflict['extendedProperties']['shared']
-            message_start += (
+            context.chat_data['conflicts_message'] += (
                 f'*Time:* {conflict_details["start_time"]} - {conflict_details["end_time"]}\n'
                 f'*Description:* {conflict_details["description"]}\n'
                 f'*POC:* {conflict_details["name_and_company"]}\n'
                 f'[Event Link]({conflict["htmlLink"]})\n\n'
             )
+        message_end = context.chat_data['conflicts_message'] + message_end
                 
         chat.send_message(
             text = f'{message_start}{message_end}',
@@ -257,9 +259,9 @@ def alt_facility(update: Update, context: CallbackContext) -> int:
     
     elif query.data == 'no':
         context.chat_data['suggest_alt_facility'] = False # Don't suggest alt facility again if new time_range conflicts too
-        update.effective_chat.send_message(
+        query.edit_message_text(
             text = 
-                f'Ok, still booking *{context.chat_data["facility"]}*.\n\n'
+                f'Ok, still trying to book *{context.chat_data["facility"]}*. These are the conflicting bookings:\n\n'
                 f'{context.chat_data["conflict_message_end"]}',
             reply_markup = context.chat_data['conflict_reply_markup'],
             parse_mode = ParseMode.MARKDOWN
