@@ -1,7 +1,9 @@
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 import config
 
-# Company Selector
+'''
+MENUS
+'''
 companies = InlineKeyboardMarkup([
     [
         InlineKeyboardButton('ALPHA', callback_data='ALPHA'),
@@ -15,8 +17,6 @@ companies = InlineKeyboardMarkup([
     ],
 ])
 
-
-# Facilities / Facilities Minus Selector
 facilities_list = [
     [
         InlineKeyboardButton('LT 1', callback_data = 'LT 1'),
@@ -41,39 +41,6 @@ def facilities_minus(facility):
     
     return InlineKeyboardMarkup(facilities_minus)
 
-
-# Confirm / Cancel
-confirm_or_cancel = InlineKeyboardMarkup([
-    [
-        InlineKeyboardButton('Confirm', callback_data = 'confirm'),
-        InlineKeyboardButton('Cancel', callback_data = 'cancel')
-    ]
-])
-
-
-# Continue with Booking
-continue_with_booking = InlineKeyboardMarkup([[InlineKeyboardButton('Continue with Booking', callback_data = 'continue')]])
-
-
-# Confirm / Cancel for Patch Booking
-patch_confirm_or_cancel = InlineKeyboardMarkup([
-    [
-        InlineKeyboardButton('Confirm', callback_data = 'confirm patch'),
-        InlineKeyboardButton('Cancel', callback_data = 'cancel patch')
-    ]
-])
-
-
-# Edit or Delete
-change_or_delete = InlineKeyboardMarkup([
-    [
-        InlineKeyboardButton('Change', callback_data = 'change'),
-        InlineKeyboardButton('Delete', callback_data = 'delete')
-    ]
-])
-
-
-# Edit Menu
 edit_menu = InlineKeyboardMarkup([
     [
         InlineKeyboardButton('Date', callback_data = 'date'),
@@ -85,25 +52,62 @@ edit_menu = InlineKeyboardMarkup([
     ],
 ])
 
-# Today Shortcut
-today_tomorrow = InlineKeyboardMarkup([
-    [InlineKeyboardButton('Today', callback_data = 'today'), InlineKeyboardButton('Tomorrow', callback_data = 'tomorrow')]
+'''
+BINARY SELECTORS
+'''
+confirm_or_cancel = InlineKeyboardMarkup([
+    [
+        InlineKeyboardButton('Confirm', callback_data = 'confirm'),
+        InlineKeyboardButton('Cancel', callback_data = 'cancel')
+    ]
 ])
 
+yes_or_no = InlineKeyboardMarkup(
+    [
+        InlineKeyboardButton('Yes', callback_data = 'yes'),
+        InlineKeyboardButton('No', callback_data = 'no')
+    ]
+)
 
-# Show Booking in Google Calendar
+patch_confirm_or_cancel = InlineKeyboardMarkup([
+    [
+        InlineKeyboardButton('Confirm', callback_data = 'confirm patch'),
+        InlineKeyboardButton('Cancel', callback_data = 'cancel patch')
+    ]
+])
+
+change_or_delete = InlineKeyboardMarkup([
+    [
+        InlineKeyboardButton('Change', callback_data = 'change'),
+        InlineKeyboardButton('Delete', callback_data = 'delete')
+    ]
+])
+
+today_tomorrow = InlineKeyboardMarkup([
+    [
+        InlineKeyboardButton('Today', callback_data = 'today'), 
+        InlineKeyboardButton('Tomorrow', callback_data = 'tomorrow')
+    ]
+])
+
+'''
+SINGLE OPTION SELECTORS
+'''
+continue_with_booking = InlineKeyboardMarkup([[InlineKeyboardButton('Continue with Booking', callback_data = 'continue')]])
+
+move_previous = InlineKeyboardMarkup([[InlineKeyboardButton('Move Previous Booking', callback_data = 'patch')]])
+
 def show_in_calendar(event_url: str) -> InlineKeyboardMarkup:
     
     return InlineKeyboardMarkup([
         [InlineKeyboardButton('Show in Google Calendar', url=event_url)]
     ])
 
-
-# View Google Calendar
 view_calendar = InlineKeyboardMarkup([[InlineKeyboardButton('Open Bookings Calendar', url=config.CALENDAR_URL)]])
 
-
-# Contact POC
+'''
+GENERATED OPTIONS SELECTORS
+'''
 def contact_poc(booking_conflicts: list, effective_username: str) -> InlineKeyboardMarkup:
     
     buttons = set()
@@ -120,12 +124,6 @@ def contact_poc(booking_conflicts: list, effective_username: str) -> InlineKeybo
     buttons = [[button] for button in buttons]
     return InlineKeyboardMarkup(buttons)
 
-# Move Previous Booking
-move_previous = InlineKeyboardMarkup([
-    [InlineKeyboardButton('Move Previous Booking', callback_data = 'patch')]
-])
-
-# User Bookings
 def user_bookings(bookings):
     
     buttons = []
