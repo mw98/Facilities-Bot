@@ -167,12 +167,12 @@ def find_upcoming_bookings_by_facility(facility: str) -> list:
 '''
 DECONFLICT BOOKINGS
 '''
-def list_conflicts(chat_data: dict) -> list:
+def list_conflicts(chat_data: dict, facility = None) -> list:
     
-    existing_bookings = find_bookings_for_facility_by_date(chat_data['facility'], chat_data['date'])
+    target_facility = facility or chat_data['facility'] # optionally specify facility, supports alt facility functionality
+    existing_bookings = find_bookings_for_facility_by_date(target_facility, chat_data['date'])
     
     conflicts = []
-    
     for booking in existing_bookings:
         
         datetime_start_time = datetime.strptime(booking['extendedProperties']['shared']['start_time'], '%H:%M').time()
