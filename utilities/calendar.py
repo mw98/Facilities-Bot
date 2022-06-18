@@ -226,18 +226,16 @@ def add_booking(user_id: int, user_data: dict, chat_data: dict, update_channel =
     
     if update_channel:
         if user_data['username'] != 'NULL':
-            username_link_opening_tag = "<a href='https://t.me/{user_data['username']}'>"
-            username_link_closing_tag = "</a>"
+            chat_link = "https://t.me/{user_data['username']}"
         else:
-            username_link_opening_tag = ''
-            username_link_closing_tag = ''
+            chat_link = "tg://user?id={user_id}"
         actions.update_facilities_channel(
             f'<b><a href="{new_booking["htmlLink"]}">New Booking</a></b>\n'
             f"<b>Facility</b>: {chat_data['facility']}\n"
             f"<b>Date</b>: {chat_data['date']}\n"
             f"<b>Time</b>: {chat_data['start_time']} - {chat_data['end_time']}\n"
             f"<b>Description</b>: {chat_data['description']}\n"
-            f"<b>POC</b>: {username_link_opening_tag}{user_data['rank_and_name']} ({user_data['company']}){username_link_closing_tag}"
+            f"<b>POC</b>: <a href='{chat_link}'>{user_data['rank_and_name']} ({user_data['company']})</a>"
         )
     
     return new_booking['htmlLink']
@@ -278,24 +276,22 @@ def patch_booking(user_id: int, user_data: dict, chat_data: dict) -> str:
     ).execute()
     
     if user_data['username'] != 'NULL':
-        username_link_opening_tag = f"<a href='https://t.me/{user_data['username']}'>"
-        username_link_closing_tag = "</a>"
+        chat_link = "https://t.me/{user_data['username']}"
     else:
-        username_link_opening_tag = ''
-        username_link_closing_tag = ''
+        chat_link = "tg://user?id={user_id}"
     actions.update_facilities_channel(
         f'<b><a href="{patched_booking["htmlLink"]}">Booking Updated</a></b>\n'
         f"<b>Facility</b>: {chat_data['old_facility']}{chat_data['facility']}\n"
         f"<b>Date</b>: {chat_data['old_date']}{chat_data['date']}\n"
         f"<b>Time</b>: {chat_data['old_start_time']}{chat_data['old_end_time']}{chat_data['start_time']} - {chat_data['end_time']}\n"
         f"<b>Description</b>: {chat_data['old_description']}{chat_data['description']}\n"
-        f"<b>POC</b>: {username_link_opening_tag}{user_data['rank_and_name']} ({user_data['company']}){username_link_closing_tag}"
+        f"<b>POC</b>: <a href='{chat_link}'>{user_data['rank_and_name']} ({user_data['company']})</a>"
     )
     
     return patched_booking['htmlLink']
     
 
-def delete_booking(user_data: dict, chat_data: dict) -> None:
+def delete_booking(user_id: int, user_data: dict, chat_data: dict) -> None:
     
     service.events().delete(
         calendarId = config.CALENDAR_ID, 
@@ -303,18 +299,16 @@ def delete_booking(user_data: dict, chat_data: dict) -> None:
     ).execute()
     
     if user_data['username'] != 'NULL':
-        username_link_opening_tag = f"<a href='https://t.me/{user_data['username']}'>"
-        username_link_closing_tag = "</a>"
+        chat_link = "https://t.me/{user_data['username']}"
     else:
-        username_link_opening_tag = ''
-        username_link_closing_tag = ''
+        chat_link = "tg://user?id={user_id}"
     actions.update_facilities_channel(
         "<b>Booking Cancelled</b>\n"
         f"<b>Facility</b>: {chat_data['facility']}\n"
         f"<b>Date</b>: {chat_data['date']}\n"
         f"<b>Time</b>: {chat_data['start_time']} - {chat_data['end_time']}\n"
         f"<b>Description</b>: {chat_data['description']}\n"
-        f"<b>POC</b>: {username_link_opening_tag}{user_data['rank_and_name']} ({user_data['company']}){username_link_closing_tag}"
+        f"<b>POC</b>: <a href='{chat_link}'>{user_data['rank_and_name']} ({user_data['company']})</a>"
     )
     
     return
