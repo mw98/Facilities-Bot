@@ -155,7 +155,11 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
         # If more than one conflict
         if len(conflicts) > 1:
             message_start = f'The time range you sent me conflicts with these *{context.chat_data["facility"]}* bookings:\n\n'
-            context.chat_data['conflict_message_end'] = 'Please send me another time range, or contact the POCs to deconflict.' # Store in case user rejects alt_facility
+            
+            # Store in case user rejects alt_facility
+            conext.chat_data['conflict_message_start'] = 'These are the conflicting bookings:'
+            context.chat_data['conflict_message_end'] = 'Please send me another time range, or contact the POCs to deconflict.'
+            
             if not message_end: 
                 message_end = context.chat_data['conflict_message_end']
         
@@ -214,7 +218,11 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
             # If only one conflict and conflict is not with user's previous booking
             else: 
                 message_start = f'The time range you sent me conflicts with this *{context.chat_data["facility"]}* booking:\n\n'
-                context.chat_data['conflict_message_end'] = 'Please send me another time range, or contact the POC to deconflict.' # Store in case user rejects alt_facility
+                
+                # Store in case user rejects alt_facility
+                context.chat_data['conflict_message_start'] = "This is the conflicting booking:"
+                context.chat_data['conflict_message_end'] = 'Please send me another time range, or contact the POC to deconflict.'
+                
                 if not message_end: 
                     message_end = context.chat_data['conflict_message_end']
                 
@@ -261,7 +269,7 @@ def alt_facility(update: Update, context: CallbackContext) -> int:
         context.chat_data['suggest_alt_facility'] = False # Don't suggest alt facility again if new time_range conflicts too
         query.edit_message_text(
             text = 
-                f'Ok, still trying to book *{context.chat_data["facility"]}*. These are the conflicting bookings:\n\n'
+                f'Ok, still trying to book *{context.chat_data["facility"]}*. {context.chat_data["conflict_message_start"]}\n\n'
                 f'{context.chat_data["conflict_message_list"]}{context.chat_data["conflict_message_end"]}',
             reply_markup = context.chat_data['conflict_reply_markup'],
             parse_mode = ParseMode.MARKDOWN
