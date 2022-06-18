@@ -96,7 +96,7 @@ def update_facilities_channel(text: str) -> None:
     if config.CHANNEL_ID:
         try:
             Bot(config.BOT_TOKEN).send_message(
-                chat_id = config.CHANNEL_ID,
+                chat_id = f'@{config.CHANNEL_USERNAME},
                 text = text,
                 parse_mode = ParseMode.HTML,
                 disable_notification = config.CHANNEL_MUTED
