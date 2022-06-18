@@ -160,6 +160,7 @@ def confirm(update: Update, context: CallbackContext) -> int:
             f"{context.chat_data['admin_user_data']['rank_and_name']}\n"
             f"{context.chat_data['admin_user_data']['company']}`",
         parse_mode = ParseMode.MARKDOWN,
+        disable_web_page_preview = True,
         reply_markup = keyboards.show_in_calendar(event_url)
     )
     update.callback_query.answer()
