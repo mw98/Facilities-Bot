@@ -1,14 +1,14 @@
 from datetime import datetime
 from telegram import Update, ParseMode
 from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, CallbackQueryHandler, MessageHandler, Filters
-from utilities import actions, keyboards, calendar
+from utilities import shared, keyboards, calendar
 
 SHOW_BOOKINGS = 0
 
 '''
 CHECK ENTRY POINT
 '''
-@actions.send_typing_action
+@shared.send_typing_action
 def check(update: Update, context: CallbackContext) -> int:
     
     # Ask user to choose a facility to check
@@ -23,7 +23,7 @@ def check(update: Update, context: CallbackContext) -> int:
 '''
 SEND UPCOMING BOOKINGS FOR CHOSEN FACILITY
 '''
-@actions.send_typing_action
+@shared.send_typing_action
 def show_bookings(update: Update, context: CallbackContext) -> int:
     
     facility = update.callback_query.data
@@ -73,6 +73,6 @@ CHECK HANDLER
 handler = ConversationHandler(
     entry_points = [CommandHandler('check', check)],
     states = {SHOW_BOOKINGS: [CallbackQueryHandler(show_bookings)]},
-    fallbacks = [MessageHandler(Filters.command, actions.silent_cancel)],
+    fallbacks = [MessageHandler(Filters.command, shared.silent_cancel)],
     allow_reentry = True
 )

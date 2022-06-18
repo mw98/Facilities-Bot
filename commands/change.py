@@ -2,7 +2,7 @@ from datetime import datetime
 import logging
 from telegram import Update, ParseMode
 from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, MessageHandler, CallbackQueryHandler, Filters
-from utilities import actions, keyboards, filters, calendar
+from utilities import shared, keyboards, filters, calendar
 import config
 
 logger = logging.getLogger(__name__)
@@ -13,8 +13,8 @@ BOOKING, ACTION, CHANGE, CHECK_FACILITY, CHECK_DATE, CHECK_TIME_RANGE, SAVE_DESC
 '''
 CHANGE ENTRY POINT
 '''
-@actions.send_typing_action
-@actions.load_user_profile
+@shared.send_typing_action
+@shared.load_user_profile
 def change(update: Update, context: CallbackContext) -> int:
         
     # Retrieve user's bookings
@@ -220,7 +220,7 @@ def send_confirmation_query(update: Update, context: CallbackContext):
 '''
 CHANGE FACILITY
 '''
-@actions.send_typing_action
+@shared.send_typing_action
 def change_facility(update: Update, context: CallbackContext) -> int:
     
     # CallbackQueries need to be answered, even if no user notification is needed
@@ -234,7 +234,7 @@ def change_facility(update: Update, context: CallbackContext) -> int:
     return CHECK_FACILITY
 
 
-@actions.send_typing_action
+@shared.send_typing_action
 def check_facility(update: Update, context: CallbackContext) -> int:
     update.callback_query.answer()
     context.chat_data['old_facility'] = context.chat_data['facility']
@@ -261,7 +261,7 @@ def check_facility(update: Update, context: CallbackContext) -> int:
 '''
 CHANGE DATE
 '''
-@actions.send_typing_action
+@shared.send_typing_action
 def change_date(update: Update, context: CallbackContext) -> int:
     
     # CallbackQueries need to be answered, even if no user notification is needed
@@ -275,13 +275,13 @@ def change_date(update: Update, context: CallbackContext) -> int:
     return CHECK_DATE
 
 
-@actions.send_typing_action
+@shared.send_typing_action
 def date_error(update: Update, context: CallbackContext) -> int:
-    actions.send_date_error(update, context, logger)
+    shared.send_date_error(update, context, logger)
     return CHECK_DATE
 
 
-@actions.send_typing_action
+@shared.send_typing_action
 def check_date(update: Update, context: CallbackContext) -> int:
         
     context.chat_data['old_date'] = context.chat_data['date']
@@ -315,7 +315,7 @@ def check_date(update: Update, context: CallbackContext) -> int:
 '''
 CHANGE TIME RANGE
 '''
-@actions.send_typing_action
+@shared.send_typing_action
 def change_time_range(update: Update, context: CallbackContext) -> int:
     
     # CallbackQueries need to be answered, even if no user notification is needed
@@ -329,13 +329,13 @@ def change_time_range(update: Update, context: CallbackContext) -> int:
     return CHECK_TIME_RANGE
 
 
-@actions.send_typing_action
+@shared.send_typing_action
 def time_range_error(update: Update, context: CallbackContext) -> int:
-    actions.send_time_range_error(update, context, logger)    
+    shared.send_time_range_error(update, context, logger)    
     return CHECK_TIME_RANGE
 
 
-@actions.send_typing_action
+@shared.send_typing_action
 def check_time_range(update: Update, context: CallbackContext) -> int:
         
     context.chat_data['old_start_time'] = context.chat_data['start_time']
@@ -385,7 +385,7 @@ def check_time_range(update: Update, context: CallbackContext) -> int:
 '''
 CHANGE DESCRIPTION
 '''
-@actions.send_typing_action
+@shared.send_typing_action
 def change_description(update: Update, context: CallbackContext) -> int:
     
     # CallbackQueries need to be answered, even if no user notification is needed
@@ -547,7 +547,7 @@ handler = ConversationHandler(
     },
     fallbacks = [
         CommandHandler('cancel', cancel),
-        MessageHandler(Filters.command, actions.silent_cancel)
+        MessageHandler(Filters.command, shared.silent_cancel)
     ],
     allow_reentry = True
 )

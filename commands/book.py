@@ -2,7 +2,7 @@ from datetime import datetime, timedelta
 import logging
 from telegram import Update, ParseMode
 from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, MessageHandler, CallbackQueryHandler, Filters
-from utilities import actions, keyboards, filters, calendar
+from utilities import shared, keyboards, filters, calendar
 import config
 
 logger = logging.getLogger(__name__)
@@ -13,8 +13,8 @@ FACILITY, DATE, TIME_RANGE, DESCRIPTION, PATCH, CONFIRMATION = range(6)
 '''
 BOOKING ENTRY POINT
 '''
-@actions.send_typing_action
-@actions.load_user_profile
+@shared.send_typing_action
+@shared.load_user_profile
 def book(update: Update, context: CallbackContext) -> int:
     
     # Ask user which facility to book
@@ -30,19 +30,19 @@ def book(update: Update, context: CallbackContext) -> int:
 ERROR CALLBACK FUNCTIONS
 '''
 def date_error(update: Update, context: CallbackContext) -> int:
-    actions.send_date_error(update, context, logger)
+    shared.send_date_error(update, context, logger)
     return DATE
 
 
 def time_range_error(update: Update, context: CallbackContext) -> int:
-    actions.send_time_range_error(update, context, logger)    
+    shared.send_time_range_error(update, context, logger)    
     return TIME_RANGE
 
 
 '''
 BOOKING CALLBACK FUNCTIONS
 '''
-@actions.send_typing_action
+@shared.send_typing_action
 def save_facility(update: Update, context: CallbackContext) -> int:
     
     query = update.callback_query
@@ -65,7 +65,7 @@ def save_facility(update: Update, context: CallbackContext) -> int:
     return DATE
 
 
-@actions.send_typing_action
+@shared.send_typing_action
 def save_date(update: Update, context: CallbackContext) -> int:
     
     now = datetime.now(config.TIMEZONE)
@@ -99,7 +99,7 @@ def save_date(update: Update, context: CallbackContext) -> int:
     return TIME_RANGE
 
 
-@actions.send_typing_action
+@shared.send_typing_action
 def save_time_range(update: Update, context: CallbackContext) -> int:
         
     # Check that time range is not in the past, since this can't be done in the filter
@@ -390,7 +390,7 @@ handler = ConversationHandler(
     },
     fallbacks = [
         CommandHandler('cancel', cancel),
-        MessageHandler(Filters.command, actions.silent_cancel)
+        MessageHandler(Filters.command, shared.silent_cancel)
     ],
     allow_reentry = True
 )

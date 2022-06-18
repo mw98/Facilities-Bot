@@ -1,13 +1,13 @@
 from datetime import datetime
 from telegram import Update, ParseMode
 from telegram.ext import CallbackContext, CommandHandler
-from utilities import calendar, actions, keyboards
+from utilities import calendar, shared, keyboards
 
 '''
 MYBOOKINGS CALLBACK FUNCTION
 '''
-@actions.send_typing_action
-@actions.load_user_profile
+@shared.send_typing_action
+@shared.load_user_profile
 def show_upcoming_user_bookings(update: Update, context: CallbackContext) -> None:
     
     bookings = calendar.find_upcoming_bookings_by_user(update.message.from_user.id)

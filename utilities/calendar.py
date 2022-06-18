@@ -3,7 +3,7 @@ import logging, json, sys
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
-from utilities import actions
+from utilities import shared
 import config
 
 logger = logging.getLogger(__name__)
@@ -229,7 +229,7 @@ def add_booking(user_id: int, user_data: dict, chat_data: dict, update_channel =
             chat_link = f"https://t.me/{user_data['username']}"
         else:
             chat_link = f"tg://user?id={user_id}"
-        actions.update_facilities_channel(
+        shared.update_facilities_channel(
             f'<b><a href="{new_booking["htmlLink"]}">New Booking</a></b>\n'
             f"<b>Facility</b>: {chat_data['facility']}\n"
             f"<b>Date</b>: {chat_data['date']}\n"
@@ -279,7 +279,7 @@ def patch_booking(user_id: int, user_data: dict, chat_data: dict) -> str:
         chat_link = f"https://t.me/{user_data['username']}"
     else:
         chat_link = f"tg://user?id={user_id}"
-    actions.update_facilities_channel(
+    shared.update_facilities_channel(
         f'<b><a href="{patched_booking["htmlLink"]}">Booking Updated</a></b>\n'
         f"<b>Facility</b>: {chat_data['old_facility']}{chat_data['facility']}\n"
         f"<b>Date</b>: {chat_data['old_date']}{chat_data['date']}\n"
@@ -302,7 +302,7 @@ def delete_booking(user_id: int, user_data: dict, chat_data: dict) -> None:
         chat_link = f"https://t.me/{user_data['username']}"
     else:
         chat_link = f"tg://user?id={user_id}"
-    actions.update_facilities_channel(
+    shared.update_facilities_channel(
         "<b>Booking Cancelled</b>\n"
         f"<b>Facility</b>: {chat_data['facility']}\n"
         f"<b>Date</b>: {chat_data['date']}\n"

@@ -1,7 +1,7 @@
 import logging
 from telegram import Update, ParseMode
 from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, MessageHandler, CallbackQueryHandler, Filters
-from utilities import keyboards, actions, database
+from utilities import keyboards, shared, database
 import config
 
 logger = logging.getLogger(__name__)
@@ -12,7 +12,7 @@ NAME, COMPANY, RETRY_NAME, CONFIRMATION = range(4)
 '''
 REGISTRATION ENTRY POINTS
 '''
-@actions.send_typing_action
+@shared.send_typing_action
 def start(update: Update, context: CallbackContext) -> int:
     
     chat = update.effective_chat
@@ -23,7 +23,7 @@ def start(update: Update, context: CallbackContext) -> int:
         chat.send_message(
             text = 
                 f'Hi, *{context.user_data["rank_and_name"]} ({context.user_data["company"]})*.\n\n'
-                f'{actions.construct_commands_list()}\n\n'
+                f'{shared.construct_commands_list()}\n\n'
                 'Tap the link below to see the bookings calendar.',
             parse_mode = ParseMode.MARKDOWN,
             reply_markup = keyboards.view_calendar
@@ -44,8 +44,8 @@ def start(update: Update, context: CallbackContext) -> int:
     
     return NAME
 
-@actions.send_typing_action
-@actions.load_user_profile
+@shared.send_typing_action
+@shared.load_user_profile
 def profile(update: Update, context: CallbackContext) -> int:
     
     # Save telegram username
@@ -68,7 +68,7 @@ def profile(update: Update, context: CallbackContext) -> int:
 """
 REGISTRATION CALLBACK FUNCTIONS
 """
-@actions.send_typing_action
+@shared.send_typing_action
 def save_name(update: Update, context: CallbackContext) -> int:
     
     # Save user's rank and name
@@ -83,7 +83,7 @@ def save_name(update: Update, context: CallbackContext) -> int:
     return COMPANY
 
 
-@actions.send_typing_action
+@shared.send_typing_action
 def save_coy(update: Update, context: CallbackContext) -> int:
     
     query = update.callback_query
@@ -128,7 +128,7 @@ def save_coy(update: Update, context: CallbackContext) -> int:
     return CONFIRMATION
 
 
-@actions.send_typing_action
+@shared.send_typing_action
 def retry_name(update: Update, context: CallbackContext) -> int:
     
     # Save new rank and name
@@ -175,7 +175,7 @@ def confirm(update: Update, context: CallbackContext) -> int:
     query.edit_message_text(
         text = 
             f'Profile created! Hi *{context.user_data["rank_and_name"]} ({context.user_data["company"]})*.\n\n'
-            f'{actions.construct_commands_list()}\n\n'
+            f'{shared.construct_commands_list()}\n\n'
             'Tap the link below to see the bookings calendar.',
         parse_mode = ParseMode.MARKDOWN,
         reply_markup = keyboards.view_calendar
@@ -239,6 +239,6 @@ handler = ConversationHandler(
     },
     fallbacks = [
         CommandHandler('cancel', cancel),
-        MessageHandler(Filters.command, actions.silent_cancel)
+        MessageHandler(Filters.command, shared.silent_cancel)
     ]
 )

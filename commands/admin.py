@@ -2,7 +2,7 @@ from datetime import timedelta
 import logging
 from telegram import Update, ParseMode
 from telegram.ext import CallbackContext, ConversationHandler, CommandHandler, MessageHandler, CallbackQueryHandler, Filters
-from utilities import filters, actions, keyboards, calendar, database
+from utilities import filters, shared, keyboards, calendar, database
 import config
 
 logger = logging.getLogger(__name__)
@@ -13,7 +13,7 @@ BOOKING_DETAILS, CONFIRMATION = range(2)
 '''
 ADMIN ENTRY POINT
 '''
-@actions.send_typing_action
+@shared.send_typing_action
 def admin(update: Update, context: CallbackContext) -> int:
     
     if str(update.message.from_user.id) in config.ADMIN_UID_LIST:
@@ -37,7 +37,7 @@ def admin(update: Update, context: CallbackContext) -> int:
 '''
 SAVE BOOKING DETAILS
 '''
-@actions.send_typing_action
+@shared.send_typing_action
 def save_booking_details(update: Update, context: CallbackContext) -> int:
     
     context.chat_data['admin_chat_data'] = {
@@ -233,7 +233,7 @@ handler = ConversationHandler(
     },
     fallbacks = [
         CommandHandler('cancel', cancel),
-        MessageHandler(Filters.command, actions.silent_cancel)
+        MessageHandler(Filters.command, shared.silent_cancel)
     ],
     allow_reentry = True
 )
