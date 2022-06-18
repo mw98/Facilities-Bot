@@ -278,7 +278,7 @@ def patch_booking(user_id: int, user_data: dict, chat_data: dict) -> str:
     ).execute()
     
     if user_data['username'] != 'NULL':
-        username_link_opening_tag = "<a href='https://t.me/{user_data['username']}'>"
+        username_link_opening_tag = f"<a href='https://t.me/{user_data['username']}'>"
         username_link_closing_tag = "</a>"
     else:
         username_link_opening_tag = ''
@@ -303,7 +303,7 @@ def delete_booking(user_data: dict, chat_data: dict) -> None:
     ).execute()
     
     if user_data['username'] != 'NULL':
-        username_link_opening_tag = "<a href='https://t.me/{user_data['username']}'>"
+        username_link_opening_tag = f"<a href='https://t.me/{user_data['username']}'>"
         username_link_closing_tag = "</a>"
     else:
         username_link_opening_tag = ''
