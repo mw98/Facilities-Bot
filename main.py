@@ -24,7 +24,7 @@ def main():
 
     # Initialise bot and updater
     bot = Bot(config.BOT_TOKEN)
-    updater = Updater(bot=bot)
+    updater = Updater(config.BOT_TOKEN)
 
     # Attach handlers
     dispatcher = updater.dispatcher
@@ -37,10 +37,12 @@ def main():
     dispatcher.add_handler(admin.handler, 3)
     
     # Add bot commands
-    bot.set_my_commands(config.COMMANDS_DEFAULT)
+    default_commands = config.COMMANDS_BOOKING + config.COMMANDS_SETTING
+    admin_commands = config.COMMANDS_ADMIN + default_commands
+    bot.set_my_commands(default_commands)
     for admin_uid in config.ADMIN_UID_LIST:
         bot.set_my_commands(
-            commands = config.COMMANDS_ADMIN + config.COMMANDS_DEFAULT,
+            commands = admin_commands,
             scope = BotCommandScopeChat(admin_uid)
         )
 
