@@ -154,7 +154,7 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
         
         # If more than one conflict
         if len(conflicts) > 1:
-            message_start = 'The time range you sent me conflicts with these bookings:\n\n'
+            message_start = f'The time range you sent me conflicts with these *{context.chat_data["facility"]}* bookings:\n\n'
             context.chat_data['conflict_message_end'] = 'Please send me another time range, or contact the POCs to deconflict.' # Store in case user rejects alt_facility
             if not message_end: 
                 message_end = context.chat_data['conflict_message_end']
@@ -213,7 +213,7 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
             
             # If only one conflict and conflict is not with user's previous booking
             else: 
-                message_start = 'The time range you sent me conflicts with this booking:\n\n'
+                message_start = 'The time range you sent me conflicts with this *{context.chat_data["facility"]}* booking:\n\n'
                 context.chat_data['conflict_message_end'] = 'Please send me another time range, or contact the POC to deconflict.' # Store in case user rejects alt_facility
                 if not message_end: 
                     message_end = context.chat_data['conflict_message_end']
