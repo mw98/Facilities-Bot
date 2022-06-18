@@ -152,7 +152,7 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
             conflict_details = conflict['extendedProperties']['shared']
             
             # If conflict is with user's previous booking
-            if int(conflict_details['user_id']) == update.message.from_user.id:
+            if conflict_details['user_id'] == str(update.message.from_user.id):
                 
                 previous_booking = (
                     f'*Facility:* {context.chat_data["facility"]}\n'
