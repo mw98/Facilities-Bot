@@ -93,7 +93,7 @@ ADDITIONAL API REQUESTS
 '''
 def update_facilities_channel(text: str) -> None:
     
-    if config.CHANNEL_ID:
+    if config.CHANNEL_USERNAME:
         try:
             Bot(config.BOT_TOKEN).send_message(
                 chat_id = f'@{config.CHANNEL_USERNAME}',
