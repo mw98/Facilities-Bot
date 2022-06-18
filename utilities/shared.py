@@ -111,6 +111,7 @@ def update_facilities_channel(text: str) -> None:
                 chat_id = f'@{config.CHANNEL_USERNAME}',
                 text = text,
                 parse_mode = ParseMode.HTML,
+                disable_web_page_preview = False,
                 disable_notification = config.CHANNEL_MUTED
             )
         except Exception as error:
