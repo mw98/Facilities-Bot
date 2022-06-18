@@ -129,6 +129,7 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
         reply_markup = keyboards.contact_poc(conflicts, update.message.from_user.username)
         context.chat_data['conflict_reply_markup'] = reply_markup # Store in case user rejects alt_facility
         conversation_state = TIME_RANGE
+        print('test')
         if (alt_facility := config.ALT_FACILITIES.get(context.chat_data['facility'])
             and context.chat_data.get('suggest_alt_facility', True) # Don't suggest alt_facility again if user has already rejected it
         ):
@@ -212,9 +213,7 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
                 f'*POC:* {conflict_details["name_and_company"]}\n'
                 f'[Event Link]({conflict["htmlLink"]})\n\n'
             )
-        
-        context.chat_data['conflict_message_start'] = message_start # Store in case user rejects alt_facility
-        
+                
         chat.send_message(
             text = f'{message_start}{message_end}',
             reply_markup = reply_markup,
@@ -245,8 +244,8 @@ def alt_facility(update: Update, context: CallbackContext) -> int:
     
     elif query.data == 'no':
         context.chat_data['suggest_alt_facility'] = False # Don't suggest alt facility again if new time_range conflicts too
-        query.edit_message_text(
-            text = f'{context.chat_data["conflict_message_start"]}{context.chat_data["conflict_message_end"]}',
+        update.effective_chat.send_message(
+            text = f'Ok, still booking *{context.chat_data["facility"]}*. {context.chat_data["conflict_message_end"]}',
             reply_markup = context.chat_data['conflict_reply_markup'],
             parse_mode = ParseMode.MARKDOWN
         )
