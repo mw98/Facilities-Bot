@@ -23,7 +23,7 @@ def start(update: Update, context: CallbackContext) -> int:
         chat.send_message(
             text = 
                 f'Hi, *{context.user_data["rank_and_name"]} ({context.user_data["company"]})*.\n\n'
-                f'{config.BOT_COMMANDS}\n\n'
+                f'{actions.construct_commands_list()}\n\n'
                 'Tap the link below to see the bookings calendar.',
             parse_mode = ParseMode.MARKDOWN,
             reply_markup = keyboards.view_calendar
@@ -175,7 +175,7 @@ def confirm(update: Update, context: CallbackContext) -> int:
     query.edit_message_text(
         text = 
             f'Profile created! Hi *{context.user_data["rank_and_name"]} ({context.user_data["company"]})*.\n\n'
-            f'{config.BOT_COMMANDS}\n\n'
+            f'{actions.construct_commands_list()}\n\n'
             'Tap the link below to see the bookings calendar.',
         parse_mode = ParseMode.MARKDOWN,
         reply_markup = keyboards.view_calendar
