@@ -457,7 +457,11 @@ def confirm_change(update: Update, context: CallbackContext) -> int:
 def confirm_delete(update: Update, context: CallbackContext) -> int:
     
     try:
-        calendar.delete_booking(context.user_data, context.chat_data)
+        calendar.delete_booking(
+            user_id = update.callback_query.from_user.id, 
+            user_data = context.user_data, 
+            chat_data = context.chat_data
+        )
     except Exception as error:
         update.effective_chat.send_message(
             text = '⚠ Sorry, I could not connect to Google Calendar. Try again?',
