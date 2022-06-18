@@ -25,9 +25,22 @@
       "description": "Port for Telegram webhook requests. Acceptable values: 443, 80, 88 or 8443.",
       "value": "8443"
     },
-    "BOT_COMMANDS": {
-      "description": "Description of bot commands used in /help and elsewhere.",
-      "value": "Interact with me using these commands:\n\n*Manage Facility Bookings*\n/book - Book facilities in 5 SIR\n/change - Change or cancel a booking\n/check - Check facility availability\n/mybookings - List your upcoming bookings\n\n*Bot Settings*\n/profile - Update your user profile\n/help - Show this list of commands"
+    "COMMANDS_DEFAULT": {
+      "description": "JSON serialised list of bot commands. Format: {'command': 'description'}",
+      "value": "{
+  "book": "Make a new booking",
+  "change": "Change or cancel a booking",
+  "check": "Check facility availability",
+  "mybookings": "List your upcoming bookings",
+  "profile": "Update your user profile",
+  "help": "Show this list of commands"
+}"
+    },
+    "COMMANDS_ADMIN": {
+      "description": "JSON serialised list of admin-only commands. Format: {'command': 'description'}",
+      "value": "{
+  "admin": "Make a booking as any user"
+}"
     },
     "CHANNEL_USERNAME": {
       "description": "Username of public telegram channel for logging bookings."
