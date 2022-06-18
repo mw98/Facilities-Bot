@@ -8,7 +8,7 @@ import config
 logger = logging.getLogger(__name__)
 
 
-FACILITY, DATE, TIME_RANGE, DESCRIPTION, PATCH, CONFIRMATION = range(6)
+FACILITY, DATE, TIME_RANGE, ALT_FACILITY, DESCRIPTION, PATCH, CONFIRMATION = range(7)
 
 '''
 BOOKING ENTRY POINT
@@ -123,21 +123,38 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
     
     # Check for conflicting bookings
     if (conflicts := calendar.list_conflicts(context.chat_data)):
+                
+        # If alternate facilities are available
+        message_end = None
+        reply_markup = keyboards.contact_poc(conflicts, update.message.from_user.username)
+        context.chat_data['conflict_reply_markup'] = reply_markup # Store in case user rejects alt_facility
+        conversation_state = TIME_RANGE
+        if (alt_facility := config.ALT_FACILITIES.get(context.chat_data['facility'])
+            and not context.chat_data.get('suggest_alt_facility', True) # Don't suggest alt_facility again if user has already rejected it
+        ):
+            if not list_conflicts(context.chat_data, facility = alt_facility):
+                context.chat_data['alt_facility'] = alt_facility
+                context.chat_data['conflicts'] = conflicts # Store in case user rejects alt_facility
+                message_end = f'*{alt_facility}* is available at that time, would you like to book it instead?'
+                reply_markup = keyboards.yes_or_no
+                conversation_state = ALT_FACILITY
         
-        # Contextualise bot response
+        # If more than one conflict
         if len(conflicts) > 1:
             message_start = 'The time range you sent me conflicts with these bookings:\n\n'
-            message_end = 'Please send me another time range, or contact the POCs to deconflict.'
+            context.chat_data['conflict_message_end'] = 'Please send me another time range, or contact the POCs to deconflict.' # Store in case user rejects alt_facility
+            if not message_end: 
+                message_end = context.chat_daya['conflict_message_end']
         
+        # If only one conflict
         else: 
-            
             conflict = conflicts[0]
             conflict_details = conflict['extendedProperties']['shared']
             
             # If conflict is with user's previous booking
             if int(conflict_details['user_id']) == update.message.from_user.id:
                 
-                event_summary = (
+                previous_booking = (
                     f'*Facility:* {context.chat_data["facility"]}\n'
                     f'*Date:* {context.chat_data["date"]}\n'
                     f'*Time:* {conflict_details["start_time"]} - {conflict_details["end_time"]}\n'
@@ -153,7 +170,7 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
                     chat.send_message(
                         text = 
                             "You've already made this booking:\n\n"
-                            f'{event_summary}\n\n'
+                            f'{previous_booking}\n\n'
                             'Send /book to make another booking.',
                         parse_mode = ParseMode.MARKDOWN
                     )
@@ -174,17 +191,19 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
                 chat.send_message(
                     text = 
                         'The time range you sent conflicts with a previous booking you made:\n\n'
-                        f'{event_summary}\n\n'
+                        f'{previous_booking}\n\n'
                         "Move your previous booking to the new time range, or send me another time range to make a new booking.",
                     reply_markup = keyboards.move_previous,
                     parse_mode = ParseMode.MARKDOWN
                 )
                 return PATCH
             
+            # If only one conflict and conflict is not with user's previous booking
             else: 
                 message_start = 'The time range you sent me conflicts with this booking:\n\n'
-                message_end = 'Please send me another time range, or contact the POC to deconflict.'
-        
+                if not message_end: 
+                    message_end = 'Please send me another time range, or contact the POC to deconflict.'
+                
         for conflict in conflicts:
             conflict_details = conflict['extendedProperties']['shared']
             message_start += (
@@ -194,19 +213,45 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
                 f'[Event Link]({conflict["htmlLink"]})\n\n'
             )
         
+        context.chat_data['conflict_message_start'] = message_start # Store in case user rejects alt_facility
+        
         chat.send_message(
             text = f'{message_start}{message_end}',
-            reply_markup = keyboards.contact_poc(conflicts, update.message.from_user.username),
+            reply_markup = reply_markup,
             parse_mode = ParseMode.MARKDOWN
         )
         
-        return TIME_RANGE
+        return conversation_state
     
-    # Ask for a brief description of the booking
-    chat.send_message('Lastly, send me a brief description of the booking.')
+    # If no conflicts, ask for a brief description of the booking
+    chat.send_message('Lastly, send me a brief description of your booking.')
     
     return DESCRIPTION
 
+
+def alt_facility(update: Update, context: CallbackContext) -> int:
+    
+    query = update.callback_query
+    
+    if query.data == 'yes':
+        context.chat_data['facility'] = context.chat_data['alt_facility']
+        query.edit_message_text(
+            text = 
+                f'Ok, now booking *{context.chat_data["facility"]}* instead at the same date and time.\n\n'
+                'Lastly, send me a brief description of your booking.',
+            parse_mode = ParseMode.MARKDOWN
+        )
+        return DESCRIPTION
+    
+    elif query.data == 'no':
+        context.chat_data['suggest_alt_facility'] = False # Don't suggest alt facility again if new time_range conflicts too
+        query.edit_message_text(
+            text = f'{context.chat_data["conflict_message_start"]}{context.chat_data["conflict_message_end"]}',
+            reply_markup = context.chat_data['conflict_reply_markup'],
+            parse_mode = ParseMode.MARKDOWN
+        )
+        return TIME_RANGE
+        
 
 def save_description(update: Update, context: CallbackContext) -> int:
         
@@ -376,6 +421,9 @@ handler = ConversationHandler(
         TIME_RANGE: [
             MessageHandler(filters.time_range, save_time_range),
             MessageHandler(Filters.all & (~Filters.command), time_range_error)
+        ],
+        ALT_FACILITY: [
+            CallbackQueryHandler(callback = alt_facility, pattern = 'yes|no')
         ],
         DESCRIPTION: [MessageHandler(Filters.text & (~Filters.command), save_description)],
         PATCH: [
