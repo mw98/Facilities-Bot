@@ -1,6 +1,6 @@
 import logging
 from pathlib import Path
-from telegram import Bot, BotCommandScopeChat
+from telegram import Bot, BotCommandScopeChat, ChatAdministratorRights
 from telegram.ext import Updater
 from commands import start, help, book, change, check, mybookings, admin
 from utilities import database
@@ -28,13 +28,13 @@ def main():
 
     # Attach handlers
     dispatcher = updater.dispatcher
-    dispatcher.add_handler(start.handler, 6)
-    dispatcher.add_handler(help.handler, 5)
     dispatcher.add_handler(book.handler, 0)
     dispatcher.add_handler(change.handler, 1)
     dispatcher.add_handler(check.handler, 2)
-    dispatcher.add_handler(mybookings.handler, 4)
     dispatcher.add_handler(admin.handler, 3)
+    dispatcher.add_handler(mybookings.handler, 4)
+    dispatcher.add_handler(help.handler, 5)
+    dispatcher.add_handler(start.handler, 6)
     
     # Add bot commands
     default_commands = config.COMMANDS_BOOKING + config.COMMANDS_SETTING
@@ -45,6 +45,10 @@ def main():
             commands = admin_commands,
             scope = BotCommandScopeChat(admin_uid)
         )
+    
+    # Set default bot admin rights for facilities log channel
+    rights = ChatAdministratorRights(can_post_messages = True)
+    bot.set_my_default_administrator_rights(rights=rights, for_channels=True)
 
     # Run bot
     updater.start_webhook(
