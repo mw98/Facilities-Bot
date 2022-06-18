@@ -129,13 +129,13 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
         reply_markup = keyboards.contact_poc(conflicts, update.message.from_user.username)
         context.chat_data['conflict_reply_markup'] = reply_markup # Store in case user rejects alt_facility
         conversation_state = TIME_RANGE
-        if (alt_facility := config.ALT_FACILITIES.get(context.chat_data['facility'])
+        if (config.ALT_FACILITIES.get(context.chat_data['facility'])
             and context.chat_data.get('suggest_alt_facility', True) # Don't suggest alt_facility again if user has already rejected it
         ):
             if not calendar.list_conflicts(context.chat_data, facility = alt_facility):
-                context.chat_data['alt_facility'] = alt_facility
+                context.chat_data['alt_facility'] = config.ALT_FACILITIES[context.chat_data['facility']]
                 context.chat_data['conflicts'] = conflicts # Store in case user rejects alt_facility
-                message_end = f'*{alt_facility}* is available at that time, would you like to book it instead?'
+                message_end = f'*{config.ALT_FACILITIES[context.chat_data["facility"]]}* is available at that time, would you like to book it instead?'
                 reply_markup = keyboards.yes_or_no
                 conversation_state = ALT_FACILITY
         
