@@ -229,7 +229,7 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
             )
                 
         chat.send_message(
-            text = f'{message_start}{context.chat_data["conflicts_message_list"]}{message_end}',
+            text = f'{message_start}{context.chat_data["conflict_message_list"]}{message_end}',
             reply_markup = reply_markup,
             parse_mode = ParseMode.MARKDOWN
         )
