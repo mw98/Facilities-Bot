@@ -9,7 +9,7 @@ DATABASE_URL = os.environ['DATABASE_URL']
 ADMIN_UID_LIST = os.getenv('ADMIN_UID_LIST', [])
 BOT_TOKEN = os.environ['BOT_TOKEN']
 BOT_COMMANDS = os.getenv('BOT_COMMANDS', '')
-CHANNEL_ID = os.getenv('CHANNEL_ID')
+CHANNEL_USERNAME = os.getenv('CHANNEL_USERNAME')
 CHANNEL_MUTED = (os.getenv('CHANNEL_MUTED', False) == 'True')
 WEBHOOK_PORT = os.getenv('PORT', 8443)
 
