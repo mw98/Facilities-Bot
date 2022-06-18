@@ -256,12 +256,19 @@ def confirm(update: Update, context: CallbackContext) -> int:
         try: 
             event_url = calendar.add_booking(query.from_user.id, context.user_data, context.chat_data)
         except Exception as error:
-            update.effective_chat.send_message(
-                text = '⚠ Sorry, I could not connect to Google Calendar. Try again?',
-                reply_markup = keyboards.confirm_or_cancel
+            query.edit_message_text(
+                text = 
+                    "Ok. Here's a summary of your booking request.\n\n"
+                    f'*Facility:* {context.chat_data["facility"]}\n'
+                    f'*Date:* {context.chat_data["date"]}\n'
+                    f'*Time:* {context.chat_data["start_time"]} - {context.chat_data["end_time"]}\n'
+                    f'*Description:* {context.chat_data["description"]}\n\n'
+                    "*⚠ Sorry, I could not connect to Google Calendar. Try again?*",
+                reply_markup = keyboards.confirm_or_cancel,
+                parse_mode = ParseMode.HTML
             )
             logger.exception(
-                'GCal Insert Request Failure - %s - %s - %s',
+                'GCal Insert Failure - %s - %s - %s',
                 query.from_user.id,
                 context.user_data['rank_and_name'],
                 error
@@ -281,12 +288,19 @@ def confirm(update: Update, context: CallbackContext) -> int:
                 chat_data = context.chat_data
             )
         except Exception as error:
-            update.effective_chat.send_message(
-                text = '⚠ Sorry, I could not connect to Google Calendar. Try again?',
-                reply_markup = keyboards.patch_confirm_or_cancel
+            query.edit_message_text(
+                text = 
+                    "Ok. Here's what your updated booking will look like.\n\n"
+                    f'<b>Facility:</b> {context.chat_data["facility"]}\n'
+                    f'<b>Date:</b> {context.chat_data["date"]}\n'
+                    f'<b>Time:</b> {context.chat_data["old_start_time"]}{context.chat_data["old_end_time"]}{context.chat_data["start_time"]} - {context.chat_data["end_time"]}\n'
+                    f'<b>Description:</b> {context.chat_data["description"]}\n\n'
+                    "<b>⚠ Sorry, I could not connect to Google Calendar. Try again?</b>",
+                reply_markup = keyboards.patch_confirm_or_cancel,
+                parse_mode = ParseMode.HTML
             )
             logger.exception(
-                'GCal Patch Request Failure - %s - %s - %s',
+                'GCal Patch Failure - %s - %s - %s',
                 query.from_user.id,
                 context.user_data['rank_and_name'],
                 error
