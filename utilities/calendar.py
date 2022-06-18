@@ -226,9 +226,9 @@ def add_booking(user_id: int, user_data: dict, chat_data: dict, update_channel =
     
     if update_channel:
         if user_data['username'] != 'NULL':
-            chat_link = "https://t.me/{user_data['username']}"
+            chat_link = f"https://t.me/{user_data['username']}"
         else:
-            chat_link = "tg://user?id={user_id}"
+            chat_link = f"tg://user?id={user_id}"
         actions.update_facilities_channel(
             f'<b><a href="{new_booking["htmlLink"]}">New Booking</a></b>\n'
             f"<b>Facility</b>: {chat_data['facility']}\n"
@@ -276,9 +276,9 @@ def patch_booking(user_id: int, user_data: dict, chat_data: dict) -> str:
     ).execute()
     
     if user_data['username'] != 'NULL':
-        chat_link = "https://t.me/{user_data['username']}"
+        chat_link = f"https://t.me/{user_data['username']}"
     else:
-        chat_link = "tg://user?id={user_id}"
+        chat_link = f"tg://user?id={user_id}"
     actions.update_facilities_channel(
         f'<b><a href="{patched_booking["htmlLink"]}">Booking Updated</a></b>\n'
         f"<b>Facility</b>: {chat_data['old_facility']}{chat_data['facility']}\n"
@@ -299,9 +299,9 @@ def delete_booking(user_id: int, user_data: dict, chat_data: dict) -> None:
     ).execute()
     
     if user_data['username'] != 'NULL':
-        chat_link = "https://t.me/{user_data['username']}"
+        chat_link = f"https://t.me/{user_data['username']}"
     else:
-        chat_link = "tg://user?id={user_id}"
+        chat_link = f"tg://user?id={user_id}"
     actions.update_facilities_channel(
         "<b>Booking Cancelled</b>\n"
         f"<b>Facility</b>: {chat_data['facility']}\n"
