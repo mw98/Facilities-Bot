@@ -29,8 +29,8 @@
       "description": "Description of bot commands used in /help and elsewhere.",
       "value": "Interact with me using these commands:\n\n*Manage Facility Bookings*\n/book - Book facilities in 5 SIR\n/change - Change or cancel a booking\n/check - Check facility availability\n/mybookings - List your upcoming bookings\n\n*Bot Settings*\n/profile - Update your user profile\n/help - Show this list of commands"
     },
-    "CHANNEL_ID": {
-      "description": "@UserName of public telegram channel for logging bookings."
+    "CHANNEL_USERNAME": {
+      "description": "Username of public telegram channel for logging bookings."
     },
     "CHANNEL_MUTED": {
       "description": "Whether log channel updates are delivered silently (bool; case sensitive 'True' evaluates as True, all other values evaluate as False.)",
