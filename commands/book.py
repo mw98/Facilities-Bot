@@ -60,7 +60,7 @@ def save_facility(update: Update, context: CallbackContext) -> int:
     query.edit_message_text(
         text = 
             f'Ok, now booking *{context.chat_data["facility"]}* for you. Use /cancel to stop.\n\n'
-            "*Send me a date for this booking or select one of the options below.* Please use the `DDMMYY` format.",
+            "Send me a date for this booking or select one of the options below. Please use the `DDMMYY` format.",
         reply_markup = keyboards.today_tomorrow,
         parse_mode = ParseMode.MARKDOWN
     )
@@ -88,9 +88,9 @@ def save_date(update: Update, context: CallbackContext) -> int:
         query.answer()
         
         # Ask user for a time range
-        update.effective_chat.send_message(
+        query.edit_message_text.send_message(
             text = 
-                f'*Send me a time range for your {context.chat_data["facility"]} booking.* Please use this format:\n\n'
+                f'Send me a time range for your *{context.chat_data["facility"]}* booking. Please use this format:\n\n'
                 '`HHmm-HHmm` (e.g. 0930-1300)',
             parse_mode = ParseMode.MARKDOWN
         )
@@ -104,7 +104,7 @@ def save_date(update: Update, context: CallbackContext) -> int:
         # Ask user for a time range
         update.effective_chat.send_message(
             text = 
-                f'*Send me a time range for your {context.chat_data["facility"]} booking.* Please use this format:\n\n'
+                f'Send me a time range for your *{context.chat_data["facility"]}* booking. Please use this format:\n\n'
                 '`HHmm-HHmm` (e.g. 0930-1300)',
             parse_mode = ParseMode.MARKDOWN
         )
@@ -148,14 +148,14 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
             if not calendar.list_conflicts(context.chat_data, facility = alt_facility):
                 context.chat_data['alt_facility'] = config.ALT_FACILITIES[context.chat_data['facility']]
                 context.chat_data['conflicts'] = conflicts # Store in case user rejects alt_facility
-                message_end = f'*{config.ALT_FACILITIES[context.chat_data["facility"]]} is available at that time, would you like to book it instead?*'
+                message_end = f'{config.ALT_FACILITIES[context.chat_data["facility"]]} is available at that time, would you like to book it instead?'
                 reply_markup = keyboards.yes_or_no
                 conversation_state = ALT_FACILITY
         
         # If more than one conflict
         if len(conflicts) > 1:
             message_start = 'The time range you sent me conflicts with these bookings:\n\n'
-            context.chat_data['conflict_message_end'] = '*Please send me another time range, or contact the POCs to deconflict.*' # Store in case user rejects alt_facility
+            context.chat_data['conflict_message_end'] = 'Please send me another time range, or contact the POCs to deconflict.' # Store in case user rejects alt_facility
             if not message_end: 
                 message_end = context.chat_data['conflict_message_end']
         
@@ -205,7 +205,7 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
                     text = 
                         'The time range you sent conflicts with a previous booking you made:\n\n'
                         f'{previous_booking}\n\n'
-                        "*Move your previous booking to the new time range, or send me another time range to make a new booking.*",
+                        "Move your previous booking to the new time range, or send me another time range to make a new booking.",
                     reply_markup = keyboards.move_previous,
                     parse_mode = ParseMode.MARKDOWN
                 )
@@ -214,7 +214,7 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
             # If only one conflict and conflict is not with user's previous booking
             else: 
                 message_start = 'The time range you sent me conflicts with this booking:\n\n'
-                context.chat_data['conflict_message_end'] = '*Please send me another time range, or contact the POC to deconflict.*' # Store in case user rejects alt_facility
+                context.chat_data['conflict_message_end'] = 'Please send me another time range, or contact the POC to deconflict.' # Store in case user rejects alt_facility
                 if not message_end: 
                     message_end = context.chat_data['conflict_message_end']
                 
@@ -236,7 +236,7 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
         return conversation_state
     
     # If no conflicts, ask for a brief description of the booking
-    chat.send_message('Lastly, send me a *brief description of your booking*.')
+    chat.send_message('Lastly, send me a brief description of your booking.')
     
     return DESCRIPTION
 
@@ -250,7 +250,7 @@ def alt_facility(update: Update, context: CallbackContext) -> int:
         query.edit_message_text(
             text = 
                 f'Ok, now booking *{context.chat_data["facility"]}* instead at the same date and time.\n\n'
-                '*Lastly, send me a brief description of your booking.*',
+                'Lastly, send me a brief description of your booking.',
             parse_mode = ParseMode.MARKDOWN
         )
         return DESCRIPTION
@@ -280,7 +280,7 @@ def save_description(update: Update, context: CallbackContext) -> int:
             f'*Date:* {context.chat_data["date"]}\n'
             f'*Time:* {context.chat_data["start_time"]} - {context.chat_data["end_time"]}\n'
             f'*Description:* {context.chat_data["description"]}\n\n'
-            '*Do you want to confirm this booking?*',
+            'Do you want to confirm this booking?',
         reply_markup = keyboards.confirm_or_cancel,
         parse_mode = ParseMode.MARKDOWN
     )
@@ -297,7 +297,7 @@ def patch_booking(update: Update, context: CallbackContext) -> int:
             f'<b>Date:</b> {context.chat_data["date"]}\n'
             f'<b>Time:</b> {context.chat_data["old_start_time"]}{context.chat_data["old_end_time"]}{context.chat_data["start_time"]} - {context.chat_data["end_time"]}\n'
             f'<b>Description:</b> {context.chat_data["description"]}\n\n'
-            '*Do you want to proceed?*',
+            'Do you want to proceed?',
         reply_markup = keyboards.patch_confirm_or_cancel,
         parse_mode = ParseMode.HTML
     )
