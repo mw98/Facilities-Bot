@@ -104,7 +104,7 @@ def save_date(update: Update, context: CallbackContext) -> int:
         # Ask user for a time range
         update.effective_chat.send_message(
             text = 
-                f'*Send me a time range for your {context.chat_data["facility"]} booking.* Please use this format:\n\n
+                f'*Send me a time range for your {context.chat_data["facility"]} booking.* Please use this format:\n\n'
                 '`HHmm-HHmm` (e.g. 0930-1300)',
             parse_mode = ParseMode.MARKDOWN
         )
