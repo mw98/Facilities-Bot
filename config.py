@@ -26,3 +26,9 @@ SERVICE_ACCOUNT_INFO = os.environ['SERVICE_ACCOUNT_INFO']
 COMPANIES_LIST = ['ALPHA', 'BRAVO', 'CHARLIE', 'SP', 'MSC', 'HQ']
 FACILITIES_LIST = ['LT 1', 'LT 2', 'CONF ROOM', 'RTS', 'STINGRAY SQ']
 TIMEZONE = timezone(timedelta(hours=8)) # UTC+8
+ALT_FACILITIES = {
+    'LT 1': 'LT 2',
+    'LT 2': 'LT 1',
+    'RTS': 'STINGRAY SQ',
+    'STINGRAY SQ': 'RTS'
+}
