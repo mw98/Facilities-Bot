@@ -114,10 +114,11 @@ def contact_poc(booking_conflicts: list, effective_username: str) -> InlineKeybo
     
     for conflict in booking_conflicts:
         if conflict['extendedProperties']['shared']['username'] != effective_username:
-            if conflict['extendedProperties']['shared']['username'] != 'NULL':
+            if conflict['extendedProperties']['shared']['username'] != 'NULL': # some telegram users don't have usernames
                 url = f'https://t.me/{conflict["extendedProperties"]["shared"]["username"]}'
             else:
-                url = f'tg://user?id={conflict["extendedProperties"]["shared"]["user_id"]}'
+                if conflict['extendedProperties']['shared']['user_id'] != 'NULL': # admin bookings for unregistered users don't carry user ids
+                    url = f'tg://user?id={conflict["extendedProperties"]["shared"]["user_id"]}'
             buttons.add(InlineKeyboardButton(f'Message {conflict["extendedProperties"]["shared"]["name_and_company"]}', url=url))
     
     buttons = list(buttons)
