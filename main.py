@@ -49,7 +49,7 @@ def main():
     # Set default bot admin rights for facilities log channel
     rights = ChatAdministratorRights(
         is_anonymous = False,
-        can_manage_chat = True,
+        can_manage_chat = False,
         can_delete_messages = False,
         can_manage_video_chats = False,
         can_restrict_members = False,
