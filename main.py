@@ -1,6 +1,7 @@
 import logging
 from pathlib import Path
-from telegram.ext import Updater, PicklePersistence
+from telegram import Bot, BotCommandScopeChat
+from telegram.ext import Updater
 from commands import start, help, book, change, check, mybookings, admin
 from utilities import database
 import config
@@ -21,8 +22,9 @@ def main():
     # Create users database if it doesn't exist
     database.create_if_not_exists()
 
-    # Create bot updater
-    updater = Updater(config.BOT_TOKEN)
+    # Initialise bot and updater
+    bot = Bot(config.BOT_TOKEN)
+    updater = Updater(bot=bot)
 
     # Attach handlers
     dispatcher = updater.dispatcher
@@ -33,6 +35,14 @@ def main():
     dispatcher.add_handler(check.handler, 2)
     dispatcher.add_handler(mybookings.handler, 4)
     dispatcher.add_handler(admin.handler, 3)
+    
+    # Add bot commands
+    bot.set_my_commands(config.COMMANDS_DEFAULT)
+    for admin_uid in config.ADMIN_UID_LIST:
+        bot.set_my_commands(
+            commands = config.COMMANDS_ADMIN + config.COMMANDS_DEFAULT,
+            scope = BotCommandScopeChat(admin_uid)
+        )
 
     # Run bot
     updater.start_webhook(
