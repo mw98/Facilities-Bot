@@ -109,10 +109,12 @@ def contact_poc(booking_conflicts: list, effective_username: str) -> InlineKeybo
     buttons = set()
     
     for conflict in booking_conflicts:
-        if (conflict['extendedProperties']['shared']['username'] != effective_username
-            and conflict['extendedProperties']['shared']['username'] != 'NULL'
-        ):
-            buttons.add(InlineKeyboardButton(f'Message {conflict["extendedProperties"]["shared"]["name_and_company"]}', url=f'https://t.me/{conflict["extendedProperties"]["shared"]["username"]}'))
+        if conflict['extendedProperties']['shared']['username'] != effective_username:
+            if conflict['extendedProperties']['shared']['username'] != 'NULL':
+                url = f'https://t.me/{conflict["extendedProperties"]["shared"]["username"]}'
+            else:
+                url = f'tg://user?id={conflict["extendedProperties"]["shared"]["user_id"]}'
+            buttons.add(InlineKeyboardButton(f'Message {conflict["extendedProperties"]["shared"]["name_and_company"]}', url=url))
     
     buttons = list(buttons)
     buttons = [[button] for button in buttons]
