@@ -88,6 +88,18 @@ def silent_cancel(update, context) -> int:
     return ConversationHandler.END
 
 
+def construct_commands_list() -> str:
+    
+    commands = "Interact with me using these commands:\n\n*Manage Facility Bookings*"
+    for command in config.COMMANDS_BOOKING:
+        commands += f"\n/{command[0]} - {command[1]}"
+    commands += "\n\n*Bot Settings*"
+    for command in config.COMMANDS_SETTING:
+        commands += f"\n/{command[0]} - {command[1]}"
+    
+    return commands
+
+
 '''
 ADDITIONAL API REQUESTS
 '''
