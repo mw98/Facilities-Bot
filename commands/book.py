@@ -436,9 +436,7 @@ handler = ConversationHandler(
             MessageHandler(filters.time_range, save_time_range),
             MessageHandler(Filters.all & (~Filters.command), time_range_error)
         ],
-        ALT_FACILITY: [
-            CallbackQueryHandler(callback = alt_facility, pattern = 'yes|no')
-        ],
+        ALT_FACILITY: [CallbackQueryHandler(callback = alt_facility, pattern = 'yes|no')],
         DESCRIPTION: [MessageHandler(Filters.text & (~Filters.command), save_description)],
         PATCH: [
             CallbackQueryHandler(callback = patch_booking, pattern = 'patch'),
