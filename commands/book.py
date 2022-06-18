@@ -260,7 +260,7 @@ def alt_facility(update: Update, context: CallbackContext) -> int:
         update.effective_chat.send_message(
             text = 
                 f'Ok, still booking *{context.chat_data["facility"]}*.\n\n'
-                '{context.chat_data["conflict_message_end"]}',
+                f'{context.chat_data["conflict_message_end"]}',
             reply_markup = context.chat_data['conflict_reply_markup'],
             parse_mode = ParseMode.MARKDOWN
         )
