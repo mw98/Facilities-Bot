@@ -11,7 +11,8 @@ ADMIN_UID_LIST = os.getenv('ADMIN_UID_LIST', '').splitlines()
 BOT_TOKEN = os.environ['BOT_TOKEN']
 CHANNEL_USERNAME = os.getenv('CHANNEL_USERNAME')
 CHANNEL_MUTED = (os.getenv('CHANNEL_MUTED', False) == 'True')
-COMMANDS_DEFAULT = list(ujson.loads(os.getenv('COMMANDS_DEFAULT', '{}')).items())
+COMMANDS_BOOKING = list(ujson.loads(os.getenv('COMMANDS_BOOKINGS', '{}')).items())
+COMMANDS_SETTING = list(ujson.loads(os.getenv('COMMANDS_SETTINGS', '{}')).items())
 COMMANDS_ADMIN = list(ujson.loads(os.getenv('COMMANDS_ADMIN', '{}')).items())
 WEBHOOK_PORT = os.getenv('PORT', 8443)
 
