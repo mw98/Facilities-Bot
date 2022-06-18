@@ -133,7 +133,7 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
         context.chat_data['conflict_reply_markup'] = reply_markup # Store in case user rejects alt_facility
         conversation_state = TIME_RANGE
         if (config.ALT_FACILITIES.get(context.chat_data['facility'])
-            and context.chat_data.['suggest_alt_facility'] # Don't suggest alt_facility again if user has already rejected it
+            and context.chat_data['suggest_alt_facility'] # Don't suggest alt_facility again if user has already rejected it
         ):
             if not calendar.list_conflicts(context.chat_data, facility = alt_facility):
                 context.chat_data['alt_facility'] = config.ALT_FACILITIES[context.chat_data['facility']]
