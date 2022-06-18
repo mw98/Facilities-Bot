@@ -88,7 +88,7 @@ def save_date(update: Update, context: CallbackContext) -> int:
         query.answer()
         
         # Ask user for a time range
-        query.edit_message_text.send_message(
+        query.edit_message_text(
             text = 
                 f'Send me a time range for your *{context.chat_data["facility"]}* booking. Please use this format:\n\n'
                 '`HHmm-HHmm` (e.g. 0930-1300)',
