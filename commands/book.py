@@ -254,6 +254,7 @@ def alt_facility(update: Update, context: CallbackContext) -> int:
                 'Lastly, send me a brief description of your booking.',
             parse_mode = ParseMode.MARKDOWN
         )
+        query.answer()
         return DESCRIPTION
     
     elif query.data == 'no':
@@ -265,6 +266,7 @@ def alt_facility(update: Update, context: CallbackContext) -> int:
             reply_markup = context.chat_data['conflict_reply_markup'],
             parse_mode = ParseMode.MARKDOWN
         )
+        query.answer()
         return TIME_RANGE
         
 
