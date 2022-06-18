@@ -25,13 +25,18 @@
       "description": "Port for Telegram webhook requests. Acceptable values: 443, 80, 88 or 8443.",
       "value": "8443"
     },
-    "COMMANDS_DEFAULT": {
-      "description": "JSON serialised list of bot commands. Format: {'command': 'description'}",
+    "COMMANDS_BOOKING": {
+      "description": "JSON serialised list of commands for managing bookings. Format: {'command': 'description'}",
       "value": "{
   "book": "Make a new booking",
   "change": "Change or cancel a booking",
   "check": "Check facility availability",
-  "mybookings": "List your upcoming bookings",
+  "mybookings": "List your upcoming bookings"
+}"
+    },
+    "COMMANDS_SETTING": {
+      "description": "JSON serialised list of commands for user settings. Format: {'command': 'description'}",
+      "value": "{
   "profile": "Update your user profile",
   "help": "Show this list of commands"
 }"
