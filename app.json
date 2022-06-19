@@ -27,25 +27,15 @@
     },
     "COMMANDS_BOOKING": {
       "description": "JSON serialised list of commands for managing bookings. Format: {'command': 'description'}",
-      "value": "{
-  "book": "Make a new booking",
-  "change": "Change or cancel a booking",
-  "check": "Check facility availability",
-  "mybookings": "List your upcoming bookings"
-}"
+      "value": "{\n  \"book\": \"Make a new booking\",\n  \"change\": \"Change or cancel a booking\",\n  \"check\": \"Check facility availability\",\n  \"mybookings\": \"List your upcoming bookings\"\n}"
     },
     "COMMANDS_SETTING": {
       "description": "JSON serialised list of commands for user settings. Format: {'command': 'description'}",
-      "value": "{
-  "profile": "Update your user profile",
-  "help": "Show this list of commands"
-}"
+      "value": "{\n  \"profile\": \"Update your user profile\",\n  \"help\": \"Show this list of commands\"\n}"
     },
     "COMMANDS_ADMIN": {
       "description": "JSON serialised list of admin-only commands. Format: {'command': 'description'}",
-      "value": "{
-  "admin": "Make a booking as any user"
-}"
+      "value": "{\n  \"admin\": \"Make a booking as any user\"\n}"
     },
     "CHANNEL_USERNAME": {
       "description": "Username of public telegram channel for logging bookings."
@@ -56,10 +46,7 @@
     },
     "ALT_FACILITIES": {
       "description": "JSON serialised facility equivalences. Format: {'Facility 1': 'Facility 2', 'Facility 2': 'Facility 1'}",
-      "value": "{
-  "LT 1": "LT 2",
-  "LT 2": "LT 1"
-}"
+      "value": "{\n  \"LT 1\": \"LT 2\",\n  \"LT 2\": \"LT 1\"\n}"
     }
   },
   "addons": [
