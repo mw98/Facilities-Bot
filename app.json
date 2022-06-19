@@ -19,7 +19,8 @@
       "description": "Heroku web app URL, include / at the end."
     },
     "ADMIN_USERS": {
-      "description": "Newline separated list of Telegram user ids with admin rights."
+      "description": "Newline separated list of Telegram user ids with admin rights.",
+      "required": false
     },
     "PORT": {
       "description": "Port for Telegram webhook requests. Acceptable values: 443, 80, 88 or 8443.",
@@ -38,15 +39,18 @@
       "value": "{\n  \"admin\": \"Make a booking as any user\"\n}"
     },
     "CHANNEL_USERNAME": {
-      "description": "Username of public telegram channel for logging bookings, exclude '@'."
+      "description": "Username of public telegram channel for logging bookings, exclude '@'.",
+      "required": false
     },
     "CHANNEL_MUTED": {
       "description": "Whether log channel updates are delivered silently (bool; case sensitive 'True' evaluates as True, all other values evaluate as False.)",
-      "value": "True"
+      "value": "True",
+      "required": false
     },
     "ALT_FACILITIES": {
       "description": "JSON serialised facility equivalences. Format: {'Facility 1': 'Facility 2', 'Facility 2': 'Facility 1'}",
-      "value": "{\n  \"LT 1\": \"LT 2\",\n  \"LT 2\": \"LT 1\"\n}"
+      "value": "{\n  \"LT 1\": \"LT 2\",\n  \"LT 2\": \"LT 1\"\n}",
+      "required": false
     }
   },
   "addons": [
