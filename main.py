@@ -1,5 +1,4 @@
 import logging
-from pathlib import Path
 from telegram import Bot, BotCommandScopeChat, ChatAdministratorRights
 from telegram.ext import Updater
 from commands import start, help, book, change, check, mybookings, admin
@@ -13,12 +12,7 @@ logging.basicConfig(
 )
 
 def main():
-
-    # Create data and keys directories if they don't exist
-    project_directory = Path(__file__).parents[0]
-    project_directory.joinpath('data').mkdir(exist_ok = True)
-    project_directory.joinpath('keys').mkdir(exist_ok = True)
-
+    
     # Create users database if it doesn't exist
     database.create_if_not_exists()
 
