@@ -53,6 +53,13 @@
     "CHANNEL_MUTED": {
       "description": "Whether log channel updates are delivered silently (bool; case sensitive 'True' evaluates as True, all other values evaluate as False.)",
       "value": "True"
+    },
+    "ALT_FACILITIES": {
+      "description": "JSON serialised facility equivalences. Format: {'Facility 1': 'Facility 2', 'Facility 2': 'Facility 1'}",
+      "value": "{
+  "LT 1": "LT 2",
+  "LT 2": "LT 1"
+}"
     }
   },
   "addons": [
