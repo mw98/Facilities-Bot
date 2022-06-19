@@ -16,7 +16,7 @@ ADMIN ENTRY POINT
 @shared.send_typing_action
 def admin(update: Update, context: CallbackContext) -> int:
     
-    if str(update.message.from_user.id) in config.ADMIN_USERS:
+    if update.message.from_user.id in config.ADMIN_USERS:
         update.effective_chat.send_message(
             text = 
                 '*⚠ Conflict checking disabled*\n\n'

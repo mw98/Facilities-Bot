@@ -42,7 +42,7 @@ def main():
     for user_id in db_admin_users - config.ADMIN_USERS:
         bot.delete_my_commands(BotCommandScopeChat(user_id))
     for user_id in db_admin_users ^ config.ADMIN_USERS:
-        database.toggle_admin(int(user_id))
+        database.toggle_admin(user_id)
     
     # Configure default bot admin rights for facilities log channel
     rights = ChatAdministratorRights(
