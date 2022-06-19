@@ -18,7 +18,7 @@
     "HEROKU_APP_URL": {
       "description": "Heroku web app URL, include / at the end."
     },
-    "ADMIN_UID_LIST": {
+    "ADMIN_USERS": {
       "description": "Newline separated list of Telegram user ids with admin rights."
     },
     "PORT": {
