@@ -14,6 +14,7 @@ def create_if_not_exists() -> None:
                         rank_and_name  TEXT NOT NULL,
                         company        TEXT NOT NULL,
                         username       TEXT NOT NULL,
+                        admin          BOOLEAN NOT NULL DEFAULT FALSE,
                         UNIQUE (rank_and_name, company)
                     );
                     """
@@ -106,4 +107,47 @@ def retrieve_user_by_rank_name_company(rank_and_name: str, company: str) -> list
             'id': user_data[0],
             'username': user_data[1]
         }
+    return
+
+
+# Retrieve set of admin user_ids
+def retrieve_admins() -> set:
+    
+    try:
+        with psycopg2.connect(config.DATABASE_URL, sslmode = 'require') as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    SELECT user_id
+                    FROM users
+                    WHERE admin = TRUE
+                    """
+                )
+                result = cursor.fetchall()
+    except Exception as error:
+        print(f'Could not retrieve list of admins from db: {error}')
+    finally:
+        connection.close()
+    
+    return {row[0] for row in result}
+
+
+# Toggle user admin status
+def toggle_admin(user_id: int) -> None:
+    
+    try:
+        with psycopg2.connect(config.DATABASE_URL, sslmode = 'require') as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    UPDATE users
+                    SET admin = NOT admin
+                    WHERE user_id = %s
+                    """,
+                    (user_id,)
+                )
+    except Exception as error:
+        print(f'Could not toggle {user_id} admin status: {error}')
+    finally:
+        connection.close()
     return
