@@ -1,7 +1,6 @@
 {
-  "name": "5SIR Facilities Bot",
-  "description": "Manages 5 SIR facility bookings via telegram bot",
-  "repository": "https://github.com/mw98/5SIR-Facilities-Bot/",
+  "name": "Bn Facilities Bot",
+  "description": "Manages bn-level facility bookings via telegram bot",
   "env": {
     "BOT_TOKEN": {
       "description": "Telegram bot token."
