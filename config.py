@@ -10,11 +10,11 @@ DATABASE_URL = os.environ['DATABASE_URL']
 ADMIN_UID_LIST = os.getenv('ADMIN_UID_LIST', '').splitlines()
 BOT_TOKEN = os.environ['BOT_TOKEN']
 CHANNEL_USERNAME = os.getenv('CHANNEL_USERNAME')
-CHANNEL_MUTED = (os.getenv('CHANNEL_MUTED', False) == 'True')
-COMMANDS_BOOKING = list(ujson.loads(os.getenv('COMMANDS_BOOKING', '{}')).items())
-COMMANDS_SETTING = list(ujson.loads(os.getenv('COMMANDS_SETTING', '{}')).items())
-COMMANDS_ADMIN = list(ujson.loads(os.getenv('COMMANDS_ADMIN', '{}')).items())
-WEBHOOK_PORT = os.getenv('PORT', 8443)
+CHANNEL_MUTED = (os.getenv('CHANNEL_MUTED') == 'True')
+COMMANDS_BOOKING = list(ujson.loads(os.getenv('COMMANDS_BOOKING') or '{}').items())
+COMMANDS_SETTING = list(ujson.loads(os.getenv('COMMANDS_SETTING') or '{}').items())
+COMMANDS_ADMIN = list(ujson.loads(os.getenv('COMMANDS_ADMIN') or '{}').items())
+WEBHOOK_PORT = os.getenv('PORT') or 8443
 
 # GOOGLE CALENDAR
 CALENDAR_ID = os.environ['CALENDAR_ID']
