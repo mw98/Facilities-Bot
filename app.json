@@ -38,7 +38,7 @@
       "value": "{\n  \"admin\": \"Make a booking as any user\"\n}"
     },
     "CHANNEL_USERNAME": {
-      "description": "Username of public telegram channel for logging bookings."
+      "description": "Username of public telegram channel for logging bookings, exclude '@'."
     },
     "CHANNEL_MUTED": {
       "description": "Whether log channel updates are delivered silently (bool; case sensitive 'True' evaluates as True, all other values evaluate as False.)",
