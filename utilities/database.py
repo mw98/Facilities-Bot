@@ -129,7 +129,9 @@ def retrieve_admins() -> set:
     finally:
         connection.close()
     
-    return {row[0] for row in result}
+    if result:
+        return {row[0] for row in result}
+    return set()
 
 
 # Toggle user admin status
