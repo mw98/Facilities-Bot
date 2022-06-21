@@ -105,7 +105,7 @@ def retrieve_user(user_id: int):
     
 
 # Retrieve users by rank and name and company
-def retrieve_user_by_rank_name_company(rank_and_name: str, company: str) -> list:
+def retrieve_user_by_rank_name_company(rank_and_name: str, company: str):
     
     user_data = None
     try:
