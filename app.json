@@ -18,7 +18,8 @@
       "description": "Heroku web app URL, include / at the end."
     },
     "ADMIN_USERS": {
-      "description": "Newline separated list of Telegram user ids with admin rights.",
+      "description": "JSON array of Telegram user ids with admin rights. Format: [123456082, 227172364]",
+      "value": "[]",
       "required": false
     },
     "PORT": {
@@ -26,7 +27,7 @@
       "value": "8443"
     },
     "COMMANDS_BOOKING": {
-      "description": "JSON serialised list of commands for managing bookings. Format: {'command': 'description'}",
+      "description": "JSON serialised list of commands for managing bookings. Format: {\"command\": \"description\"}",
       "value": "{\n  \"book\": \"Make a new booking\",\n  \"change\": \"Change or cancel a booking\",\n  \"check\": \"Check facility availability\",\n  \"mybookings\": \"List your upcoming bookings\"\n}"
     },
     "COMMANDS_SETTING": {

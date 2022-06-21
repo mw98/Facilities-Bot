@@ -7,7 +7,7 @@ HEROKU_APP_URL = os.environ['HEROKU_APP_URL']
 DATABASE_URL = os.environ['DATABASE_URL']
 
 # TELEGRAM
-ADMIN_USERS = {int(user_id) for user_id in os.getenv('ADMIN_USERS', '').splitlines()}
+ADMIN_USERS = set(ujson.loads(os.getenv('ADMIN_USERS') or '[]'))
 BOT_TOKEN = os.environ['BOT_TOKEN']
 CHANNEL_USERNAME = os.getenv('CHANNEL_USERNAME')
 CHANNEL_MUTED = (os.getenv('CHANNEL_MUTED') == 'True')
