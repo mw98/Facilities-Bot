@@ -36,9 +36,9 @@ def start(update: Update, context: CallbackContext) -> int:
     else:
         context.user_data['username'] = 'NULL'
     
-    # Introduce bot and ask for user's rank and name
+    # Ask for user's rank and name
     chat.send_message(
-        text = "You'll need to create a user profile first. *Please send me your rank and name.*",
+        text = "You'll need to create a user profile to book facilities through me. *Please send me your rank and name.*",
         parse_mode = ParseMode.MARKDOWN
     )
     
@@ -48,6 +48,10 @@ def start(update: Update, context: CallbackContext) -> int:
 @shared.load_user_profile
 def profile(update: Update, context: CallbackContext) -> int:
         
+    # Store existing profile details
+    context.user_data['old_rank_and_name'] = context.user_data['rank_and_name']
+    context.user_data['old_company'] = context.user_data['company']
+    
     # Ask for user's rank and name
     update.effective_chat.send_message(
         text = 
@@ -79,11 +83,9 @@ def save_name(update: Update, context: CallbackContext) -> int:
 
 @shared.send_typing_action
 def save_coy(update: Update, context: CallbackContext) -> int:
-    
-    query = update.callback_query
-    
+        
     # Save user's company
-    context.user_data['company'] = query.data
+    context.user_data['company'] = update.callback_query.data
     
     # Check if user's rank and name + company are unique
     if (existing_user := database.retrieve_user_by_rank_name_company(
@@ -91,17 +93,17 @@ def save_coy(update: Update, context: CallbackContext) -> int:
         context.user_data['company']
     )):
         # CallbackQueries need to be answered, even if no user notification is needed
-        query.answer()
+        update.callback_query.answer()
         
         if existing_user['id'] == update.effective_user.id:
-            update.effective_chat.send_message(
+            update.callback_query.edit_message_text(
                 text = f"You're already registered as *{context.user_data['rank_and_name']} ({context.user_data['company']})*",
                 parse_mode = ParseMode.MARKDOWN
             )
             return ConversationHandler.END
         
         else:
-            update.effective_chat.send_message(
+            update.callback_query.edit_message_text(
                 text = 
                     f"Sorry, there's already a user registered as *{context.user_data['rank_and_name']}* in *{context.user_data['company']}*.\n\n"
                     'Please send me your rank and name again. Consider using your full name, or another variation of your name.',
@@ -109,15 +111,24 @@ def save_coy(update: Update, context: CallbackContext) -> int:
             )
             return RETRY_NAME
         
-    # Ask user to confirm user profile
-    update.effective_chat.send_message(
-        text = f"Ok, I'll register you as *{context.user_data['rank_and_name']} ({context.user_data['company']})*. Is this correct?",
-        reply_markup = keyboards.confirm_or_cancel,
-        parse_mode = ParseMode.MARKDOWN
-    )
+    # Confirmation message for updating profile
+    if context.user_data.get('old_rank_and_name') and context.user_data.get('old_company'):
+        update.callback_query.edit_message_text(
+            text = f"Ok, I'll update your profile to *{context.user_data['rank_and_name']} ({context.user_data['company']})*. Is this correct?",
+            reply_markup = keyboards.confirm_or_cancel_update,
+            parse_mode = ParseMode.MARKDOWN
+        )
+    
+    # Confirmation message for registering new user
+    else:
+        update.callback_query.edit_message_text(
+            text = f"Ok, I'll register you as *{context.user_data['rank_and_name']} ({context.user_data['company']})*. Is this correct?",
+            reply_markup = keyboards.confirm_or_cancel,
+            parse_mode = ParseMode.MARKDOWN
+        )
     
     # CallbackQueries need to be answered, even if no user notification is needed
-    query.answer()
+    update.callback_query.answer()
     
     return CONFIRMATION
 
@@ -135,40 +146,45 @@ def retry_name(update: Update, context: CallbackContext) -> int:
     ):
         update.effective_chat.send_message(
             text = 
-                f"Sorry, there's also a user registered as *{context.user_data['rank_and_name']}* in *{context.user_data['company']}*. "
+                f"There's also a user registered as *{context.user_data['rank_and_name']}* in *{context.user_data['company']}*. "
                 'Please send me your rank and name again. Consider using another variation of your name.',
             parse_mode = ParseMode.MARKDOWN
         )
-        # CallbackQueries need to be answered, even if no user notification is needed
-        query.answer()
         return RETRY_NAME
     
-    # Ask user to confirm user profile
-    update.effective_chat.send_message(
-        text = f"Ok, I'll register you as *{context.user_data['rank_and_name']} ({context.user_data['company']})*. Is this correct?",
-        reply_markup = keyboards.confirm_or_cancel,
-        parse_mode = ParseMode.MARKDOWN
-    )
+    # Confirmation message for updating profile
+    if context.user_data.get('old_rank_and_name') and context.user_data.get('old_company'):
+        update.callback_query.edit_message_text(
+            text = f"Ok, I'll update your profile to *{context.user_data['rank_and_name']} ({context.user_data['company']})*. Is this correct?",
+            reply_markup = keyboards.confirm_or_cancel_update,
+            parse_mode = ParseMode.MARKDOWN
+        )
+    
+    # Confirmation message for registering new user
+    else:
+        update.callback_query.edit_message_text(
+            text = f"Ok, I'll register you as *{context.user_data['rank_and_name']} ({context.user_data['company']})*. Is this correct?",
+            reply_markup = keyboards.confirm_or_cancel,
+            parse_mode = ParseMode.MARKDOWN
+        )
     
     return CONFIRMATION
 
 
 def confirm(update: Update, context: CallbackContext) -> int: 
-    
-    query = update.callback_query
-    
-    # CallbackQueries need to be answered, even if no user notification is needed
-    query.answer()
-    
-    # Add new user profile to database
+        
+    # Add new user to database
     if database.add_user(update.effective_user.id, context.user_data) < 0:
-        query.edit_message_text("⚠ Sorry, I couldn't register you due to an error. Please contact S3 branch for assistance.")
+        query.edit_message_text("⚠ Sorry, I couldn't register you. Please contact S3 branch for assistance.")
         return ConversationHandler.END # -1
+    
+    # Answer callback_query
+    update.callback_query.answer()
         
     # Confirm registration and introduce user to bot commands
-    query.edit_message_text(
+    update.callback_query.edit_message_text(
         text = 
-            f'Profile created! Hi *{context.user_data["rank_and_name"]} ({context.user_data["company"]})*.\n\n'
+            f'Profile created! Hi, *{context.user_data["rank_and_name"]} ({context.user_data["company"]})*.\n\n'
             f'{shared.construct_commands_list()}\n\n'
             'Tap the link below to see the bookings calendar.',
         parse_mode = ParseMode.MARKDOWN,
@@ -177,7 +193,7 @@ def confirm(update: Update, context: CallbackContext) -> int:
     
     # Log new user registration
     logger.info(
-        'User Registered - %s - %s - %s COMPANY', 
+        'User Registered - %s - %s (%s)', 
         update.effective_user.id,
         context.user_data['rank_and_name'], 
         context.user_data['company']
@@ -186,29 +202,68 @@ def confirm(update: Update, context: CallbackContext) -> int:
     return ConversationHandler.END # -1
 
 
+def confirm_update(update: Update, context: CallbackContext) -> int:
+    
+    # Update user database record
+    if database.add_user(update.effective_user.id, context.user_data) < 0:
+        query.edit_message_text("⚠ Sorry, I couldn't update your profile. Please contact S3 branch for assistance.")
+        return ConversationHandler.END # -1
+    
+    # Answer callback_query
+    update.callback_query.answer()
+    
+    # Confirm profile update
+    update.callback_query.edit_message_text(
+        text = f'Profile updated! Hi, *{context.user_data["rank_and_name"]} ({context.user_data["company"]})*.',
+        parse_mode = ParseMode.MARKDOWN
+    )
+    
+    # Log user profile update
+    logger.info(
+        'Profile Updated - %s - %s (%s) -> %s (%s)',
+        update.effective_user.id,
+        context.user_data['old_rank_and_name'],
+        context.user_data['old_company'],
+        context.user_data['rank_and_name'],
+        context.user_data['company']
+    )
+    
+    return ConversationHandler.END # -1
+
+
 def cancel(update: Update, context: CallbackContext) -> int:
     
+    # Cancelling via inline keyboard
     if update.callback_query:
         update.callback_query.answer()
         
-        if database.retrieve_user(update.effective_user.id):
+        # Cancelling profile update
+        if update.callback_query.data == 'cancel update':
             update.callback_query.edit_message_text('Ok, no changes were made.')
             return ConversationHandler.END
         
+        # Cancelling new user registration
         update.callback_query.edit_message_text(
-            'User registration cancelled.\n\n'
-            "You'll need to create a user profile to book facilities through me. Please send me your rank and name."
+            text =
+                'User registration cancelled.\n\n'
+                'You have to create a user profile to book facilities through me. *Please send me your rank and name.*',
+            parse_mode = ParseMode.MARKDOWN
         )
     
+    # Cancelling via /cancel command
     else:
         
-        if database.retrieve_user(update.effective_user.id):
+        # Cancelling profile update
+        if context.user_data.get('old_rank_and_name') and context.user_data.get('old_company'):
             update.effective_chat.send_message('Ok, no changes were made.')
             return ConversationHandler.END
         
+        # Cancelling new user registration
         update.effective_chat.send_message(
-            'User registration cancelled.\n\n'
-            "You'll need to create a user profile to book facilities through me. Please send me your rank and name."
+            text =
+                'User registration cancelled.\n\n'
+                'You have to create a user profile to book facilities through me. *Please send me your rank and name.*',
+            parse_mode = ParseMode.MARKDOWN
         )
         
     return NAME
@@ -228,6 +283,7 @@ handler = ConversationHandler(
         RETRY_NAME: [MessageHandler(Filters.text & (~Filters.command), retry_name)],
         CONFIRMATION: [
             CallbackQueryHandler(callback = confirm, pattern = 'confirm'),
+            CallbackQueryHandler(callback = confirm_update, pattern = 'update'),
             CallbackQueryHandler(callback = cancel, pattern = 'cancel')
         ]
     },
