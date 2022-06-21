@@ -144,7 +144,7 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
             if not calendar.list_conflicts(context.chat_data, facility = config.ALT_FACILITIES[context.chat_data['facility']]):
                 context.chat_data['alt_facility'] = config.ALT_FACILITIES[context.chat_data['facility']]
                 context.chat_data['conflicts'] = conflicts # Store in case user rejects alt_facility
-                message_end = f'*{config.ALT_FACILITIES[context.chat_data["facility"]]}* is available at that time, would you like to book it instead?'
+                message_end = f'*{config.ALT_FACILITIES[context.chat_data["facility"]]}* is available, would you like to book it instead?'
                 reply_markup = keyboards.yes_or_no
                 conversation_state = ALT_FACILITY
 
