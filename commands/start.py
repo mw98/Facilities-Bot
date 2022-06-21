@@ -18,7 +18,7 @@ def start(update: Update, context: CallbackContext) -> int:
     chat = update.effective_chat
     
     # Check if user is already registered
-    if (user_data := database.retrieve_user(update.message.from_user.id)):
+    if (user_data := database.retrieve_user(update.effective_user.id)):
         context.user_data.update(user_data)
         chat.send_message(
             text = 
@@ -31,7 +31,7 @@ def start(update: Update, context: CallbackContext) -> int:
         return ConversationHandler.END # -1
     
     # Save telegram username
-    if (username := update.message.from_user.username):
+    if (username := update.effective_user.username):
         context.user_data['username'] = username
     else:
         context.user_data['username'] = 'NULL'
@@ -47,13 +47,7 @@ def start(update: Update, context: CallbackContext) -> int:
 @shared.send_typing_action
 @shared.load_user_profile
 def profile(update: Update, context: CallbackContext) -> int:
-    
-    # Save telegram username
-    if (username := update.message.from_user.username):
-        context.user_data['username'] = username
-    else:
-        context.user_data['username'] = 'NULL'
-    
+        
     # Ask for user's rank and name
     update.effective_chat.send_message(
         text = 
@@ -99,7 +93,7 @@ def save_coy(update: Update, context: CallbackContext) -> int:
         # CallbackQueries need to be answered, even if no user notification is needed
         query.answer()
         
-        if existing_user['id'] == query.from_user.id:
+        if existing_user['id'] == update.effective_user.id:
             update.effective_chat.send_message(
                 text = f"You're already registered as *{context.user_data['rank_and_name']} ({context.user_data['company']})*",
                 parse_mode = ParseMode.MARKDOWN
@@ -167,7 +161,7 @@ def confirm(update: Update, context: CallbackContext) -> int:
     query.answer()
     
     # Add new user profile to database
-    if database.add_user(query.from_user.id, context.user_data) < 0:
+    if database.add_user(update.effective_user.id, context.user_data) < 0:
         query.edit_message_text("⚠ Sorry, I couldn't register you due to an error. Please contact S3 branch for assistance.")
         return ConversationHandler.END # -1
         
@@ -184,7 +178,7 @@ def confirm(update: Update, context: CallbackContext) -> int:
     # Log new user registration
     logger.info(
         'User Registered - %s - %s - %s COMPANY', 
-        query.from_user.id,
+        update.effective_user.id,
         context.user_data['rank_and_name'], 
         context.user_data['company']
     )
@@ -197,7 +191,7 @@ def cancel(update: Update, context: CallbackContext) -> int:
     if update.callback_query:
         update.callback_query.answer()
         
-        if database.retrieve_user(update.callback_query.from_user.id):
+        if database.retrieve_user(update.effective_user.id):
             update.callback_query.edit_message_text('Ok, no changes were made.')
             return ConversationHandler.END
         
@@ -208,7 +202,7 @@ def cancel(update: Update, context: CallbackContext) -> int:
     
     else:
         
-        if database.retrieve_user(update.message.from_user.id):
+        if database.retrieve_user(update.effective_user.id):
             update.effective_chat.send_message('Ok, no changes were made.')
             return ConversationHandler.END
         

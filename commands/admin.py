@@ -16,7 +16,7 @@ ADMIN ENTRY POINT
 @shared.send_typing_action
 def admin(update: Update, context: CallbackContext) -> int:
     
-    if update.message.from_user.id in config.ADMIN_USERS:
+    if update.effective_user.id in config.ADMIN_USERS:
         update.effective_chat.send_message(
             text = 
                 '*⚠ Conflict checking disabled*\n\n'
@@ -104,7 +104,7 @@ def continue_with_unregistered_user(update: Update, context: CallbackContext) ->
             f"*Time:* {context.chat_data['admin_chat_data']['start_time']} - {context.chat_data['admin_chat_data']['end_time']}\n"
             f"*Description:* {context.chat_data['admin_chat_data']['description']}\n"
             f'*POC:* {context.chat_data["admin_user_data"]["rank_and_name"]} ({context.chat_data["admin_user_data"]["company"]})\n'
-            f"*Username:* @NULL\n"
+            f"*Username:* NULL\n"
             f"*User ID:* NULL",
         parse_mode = ParseMode.MARKDOWN,
         reply_markup = keyboards.confirm_or_cancel
@@ -135,7 +135,7 @@ def confirm(update: Update, context: CallbackContext) -> int:
         )
         logger.exception(
             'GCal Insert Request Failure - %s - %s - %s',
-            query.from_user.id,
+            update.effective_user.id,
             context.user_data['rank_and_name'],
             error
         )
@@ -168,7 +168,7 @@ def confirm(update: Update, context: CallbackContext) -> int:
     # Log new booking
     logger.info(
         'Admin Booking - %s - for %s - %s on %s, %s to %s',
-        update.callback_query.from_user.id,
+        update.effective_user.id,
         context.chat_data['admin_user_data']['rank_and_name'],
         context.chat_data['admin_chat_data']['facility'],
         context.chat_data['admin_chat_data']['date'],

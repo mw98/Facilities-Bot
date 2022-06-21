@@ -139,7 +139,7 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
                 
         # If alternate facilities are available
         message_end = None
-        reply_markup = keyboards.contact_poc(conflicts, update.message.from_user.username)
+        reply_markup = keyboards.contact_poc(conflicts, update.effective_user.username)
         context.chat_data['conflict_reply_markup'] = reply_markup # Store in case user rejects alt_facility
         conversation_state = TIME_RANGE
         if (config.ALT_FACILITIES.get(context.chat_data['facility'])
@@ -169,7 +169,7 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
             conflict_details = conflict['extendedProperties']['shared']
             
             # If conflict is with user's previous booking
-            if conflict_details['user_id'] == str(update.message.from_user.id):
+            if conflict_details['user_id'] == str(update.effective_user.id):
                 
                 previous_booking = (
                     f'*Facility:* {context.chat_data["facility"]}\n'
@@ -324,7 +324,7 @@ def confirm(update: Update, context: CallbackContext) -> int:
         
         # Book facility on Google Calendar
         try: 
-            event_url = calendar.add_booking(query.from_user.id, context.user_data, context.chat_data)
+            event_url = calendar.add_booking(update.effective_user.id, context.user_data, context.chat_data)
         except Exception as error:
             query.edit_message_text(
                 text = 
@@ -339,7 +339,7 @@ def confirm(update: Update, context: CallbackContext) -> int:
             )
             logger.exception(
                 'GCal Insert Failure - %s - %s - %s',
-                query.from_user.id,
+                update.effective_user.id,
                 context.user_data['rank_and_name'],
                 error
             )
@@ -353,7 +353,7 @@ def confirm(update: Update, context: CallbackContext) -> int:
         # Patch facility booking on Google Calendar
         try:
             event_url = calendar.patch_booking(
-                user_id = query.from_user.id,
+                user_id = update.effective_user.id,
                 user_data = context.user_data,
                 chat_data = context.chat_data
             )
@@ -371,7 +371,7 @@ def confirm(update: Update, context: CallbackContext) -> int:
             )
             logger.exception(
                 'GCal Patch Failure - %s - %s - %s',
-                query.from_user.id,
+                update.effective_user.id,
                 context.user_data['rank_and_name'],
                 error
             )
@@ -399,7 +399,7 @@ def confirm(update: Update, context: CallbackContext) -> int:
     # Log new booking
     logger.info(
         'New Booking - %s - %s - %s on %s, %s to %s',
-        query.from_user.id,
+        update.effective_user.id,
         context.user_data['rank_and_name'],
         context.chat_data['facility'],
         context.chat_data['date'],

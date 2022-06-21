@@ -19,7 +19,7 @@ def change(update: Update, context: CallbackContext) -> int:
         
     # Retrieve user's bookings
     try: 
-        bookings = calendar.find_upcoming_bookings_by_user(update.message.from_user.id)
+        bookings = calendar.find_upcoming_bookings_by_user(update.effective_user.id)
     except Exception as error:
         update.effective_chat.send_message('⚠ Sorry, I could not connect to Google Calendar. Send /change to try again.')
     
@@ -244,7 +244,7 @@ def check_facility(update: Update, context: CallbackContext) -> int:
         send_conflicts_message(
             update = update,
             context = context,
-            user_id = update.callback_query.from_user.id,
+            user_id = update.effective_user.id,
             conflicts = conflicts,
             conflict_prompt = 'Please select another facility',
             reply_markup = keyboards.facilities_minus(context.chat_data['old_facility'])
@@ -298,10 +298,10 @@ def check_date(update: Update, context: CallbackContext) -> int:
         send_conflicts_message(
             update = update,
             context = context,
-            user_id = update.message.from_user.id,
+            user_id = update.effective_user.id,
             conflicts = conflicts,
             conflict_prompt = 'Send me another date in the `DDMMYY` format',
-            reply_markup = keyboards.contact_poc(conflicts, update.message.from_user.username)
+            reply_markup = keyboards.contact_poc(conflicts, update.effective_user.username)
         )
         context.chat_data['date'] = context.chat_data['old_date']
         return CHECK_DATE
@@ -364,10 +364,10 @@ def check_time_range(update: Update, context: CallbackContext) -> int:
         send_conflicts_message(
             update = update,
             context = context,
-            user_id = update.message.from_user.id,
+            user_id = update.effective_user.id,
             conflicts = conflicts,
             conflict_prompt = 'Send me another time range in the `HHmm-HHmm` format',
-            reply_markup = keyboards.contact_poc(conflicts, update.message.from_user.username)
+            reply_markup = keyboards.contact_poc(conflicts, update.effective_user.username)
         )
         context.chat_data['start_time'] = context.chat_data['old_start_time']
         context.chat_data['end_time'] = context.chat_data['old_end_time']
@@ -408,7 +408,7 @@ def confirm_change(update: Update, context: CallbackContext) -> int:
     
     try:
         event_url = calendar.patch_booking(
-            user_id = update.callback_query.from_user.id,
+            user_id = update.effective_user.id,
             user_data = context.user_data,
             chat_data = context.chat_data
         )
@@ -420,7 +420,7 @@ def confirm_change(update: Update, context: CallbackContext) -> int:
         update.callback_query.answer()
         logger.exception(
             'GCal Patch Request Failure - %s - %s - %s',
-            update.callback_query.from_user.id,
+            update.effective_user.id,
             context.user_data['rank_and_name'],
             error
         )
@@ -443,7 +443,7 @@ def confirm_change(update: Update, context: CallbackContext) -> int:
     # Log new booking
     logger.info(
         'New Booking - %s - %s - %s on %s, %s to %s',
-        update.callback_query.from_user.id,
+        update.effective_user.id,
         context.user_data['rank_and_name'],
         context.chat_data['facility'],
         context.chat_data['date'],
@@ -458,7 +458,7 @@ def confirm_delete(update: Update, context: CallbackContext) -> int:
     
     try:
         calendar.delete_booking(
-            user_id = update.callback_query.from_user.id, 
+            user_id = update.effective_user.id, 
             user_data = context.user_data, 
             chat_data = context.chat_data
         )
@@ -470,7 +470,7 @@ def confirm_delete(update: Update, context: CallbackContext) -> int:
         update.callback_query.answer()
         logger.exception(
             'GCal Delete Request Failure - %s - %s - %s',
-            update.callback_query.from_user.id,
+            update.effective_user.id,
             context.user_data['rank_and_name'],
             error
         )
@@ -483,7 +483,7 @@ def confirm_delete(update: Update, context: CallbackContext) -> int:
     # Log new booking
     logger.info(
         'Booking Deleted - %s - %s - %s on %s, %s to %s',
-        update.callback_query.from_user.id,
+        update.effective_user.id,
         context.user_data['rank_and_name'],
         context.chat_data['facility'],
         context.chat_data['date'],

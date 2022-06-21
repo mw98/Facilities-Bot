@@ -10,7 +10,7 @@ MYBOOKINGS CALLBACK FUNCTION
 @shared.load_user_profile
 def show_upcoming_user_bookings(update: Update, context: CallbackContext) -> None:
     
-    bookings = calendar.find_upcoming_bookings_by_user(update.message.from_user.id)
+    bookings = calendar.find_upcoming_bookings_by_user(update.effective_user.id)
     
     if not bookings['ongoing'] and not bookings['later_today'] and not bookings['after_today']:
         message = "You don't have any ongoing or upcoming bookings.\n\nTap the link below to open the bookings calendar."
