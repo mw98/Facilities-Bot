@@ -33,11 +33,17 @@ def load_user_profile(func):
         update = kwargs['update']
         context = kwargs['context']
         
-        if (user_data := database.retrieve_user(update.message.from_user.id)):
+        if (user_data := database.retrieve_user(update.effective_user.id)):
             context.user_data.update(user_data)
+            current_username = update.effective_user.username
+            if not current_username:
+                current_username = 'NULL'
+            if context.user_data['username'] != current_username:
+                context.user_data['username'] = current_username
+                database.update_username(update.effective_user.id, current_username)
         else:
             update.effective_chat.send_message("⚠ Sorry, I can't find your user profile. Send /start to create a new profile.")
-            logger.debug('User Not Found - %s - %s', update.message.from_user.id, update.message.from_user.username)
+            logger.debug('User Not Found - %s - %s', update.effective_user.id, update.effective_user.username)
             return ConversationHandler.END # -1
         
         return func(update, context)
@@ -58,7 +64,7 @@ def send_date_error(update, context, logger) -> None:
     
     # Log error
     logger.debug('Invalid Booking Date - %s - %s - "%s"', 
-        update.message.from_user.id,
+        update.effective_user.id,
         context.user_data['rank_and_name'],
         update.message.text
     )
@@ -76,7 +82,7 @@ def send_time_range_error(update, context, logger) -> None:
 
     # Log error
     logger.debug('Invalid Booking Time Range - %s - %s - "%s"',
-        update.message.from_user.id,
+        update.effective_user.id,
         context.user_data['rank_and_name'],
         update.message.text
     )
