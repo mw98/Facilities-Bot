@@ -16,16 +16,16 @@ BOOKING ENTRY POINT
 @shared.send_typing_action
 @shared.load_user_profile
 def book(update: Update, context: CallbackContext) -> int:
-    
+
     # Reset suggest_alt_facility preference
     context.chat_data['suggest_alt_facility'] = True
-    
+
     # Ask user which facility to book
     update.effective_chat.send_message(
         text = 'Which facility do you want to book?',
         reply_markup = keyboards.facilities
     )
-    
+
     return FACILITY
 
 
@@ -38,105 +38,101 @@ def date_error(update: Update, context: CallbackContext) -> int:
 
 
 def time_range_error(update: Update, context: CallbackContext) -> int:
-    shared.send_time_range_error(update, context, logger)    
+    shared.send_time_range_error(update, context, logger)
     return TIME_RANGE
 
 
 '''
 BOOKING CALLBACK FUNCTIONS
 '''
-@shared.send_typing_action
 def save_facility(update: Update, context: CallbackContext) -> int:
-    
+
     query = update.callback_query
-    
+
     # CallbackQueries need to be answered, even if no user notification is needed
     query.answer()
-    
+
     # Save user's facility selection
     context.chat_data['facility'] = query.data
-    
+
     # Ask user for date of booking
     query.edit_message_text(
-        text = 
+        text =
             f'Ok, now booking *{context.chat_data["facility"]}* for you. Use /cancel to stop.\n\n'
             "Send me a date for this booking or select one of the options below. Please use the `DDMMYY` format.",
         reply_markup = keyboards.today_tomorrow,
         parse_mode = ParseMode.MARKDOWN
     )
-    
+
     return DATE
 
 
-@shared.send_typing_action
 def save_date(update: Update, context: CallbackContext) -> int:
-    
+
     now = datetime.now(config.TIMEZONE)
     current_date = now.date()
-    
+
     # If user taps 'Today' inline keyboard button
     if (query := update.callback_query):
-                
+
         # Save today/tomorrow's date in gcal api event date format
         if query.data == 'today':
             context.chat_data['datetime_date'] = current_date
         else:
             context.chat_data['datetime_date'] = current_date + timedelta(days=1)
         context.chat_data['date'] = context.chat_data['datetime_date'].strftime('%Y-%m-%d')
-        
+
         # CallbackQueries need to be answered, even if no user notification is needed
         query.answer()
-        
+
         # Ask user for a time range
         query.edit_message_text(
-            text = 
+            text =
                 f'Send me a time range for your *{context.chat_data["facility"]}* booking. Please use this format:\n\n'
                 '`HHmm-HHmm` (e.g. 0930-1300)',
             parse_mode = ParseMode.MARKDOWN
         )
-            
+
     # If user sends a date
-    else: 
+    else:
         # Save user entered booking date (retrieved from filters.date)
         context.chat_data['date'] = context.booking_date[0]
         context.chat_data['datetime_date'] = context.booking_date[1]
-         
+
         # Ask user for a time range
         update.effective_chat.send_message(
-            text = 
+            text =
                 f'Send me a time range for your *{context.chat_data["facility"]}* booking. Please use this format:\n\n'
                 '`HHmm-HHmm` (e.g. 0930-1300)',
             parse_mode = ParseMode.MARKDOWN
         )
-    
+
     return TIME_RANGE
 
 
 @shared.send_typing_action
 def save_time_range(update: Update, context: CallbackContext) -> int:
-        
+
     # Check that time range is not in the past, since this can't be done in the filter
     now = datetime.now(config.TIMEZONE)
     current_time = now.time()
     current_date = now.date()
     datetime_end_time = context.end_time[1]
-    if (context.chat_data['datetime_date'] == current_date 
+    if (context.chat_data['datetime_date'] == current_date
         and datetime_end_time < current_time
     ):
         # Loop user back to previous step if it is
         return time_range_error(update, context)
-    
-    chat = update.effective_chat
-    
+
     # Save time range of booking
     context.chat_data['start_time'] = context.start_time[0]
     context.chat_data['end_time'] = context.end_time[0]
     context.chat_data['datetime_start_time'] = context.start_time[1] # needed for list_conflicts function in calendar.py
     context.chat_data['datetime_end_time'] = datetime_end_time
-    
+
     # Check for conflicting bookings
     if (conflicts := calendar.list_conflicts(context.chat_data)):
-                
+
         # If alternate facilities are available
         message_end = None
         reply_markup = keyboards.contact_poc(conflicts, update.effective_user.username)
@@ -151,26 +147,26 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
                 message_end = f'*{config.ALT_FACILITIES[context.chat_data["facility"]]}* is available at that time, would you like to book it instead?'
                 reply_markup = keyboards.yes_or_no
                 conversation_state = ALT_FACILITY
-        
+
         # If more than one conflict
         if len(conflicts) > 1:
             message_start = f'The time range you sent me conflicts with these *{context.chat_data["facility"]}* bookings:\n\n'
-            
+
             # Store in case user rejects alt_facility
             conext.chat_data['conflict_message_start'] = 'These are the conflicting bookings:'
             context.chat_data['conflict_message_end'] = 'Please send me another time range, or contact the POCs to deconflict.'
-            
-            if not message_end: 
+
+            if not message_end:
                 message_end = context.chat_data['conflict_message_end']
-        
+
         # If only one conflict
-        else: 
+        else:
             conflict = conflicts[0]
             conflict_details = conflict['extendedProperties']['shared']
-            
+
             # If conflict is with user's previous booking
             if conflict_details['user_id'] == str(update.effective_user.id):
-                
+
                 previous_booking = (
                     f'*Facility:* {context.chat_data["facility"]}\n'
                     f'*Date:* {context.chat_data["date"]}\n'
@@ -178,35 +174,35 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
                     f'*Description:* {conflict_details["description"]}\n'
                     f'[Event Link]({conflict["htmlLink"]})'
                 )
-                
+
                 # Check if the new booking is identical with the previous one
                 if (conflict_details['start_time'] == context.chat_data['start_time']
                     and conflict_details['end_time'] == context.chat_data['end_time']
-                ): 
+                ):
                     # If it is, inform the user and end the conversation
-                    chat.send_message(
-                        text = 
+                    update.effective_chat.send_message(
+                        text =
                             "You've already made this booking:\n\n"
                             f'{previous_booking}\n\n'
                             'Send /book to make another booking.',
                         parse_mode = ParseMode.MARKDOWN
                     )
                     return ConversationHandler.END
-                
+
                 # Save the previous booking details
                 context.chat_data['old_start_time'] = f"<s>{conflict_details['start_time']} "
                 context.chat_data['old_end_time'] = f"{conflict_details['end_time']}</s> "
                 context.chat_data['event_id'] = conflict['id']
                 context.chat_data['description'] = conflict_details['description']
-                
+
                 # Create empty chat_data entries for compatibility with /change
                 context.chat_data['old_facility'] = ''
                 context.chat_data['old_date'] = ''
                 context.chat_data['old_description'] = ''
-                                
+
                 # Offer to update previous booking
-                chat.send_message(
-                    text = 
+                update.effective_chat.send_message(
+                    text =
                         'The time range you sent conflicts with a previous booking you made:\n\n'
                         f'{previous_booking}\n\n'
                         "Move your previous booking to the new time range, or send me another time range to make a new booking.",
@@ -214,18 +210,18 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
                     parse_mode = ParseMode.MARKDOWN
                 )
                 return PATCH
-            
+
             # If only one conflict and conflict is not with user's previous booking
-            else: 
+            else:
                 message_start = f'The time range you sent me conflicts with this *{context.chat_data["facility"]}* booking:\n\n'
-                
+
                 # Store in case user rejects alt_facility
                 context.chat_data['conflict_message_start'] = "This is the conflicting booking:"
                 context.chat_data['conflict_message_end'] = 'Please send me another time range, or contact the POC to deconflict.'
-                
-                if not message_end: 
+
+                if not message_end:
                     message_end = context.chat_data['conflict_message_end']
-                
+
         context.chat_data['conflict_message_list'] = ''
         for conflict in conflicts:
             conflict_details = conflict['extendedProperties']['shared']
@@ -235,40 +231,40 @@ def save_time_range(update: Update, context: CallbackContext) -> int:
                 f'*POC:* {conflict_details["name_and_company"]}\n'
                 f'[Event Link]({conflict["htmlLink"]})\n\n'
             )
-                
-        chat.send_message(
+
+        update.effective_chat.send_message(
             text = f'{message_start}{context.chat_data["conflict_message_list"]}{message_end}',
             reply_markup = reply_markup,
             parse_mode = ParseMode.MARKDOWN
         )
-        
+
         return conversation_state
-    
+
     # If no conflicts, ask for a brief description of the booking
-    chat.send_message('Lastly, send me a brief description of your booking.')
-    
+    update.effective_chat.send_message('Lastly, send me a brief description of your booking.')
+
     return DESCRIPTION
 
 
 def alt_facility(update: Update, context: CallbackContext) -> int:
-    
+
     query = update.callback_query
-    
+
     if query.data == 'yes':
         context.chat_data['facility'] = context.chat_data['alt_facility']
         query.edit_message_text(
-            text = 
+            text =
                 f'Ok, now booking *{context.chat_data["facility"]}* instead at the same date and time.\n\n'
                 'Lastly, send me a brief description of your booking.',
             parse_mode = ParseMode.MARKDOWN
         )
         query.answer()
         return DESCRIPTION
-    
+
     elif query.data == 'no':
         context.chat_data['suggest_alt_facility'] = False # Don't suggest alt facility again if new time_range conflicts too
         query.edit_message_text(
-            text = 
+            text =
                 f'Ok, still trying to book *{context.chat_data["facility"]}*. {context.chat_data["conflict_message_start"]}\n\n'
                 f'{context.chat_data["conflict_message_list"]}{context.chat_data["conflict_message_end"]}',
             reply_markup = context.chat_data['conflict_reply_markup'],
@@ -276,13 +272,14 @@ def alt_facility(update: Update, context: CallbackContext) -> int:
         )
         query.answer()
         return TIME_RANGE
-        
 
+
+@shared.send_typing_action
 def save_description(update: Update, context: CallbackContext) -> int:
-        
+
     # Save booking description
     context.chat_data['description'] = update.message.text
-    
+
     # Ask user to confirm booking request
     update.effective_chat.send_message(
         text =
@@ -295,14 +292,14 @@ def save_description(update: Update, context: CallbackContext) -> int:
         reply_markup = keyboards.confirm_or_cancel,
         parse_mode = ParseMode.MARKDOWN
     )
-    
+
     return CONFIRMATION
 
 
 def patch_booking(update: Update, context: CallbackContext) -> int:
-    
-    update.effective_chat.send_message(
-        text = 
+
+    update.callback_query.edit_message_text(
+        text =
             "Ok. Here's what your updated booking will look like.\n\n"
             f'<b>Facility:</b> {context.chat_data["facility"]}\n'
             f'<b>Date:</b> {context.chat_data["date"]}\n'
@@ -312,22 +309,22 @@ def patch_booking(update: Update, context: CallbackContext) -> int:
         reply_markup = keyboards.confirm_or_cancel_update,
         parse_mode = ParseMode.HTML
     )
-    
+
     return CONFIRMATION
 
 
 def confirm(update: Update, context: CallbackContext) -> int:
-        
+
     # Add Google Calendar event
-    try: 
+    try:
         event_url = calendar.add_booking(
-            user_id = update.effective_user.id, 
-            user_data = context.user_data, 
+            user_id = update.effective_user.id,
+            user_data = context.user_data,
             chat_data = context.chat_data
         )
     except Exception as error:
         update.callback_query.edit_message_text(
-            text = 
+            text =
                 "Ok. Here's a summary of your booking request.\n\n"
                 f'*Facility:* {context.chat_data["facility"]}\n'
                 f'*Date:* {context.chat_data["date"]}\n'
@@ -344,10 +341,10 @@ def confirm(update: Update, context: CallbackContext) -> int:
             error
         )
         return CONFIRMATION
-    
+
     # Answer callback_query
     update.callback_query.answer()
-        
+
     # Inform user booking is confirmed
     update.callback_query.edit_message_text(
         text =
@@ -360,7 +357,7 @@ def confirm(update: Update, context: CallbackContext) -> int:
         parse_mode = ParseMode.MARKDOWN,
         reply_markup = keyboards.show_in_calendar(event_url)
     )
-    
+
     # Log new booking
     logger.info(
         'New Booking - %s - %s - %s on %s, %s to %s',
@@ -371,12 +368,12 @@ def confirm(update: Update, context: CallbackContext) -> int:
         context.chat_data['start_time'],
         context.chat_data['end_time']
     )
-    
+
     return ConversationHandler.END # -1
 
 
 def confirm_patch(update: Update, context: CallbackContext) -> int:
-    
+
     # Patch Google Calendar event
     try:
         event_url = calendar.patch_booking(
@@ -386,7 +383,7 @@ def confirm_patch(update: Update, context: CallbackContext) -> int:
         )
     except Exception as error:
         update.callback_query.edit_message_text(
-            text = 
+            text =
                 "Ok. Here's what your updated booking will look like.\n\n"
                 f'<b>Facility:</b> {context.chat_data["facility"]}\n'
                 f'<b>Date:</b> {context.chat_data["date"]}\n'
@@ -403,10 +400,10 @@ def confirm_patch(update: Update, context: CallbackContext) -> int:
             error
         )
         return CONFIRMATION
-    
+
     # Answer callback_query
     update.callback_query.answer()
-    
+
     # Inform user booking has been updated
     update.callback_query.edit_message_text(
         text =
@@ -419,7 +416,7 @@ def confirm_patch(update: Update, context: CallbackContext) -> int:
         parse_mode = ParseMode.MARKDOWN,
         reply_markup = keyboards.show_in_calendar(event_url)
     )
-    
+
     # Log booking update
     logger.info(
         'Booking Updated - %s - %s - %s on %s, %s to %s -> %s to %s',
@@ -431,31 +428,31 @@ def confirm_patch(update: Update, context: CallbackContext) -> int:
         context.chat_data['old_end_time'],
         context.chat_data['start_time'],
         context.chat_data['end_time']
-    )    
-    
+    )
+
     return ConversationHandler.END # -1
 
 
 def cancel(update: Update, context: CallbackContext) -> int:
-    
+
     # Cancelling via inline keyboard
-    if (query := update.callback_query): 
-                
+    if (query := update.callback_query):
+
         if query.data == 'cancel':
             query.edit_message_text('Ok, no booking was made. Send /book to make a new booking.')
-        
+
         elif query.data == 'cancel update':
             query.edit_message_text('Ok, no changes were made. Send /book to make a new booking, or /change to manage your existing bookings.')
-        
+
         # CallbackQueries need to be answered, even if no user notification is needed
         query.answer()
-    
+
     # Cancelling via /cancel command
     else:
         update.effective_chat.send_message('Ok, no booking was made. Send /book to make a new booking.')
-    
+
     return ConversationHandler.END # -1
-    
+
 
 '''
 BOOKING HANDLER
