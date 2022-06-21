@@ -419,7 +419,7 @@ def confirm_change(update: Update, context: CallbackContext) -> int:
         )
         update.callback_query.answer()
         logger.exception(
-            'GCal Patch Request Failure - %s - %s - %s',
+            'Event Patch Failure - %s - %s - %s',
             update.effective_user.id,
             context.user_data['rank_and_name'],
             error
@@ -440,11 +440,15 @@ def confirm_change(update: Update, context: CallbackContext) -> int:
     )
     update.callback_query.answer()
     
-    # Log new booking
+    # Log booking update
     logger.info(
-        'New Booking - %s - %s - %s on %s, %s to %s',
+        'Booking Updated - %s - %s - %s on %s, %s to %s -> %s on %s, %s to %s',
         update.effective_user.id,
         context.user_data['rank_and_name'],
+        context.chat_data['old_facility'],
+        context.chat_data['old_date'],
+        context.chat_data['old_start_time'],
+        context.chat_data['old_end_time'],
         context.chat_data['facility'],
         context.chat_data['date'],
         context.chat_data['start_time'],
@@ -469,7 +473,7 @@ def confirm_delete(update: Update, context: CallbackContext) -> int:
         )
         update.callback_query.answer()
         logger.exception(
-            'GCal Delete Request Failure - %s - %s - %s',
+            'Event Delete Failure - %s - %s - %s',
             update.effective_user.id,
             context.user_data['rank_and_name'],
             error
