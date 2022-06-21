@@ -1,5 +1,8 @@
+import logging
 import psycopg2
 import config
+
+logger = logging.getLogger(__name__)
 
 # Create table of users if it does not exist
 def create_if_not_exists() -> None:
@@ -20,7 +23,7 @@ def create_if_not_exists() -> None:
                     """
                 )
     except Exception as error:
-        print(f'Could not create users db: {error}')
+        logger.exception('Database Creation Failure - %s', error)
     finally:
         connection.close()
     return
@@ -43,7 +46,7 @@ def add_user(user_id: int, user_data: dict) -> int:
                 (user_id, user_data['rank_and_name'], user_data['company'], user_data['username'])
                 )
     except Exception as error:
-        print(f'Could not add user to db: {error}')
+        logger.exception('User Registration Failure - %s - %s', user_id, error)
         state = -1
     finally:
         connection.close()
@@ -65,7 +68,7 @@ def update_username(user_id: int, new_username: str) -> None:
                     (new_username, user_id)
                 )
     except Exception as error:
-        print(f'Could not update {user_id} username: {error}')
+        logger.exception('Username Update Failure - %s - %s', user_id, error)
     finally:
         connection.close()
     return
@@ -88,7 +91,7 @@ def retrieve_user(user_id: int):
                 )
                 user_data = cursor.fetchone()
     except Exception as error:
-        print(f'Could not retrieve user from db: {error}')
+        logger.exception('User Retrieval Failure - %s - %s', user_id, error)
     finally:
         connection.close()
     
@@ -119,7 +122,7 @@ def retrieve_user_by_rank_name_company(rank_and_name: str, company: str) -> list
                 )
                 user_data = cursor.fetchone()
     except Exception as error:
-        print(f'Could not retrieve user from db: {error}')
+        logger.exception('User Retrieval Failure - %s - %s', user_id, error)
     finally:
         connection.close()
     
@@ -147,7 +150,7 @@ def retrieve_admins() -> set:
                 )
                 result = cursor.fetchall()
     except Exception as error:
-        print(f'Could not retrieve list of admins from db: {error}')
+        logger.exception('Admin Retrieval Failure - %s', error)
     finally:
         connection.close()
     
@@ -171,7 +174,7 @@ def toggle_admin(user_id: int) -> None:
                     (user_id,)
                 )
     except Exception as error:
-        print(f'Could not toggle {user_id} admin status: {error}')
+        logger.exception('Admin Status Change Failure - %s - %s', user_id, error)
     finally:
         connection.close()
     return
