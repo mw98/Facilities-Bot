@@ -64,15 +64,15 @@ confirm_or_cancel = InlineKeyboardMarkup([
 
 yes_or_no = InlineKeyboardMarkup([
     [
-        InlineKeyboardButton('Yes', callback_data = 'yes'),
-        InlineKeyboardButton('No', callback_data = 'no')
+        InlineKeyboardButton('Yes', callback_data = 'confirm'),
+        InlineKeyboardButton('No', callback_data = 'cancel')
     ]
 ])
 
-patch_confirm_or_cancel = InlineKeyboardMarkup([
+confirm_or_cancel_update = InlineKeyboardMarkup([
     [
-        InlineKeyboardButton('Confirm', callback_data = 'confirm patch'),
-        InlineKeyboardButton('Cancel', callback_data = 'cancel patch')
+        InlineKeyboardButton('Confirm', callback_data = 'update'),
+        InlineKeyboardButton('Cancel', callback_data = 'cancel update')
     ]
 ])
 
