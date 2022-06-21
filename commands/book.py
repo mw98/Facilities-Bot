@@ -250,7 +250,7 @@ def alt_facility(update: Update, context: CallbackContext) -> int:
 
     query = update.callback_query
 
-    if query.data == 'yes':
+    if query.data == 'confirm':
         context.chat_data['facility'] = context.chat_data['alt_facility']
         query.edit_message_text(
             text =
@@ -261,7 +261,7 @@ def alt_facility(update: Update, context: CallbackContext) -> int:
         query.answer()
         return DESCRIPTION
 
-    elif query.data == 'no':
+    elif query.data == 'cancel':
         context.chat_data['suggest_alt_facility'] = False # Don't suggest alt facility again if new time_range conflicts too
         query.edit_message_text(
             text =
