@@ -165,7 +165,8 @@ def retry_name(update: Update, context: CallbackContext) -> int:
             reply_markup = keyboards.confirm_or_cancel,
             parse_mode = ParseMode.MARKDOWN
         )
-
+    
+    update.callback_query.answer()
     return CONFIRMATION
 
 
