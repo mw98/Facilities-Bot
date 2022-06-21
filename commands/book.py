@@ -309,7 +309,7 @@ def patch_booking(update: Update, context: CallbackContext) -> int:
             f'<b>Time:</b> {context.chat_data["old_start_time"]}{context.chat_data["old_end_time"]}{context.chat_data["start_time"]} - {context.chat_data["end_time"]}\n'
             f'<b>Description:</b> {context.chat_data["description"]}\n\n'
             'Do you want to proceed?',
-        reply_markup = keyboards.patch_confirm_or_cancel,
+        reply_markup = keyboards.confirm_or_cancel_update,
         parse_mode = ParseMode.HTML
     )
     
@@ -317,73 +317,41 @@ def patch_booking(update: Update, context: CallbackContext) -> int:
 
 
 def confirm(update: Update, context: CallbackContext) -> int:
-    
-    query = update.callback_query
-    
-    if query.data == 'confirm':
         
-        # Book facility on Google Calendar
-        try: 
-            event_url = calendar.add_booking(update.effective_user.id, context.user_data, context.chat_data)
-        except Exception as error:
-            query.edit_message_text(
-                text = 
-                    "Ok. Here's a summary of your booking request.\n\n"
-                    f'*Facility:* {context.chat_data["facility"]}\n'
-                    f'*Date:* {context.chat_data["date"]}\n'
-                    f'*Time:* {context.chat_data["start_time"]} - {context.chat_data["end_time"]}\n'
-                    f'*Description:* {context.chat_data["description"]}\n\n'
-                    "*⚠ Sorry, I could not connect to Google Calendar. Try again?*",
-                reply_markup = keyboards.confirm_or_cancel,
-                parse_mode = ParseMode.HTML
-            )
-            logger.exception(
-                'GCal Insert Failure - %s - %s - %s',
-                update.effective_user.id,
-                context.user_data['rank_and_name'],
-                error
-            )
-            return CONFIRMATION
-
-        # Contextualise response
-        message_adjective = 'confirmed'
+    # Add Google Calendar event
+    try: 
+        event_url = calendar.add_booking(
+            user_id = update.effective_user.id, 
+            user_data = context.user_data, 
+            chat_data = context.chat_data
+        )
+    except Exception as error:
+        update.callback_query.edit_message_text(
+            text = 
+                "Ok. Here's a summary of your booking request.\n\n"
+                f'*Facility:* {context.chat_data["facility"]}\n'
+                f'*Date:* {context.chat_data["date"]}\n'
+                f'*Time:* {context.chat_data["start_time"]} - {context.chat_data["end_time"]}\n'
+                f'*Description:* {context.chat_data["description"]}\n\n'
+                "*⚠ Sorry, I could not connect to Google Calendar. Try again?*",
+            reply_markup = keyboards.confirm_or_cancel,
+            parse_mode = ParseMode.MARKDOWN
+        )
+        logger.exception(
+            'Event Insert Failure - %s - %s - %s',
+            update.effective_user.id,
+            context.user_data['rank_and_name'],
+            error
+        )
+        return CONFIRMATION
     
-    elif query.data == 'confirm patch':
+    # Answer callback_query
+    update.callback_query.answer()
         
-        # Patch facility booking on Google Calendar
-        try:
-            event_url = calendar.patch_booking(
-                user_id = update.effective_user.id,
-                user_data = context.user_data,
-                chat_data = context.chat_data
-            )
-        except Exception as error:
-            query.edit_message_text(
-                text = 
-                    "Ok. Here's what your updated booking will look like.\n\n"
-                    f'<b>Facility:</b> {context.chat_data["facility"]}\n'
-                    f'<b>Date:</b> {context.chat_data["date"]}\n'
-                    f'<b>Time:</b> {context.chat_data["old_start_time"]}{context.chat_data["old_end_time"]}{context.chat_data["start_time"]} - {context.chat_data["end_time"]}\n'
-                    f'<b>Description:</b> {context.chat_data["description"]}\n\n'
-                    "<b>⚠ Sorry, I could not connect to Google Calendar. Try again?</b>",
-                reply_markup = keyboards.patch_confirm_or_cancel,
-                parse_mode = ParseMode.HTML
-            )
-            logger.exception(
-                'GCal Patch Failure - %s - %s - %s',
-                update.effective_user.id,
-                context.user_data['rank_and_name'],
-                error
-            )
-            return CONFIRMATION
-
-        # Contextualise response
-        message_adjective = 'updated'
-    
     # Inform user booking is confirmed
-    query.edit_message_text(
+    update.callback_query.edit_message_text(
         text =
-            f'Booking {message_adjective}! 🎉\n\n'
+            f'Booking confirmed! 🎉\n\n'
             f'*Facility:* {context.chat_data["facility"]}\n'
             f'*Date:* {context.chat_data["date"]}\n'
             f'*Time:* {context.chat_data["start_time"]} - {context.chat_data["end_time"]}\n'
@@ -392,9 +360,6 @@ def confirm(update: Update, context: CallbackContext) -> int:
         parse_mode = ParseMode.MARKDOWN,
         reply_markup = keyboards.show_in_calendar(event_url)
     )
-    
-    # CallbackQueries need to be answered, even if no user notification is needed
-    query.answer()
     
     # Log new booking
     logger.info(
@@ -410,6 +375,67 @@ def confirm(update: Update, context: CallbackContext) -> int:
     return ConversationHandler.END # -1
 
 
+def confirm_patch(update: Update, context: CallbackContext) -> int:
+    
+    # Patch Google Calendar event
+    try:
+        event_url = calendar.patch_booking(
+            user_id = update.effective_user.id,
+            user_data = context.user_data,
+            chat_data = context.chat_data
+        )
+    except Exception as error:
+        update.callback_query.edit_message_text(
+            text = 
+                "Ok. Here's what your updated booking will look like.\n\n"
+                f'<b>Facility:</b> {context.chat_data["facility"]}\n'
+                f'<b>Date:</b> {context.chat_data["date"]}\n'
+                f'<b>Time:</b> {context.chat_data["old_start_time"]}{context.chat_data["old_end_time"]}{context.chat_data["start_time"]} - {context.chat_data["end_time"]}\n'
+                f'<b>Description:</b> {context.chat_data["description"]}\n\n'
+                "<b>⚠ Sorry, I could not connect to Google Calendar. Try again?</b>",
+            reply_markup = keyboards.confirm_or_cancel_update,
+            parse_mode = ParseMode.HTML
+        )
+        logger.exception(
+            'Event Patch Failure - %s - %s - %s',
+            update.effective_user.id,
+            context.user_data['rank_and_name'],
+            error
+        )
+        return CONFIRMATION
+    
+    # Answer callback_query
+    update.callback_query.answer()
+    
+    # Inform user booking has been updated
+    update.callback_query.edit_message_text(
+        text =
+            'Booking updated! 🎉\n\n'
+            f'*Facility:* {context.chat_data["facility"]}\n'
+            f'*Date:* {context.chat_data["date"]}\n'
+            f'*Time:* {context.chat_data["start_time"]} - {context.chat_data["end_time"]}\n'
+            f'*Description:* {context.chat_data["description"]}\n\n'
+            'Send /book to make another booking.',
+        parse_mode = ParseMode.MARKDOWN,
+        reply_markup = keyboards.show_in_calendar(event_url)
+    )
+    
+    # Log booking update
+    logger.info(
+        'Booking Updated - %s - %s - %s on %s, %s to %s -> %s to %s',
+        update.effective_user.id,
+        context.user_data['rank_and_name'],
+        context.chat_data['facility'],
+        context.chat_data['date'],
+        context.chat_data['old_start_time'],
+        context.chat_data['old_end_time'],
+        context.chat_data['start_time'],
+        context.chat_data['end_time']
+    )    
+    
+    return ConversationHandler.END # -1
+
+
 def cancel(update: Update, context: CallbackContext) -> int:
     
     # Cancelling via inline keyboard
@@ -418,7 +444,7 @@ def cancel(update: Update, context: CallbackContext) -> int:
         if query.data == 'cancel':
             query.edit_message_text('Ok, no booking was made. Send /book to make a new booking.')
         
-        elif query.data == 'cancel patch':
+        elif query.data == 'cancel update':
             query.edit_message_text('Ok, no changes were made. Send /book to make a new booking, or /change to manage your existing bookings.')
         
         # CallbackQueries need to be answered, even if no user notification is needed
@@ -447,7 +473,7 @@ handler = ConversationHandler(
             MessageHandler(filters.time_range, save_time_range),
             MessageHandler(Filters.all & (~Filters.command), time_range_error)
         ],
-        ALT_FACILITY: [CallbackQueryHandler(callback = alt_facility, pattern = 'yes|no')],
+        ALT_FACILITY: [CallbackQueryHandler(callback = alt_facility, pattern = 'confirm|cancel')],
         DESCRIPTION: [MessageHandler(Filters.text & (~Filters.command), save_description)],
         PATCH: [
             CallbackQueryHandler(callback = patch_booking, pattern = 'patch'),
@@ -456,6 +482,7 @@ handler = ConversationHandler(
         ],
         CONFIRMATION: [
             CallbackQueryHandler(callback = confirm, pattern = 'confirm'),
+            CallbackQueryHandler(callback = confirm_patch, pattern = 'update'),
             CallbackQueryHandler(callback = cancel, pattern = 'cancel')
         ]
     },
