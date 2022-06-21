@@ -20,7 +20,7 @@ WEBHOOK_PORT = os.getenv('PORT') or 8443
 CALENDAR_ID = os.environ['CALENDAR_ID']
 CALENDAR_URL = os.getenv('CALENDAR_URL')
 EVENT_COLOUR_CODES = {'LT 1': '1', 'LT 2': '7', 'CONF ROOM': '2', 'RTS': '5', 'STINGRAY SQ': '6'}
-SERVICE_ACCOUNT_INFO = os.environ['SERVICE_ACCOUNT_INFO']
+SERVICE_ACCOUNT_INFO = ujson.loads(os.environ['SERVICE_ACCOUNT_INFO'])
 
 # SHARED VARIABLES
 ALT_FACILITIES = ujson.loads(os.getenv('ALT_FACILITIES') or '{}')
