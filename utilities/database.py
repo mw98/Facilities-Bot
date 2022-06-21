@@ -1,5 +1,5 @@
 import psycopg2
-import config    
+import config
 
 # Create table of users if it does not exist
 def create_if_not_exists() -> None:
@@ -26,7 +26,7 @@ def create_if_not_exists() -> None:
     return
 
 
-# Create a new user or replace an existing one  
+# Create a new user or update an existing one  
 def add_user(user_id: int, user_data: dict) -> int:
     
     state = 0
@@ -48,6 +48,27 @@ def add_user(user_id: int, user_data: dict) -> int:
     finally:
         connection.close()
     return state
+
+
+# Update username record
+def update_username(user_id: int, new_username: str) -> None:
+    
+    try:
+        with psycopg2.connect(config.DATABASE_URL, sslmode = 'require') as connection:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    """
+                    UPDATE users
+                    SET username = %s
+                    WHERE user_id = %s
+                    """,
+                    (new_username, user_id)
+                )
+    except Exception as error:
+        print(f'Could not update {user_id} username: {error}')
+    finally:
+        connection.close()
+    return
 
 
 # Retrieve an existing user profile
@@ -113,6 +134,7 @@ def retrieve_user_by_rank_name_company(rank_and_name: str, company: str) -> list
 # Retrieve set of admin user_ids
 def retrieve_admins() -> set:
     
+    result = None
     try:
         with psycopg2.connect(config.DATABASE_URL, sslmode = 'require') as connection:
             with connection.cursor() as cursor:
