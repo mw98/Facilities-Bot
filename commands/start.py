@@ -152,7 +152,7 @@ def retry_name(update: Update, context: CallbackContext) -> int:
 
     # Confirmation message for updating profile
     if context.user_data.get('old_rank_and_name') and context.user_data.get('old_company'):
-        update.callback_query.edit_message_text(
+        update.effective_chat.send_message(
             text = f"Ok, I'll update your profile to *{context.user_data['rank_and_name']} ({context.user_data['company']})*. Is this correct?",
             reply_markup = keyboards.confirm_or_cancel_update,
             parse_mode = ParseMode.MARKDOWN
@@ -160,13 +160,12 @@ def retry_name(update: Update, context: CallbackContext) -> int:
 
     # Confirmation message for registering new user
     else:
-        update.callback_query.edit_message_text(
+        update.effective_chat.send_message(
             text = f"Ok, I'll register you as *{context.user_data['rank_and_name']} ({context.user_data['company']})*. Is this correct?",
             reply_markup = keyboards.confirm_or_cancel,
             parse_mode = ParseMode.MARKDOWN
         )
     
-    update.callback_query.answer()
     return CONFIRMATION
 
 
