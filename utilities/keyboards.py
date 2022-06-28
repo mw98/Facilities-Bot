@@ -1,46 +1,10 @@
+from itertools import zip_longest
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 import config
 
 '''
 MENUS
 '''
-companies = InlineKeyboardMarkup([
-    [
-        InlineKeyboardButton('ALPHA', callback_data='ALPHA'),
-        InlineKeyboardButton('BRAVO', callback_data='BRAVO'),
-        InlineKeyboardButton('CHARLIE', callback_data='CHARLIE')
-    ],
-    [
-        InlineKeyboardButton('MSC', callback_data='MSC'),
-        InlineKeyboardButton('SP', callback_data='SP'),
-        InlineKeyboardButton('HQ', callback_data='HQ')
-    ],
-])
-
-facilities_list = [
-    [
-        InlineKeyboardButton('LT 1', callback_data = 'LT 1'),
-        InlineKeyboardButton('LT 2', callback_data = 'LT 2'),
-        InlineKeyboardButton('CONF ROOM', callback_data = 'CONF ROOM')
-    ],
-    [
-        InlineKeyboardButton('RTS', callback_data = 'RTS'),
-        InlineKeyboardButton('STINGRAY SQ', callback_data = 'STINGRAY SQ')
-    ]
-]
-
-facilities = InlineKeyboardMarkup(facilities_list)
-
-def facilities_minus(facility):
-    
-    facility = InlineKeyboardButton(facility, callback_data = facility)
-    facilities_minus = []
-    for row in facilities_list:
-        row = [button for button in row if button != facility]
-        facilities_minus.append(row)
-    
-    return InlineKeyboardMarkup(facilities_minus)
-
 edit_menu = InlineKeyboardMarkup([
     [
         InlineKeyboardButton('Date', callback_data = 'date'),
@@ -108,6 +72,25 @@ view_calendar = InlineKeyboardMarkup([[InlineKeyboardButton('Open Bookings Calen
 '''
 GENERATED OPTIONS SELECTORS
 '''
+def generate_menu(options: list, row_size: int = 2) -> InlineKeyboardMarkup:
+    # Adapted from grouper recipe in Python itertools docs
+    # https://docs.python.org/3/library/itertools.html#itertools-recipes
+    args = [iter(options)] * row_size
+    menu = [list(row) for row in zip_longest(*args)]
+    menu[-1] = [option for option in matrix[-1] if option is not None]
+    for idx, row in enumerate(menu):
+        menu[idx] = [InlineKeyboardButton(option, callback_data = option) for option in row]
+    return InlineKeyboardMarkup(menu)
+
+companies = generate_menu(config.COMPANIES)
+
+facilities = generate_menu(config.FACILITIES)
+
+def facilities_minus(facility: str) -> InlineKeyboardMarkup:
+    facilities = [f for f in config.FACILITIES if not facility]
+    return generate_menu(facilities)
+
+
 def contact_poc(booking_conflicts: list, effective_username: str) -> InlineKeyboardMarkup:
     
     buttons = set()
@@ -125,6 +108,7 @@ def contact_poc(booking_conflicts: list, effective_username: str) -> InlineKeybo
     buttons = list(buttons)
     buttons = [[button] for button in buttons]
     return InlineKeyboardMarkup(buttons)
+
 
 def user_bookings(bookings):
     
