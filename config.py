@@ -23,6 +23,6 @@ SERVICE_ACCOUNT_INFO = ujson.loads(os.environ['SERVICE_ACCOUNT_INFO'])
 
 # BOOKING PARAMETERS
 COMPANIES = ujson.loads(os.environ['COMPANIES'])
-FACILITIES = ujson.loads(os.os.environ['FACILITIES'])
+FACILITIES = ujson.loads(os.environ['FACILITIES'])
 ALT_FACILITIES = ujson.loads(os.getenv('ALT_FACILITIES') or '{}')
 TIMEZONE = timezone(timedelta(hours=8)) # UTC+8
