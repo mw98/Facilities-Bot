@@ -77,7 +77,7 @@ def generate_menu(options: list, row_size: int = 2) -> InlineKeyboardMarkup:
     # https://docs.python.org/3/library/itertools.html#itertools-recipes
     args = [iter(options)] * row_size
     menu = [list(row) for row in zip_longest(*args)]
-    menu[-1] = [option for option in matrix[-1] if option is not None]
+    menu[-1] = [option for option in menu[-1] if option is not None]
     for idx, row in enumerate(menu):
         menu[idx] = [InlineKeyboardButton(option, callback_data = option) for option in row]
     return InlineKeyboardMarkup(menu)
