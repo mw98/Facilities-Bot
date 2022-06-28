@@ -190,6 +190,13 @@ def list_conflicts(chat_data: dict, facility = None) -> list:
 '''
 MAKE/CHANGE/DELETE BOOKINGS
 '''
+def generate_event_colorid(company: str) -> int:
+    ColorId = config.COMPANIES.index(company) + 1
+    if ColorId > 11: 
+        ColorId = ColorId - 11
+    return ColorId
+
+
 def add_booking(user_id: int, user_data: dict, chat_data: dict, update_channel = True) -> str:
 
     new_booking = service.events().insert(
@@ -207,7 +214,7 @@ def add_booking(user_id: int, user_data: dict, chat_data: dict, update_channel =
                 "dateTime": f"{chat_data['date']}T{chat_data['end_time']}:00+08:00",
                 "timeZone": "Asia/Singapore",
             },
-            "colorId": config.EVENT_COLOUR_CODES[chat_data['facility']],
+            "colorId": generate_event_colorid(user_data['company']),
             "extendedProperties": {
                 "shared": {
                    "facility": chat_data["facility"],
@@ -241,7 +248,8 @@ def add_booking(user_id: int, user_data: dict, chat_data: dict, update_channel =
 
 
 def patch_booking(user_id: int, user_data: dict, chat_data: dict) -> str:
-
+    
+    patch_timestamp = datetime.now(config.TIMEZONE).strftime('%Y-%m-%d %H:%M:%S')
     patched_booking = service.events().patch(
         calendarId = config.CALENDAR_ID,
         eventId = chat_data['event_id'],
@@ -249,7 +257,8 @@ def patch_booking(user_id: int, user_data: dict, chat_data: dict) -> str:
             "summary": f"{chat_data['facility']} ({user_data['company']})",
             "description":
                 f"Activity: {chat_data['description']}\n"
-                f"POC: {user_data['rank_and_name']} ({user_data['company']})",
+                f"POC: {user_data['rank_and_name']} ({user_data['company']})\n\n"
+                f"Edited {patch_timestamp}",
             "start": {
                 "dateTime": f"{chat_data['date']}T{chat_data['start_time']}:00+08:00",
                 "timeZone": "Asia/Singapore",
@@ -258,7 +267,7 @@ def patch_booking(user_id: int, user_data: dict, chat_data: dict) -> str:
                 "dateTime": f"{chat_data['date']}T{chat_data['end_time']}:00+08:00",
                 "timeZone": "Asia/Singapore",
             },
-            "colorId": config.EVENT_COLOUR_CODES[chat_data['facility']],
+            "colorId": generate_event_colorid(user_data['company']),
             "extendedProperties": {
                 "shared": {
                    "facility": chat_data["facility"],
