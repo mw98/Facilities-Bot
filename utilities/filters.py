@@ -80,7 +80,7 @@ class AdminBookingDetailsFilter(MessageFilter):
         except IndexError as e:
             logger.debug(e)
             return False
-        if facility not in config.FACILITIES_LIST:
+        if facility not in config.FACILITIES:
             return False
         
         # Test date
@@ -120,7 +120,7 @@ class AdminBookingDetailsFilter(MessageFilter):
         except IndexError as e:
             logger.debug(e)
             return False
-        if company not in config.COMPANIES_LIST:
+        if company not in config.COMPANIES:
             return False
         
         return {
