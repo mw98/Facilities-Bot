@@ -82,7 +82,7 @@ def generate_menu(options: list, row_size: int = 2) -> InlineKeyboardMarkup:
         menu[idx] = [InlineKeyboardButton(option, callback_data = option) for option in row]
     return InlineKeyboardMarkup(menu)
 
-companies = generate_menu(config.COMPANIES)
+companies = generate_menu(config.COMPANIES, row_size = 3)
 
 facilities = generate_menu(config.FACILITIES)
 
