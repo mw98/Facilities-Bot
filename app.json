@@ -31,11 +31,11 @@
       "value": "{\n  \"book\": \"Make a new booking\",\n  \"change\": \"Change or cancel a booking\",\n  \"check\": \"Check facility availability\",\n  \"mybookings\": \"List your upcoming bookings\"\n}"
     },
     "COMMANDS_SETTING": {
-      "description": "JSON serialised list of commands for user settings. Format: {'command': 'description'}",
+      "description": "JSON serialised list of commands for user settings. Format: {\"command\": \"description\"}",
       "value": "{\n  \"profile\": \"Update your user profile\",\n  \"help\": \"Show this list of commands\"\n}"
     },
     "COMMANDS_ADMIN": {
-      "description": "JSON serialised list of admin-only commands. Format: {'command': 'description'}",
+      "description": "JSON serialised list of admin-only commands. Format: {\"command\": \"description\"}",
       "value": "{\n  \"admin\": \"Make a booking as any user\"\n}"
     },
     "CHANNEL_USERNAME": {
@@ -48,9 +48,17 @@
       "required": false
     },
     "ALT_FACILITIES": {
-      "description": "JSON serialised facility equivalences. Format: {'Facility 1': 'Facility 2', 'Facility 2': 'Facility 1'}",
+      "description": "JSON serialised facility fallbacks. Format: {\"Facility\": \"Alt Facility\"}",
       "value": "{\n  \"LT 1\": \"LT 2\",\n  \"LT 2\": \"LT 1\"\n}",
       "required": false
+    },
+    "FACILITIES": {
+      "description": "JSON array of bookable facilities. Format: [\"Facility 1\", \"Facility 2\", \"Facility 3\"]",
+      "value": "[\"LT 1\", \"LT 2\", \"Conf Room\"]"
+    },
+    "COMPANIES": {
+      "description": "JSON array of companies. Format: [\"Coy 1\", \"Coy 2\", \"Coy 3\"]",
+      "value": "[\"ALPHA\", \"BRAVO\", \"CHARLIE\", \"SP\", \"MSC\", \"HQ\"]"
     }
   },
   "addons": [
