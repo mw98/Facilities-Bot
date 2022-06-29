@@ -2,19 +2,17 @@
 Telegram bot for managing facility bookings
 
 ## Features
-- Book facilities
-- Change / delete existing bookings
+- Make / change / delete bookings
 - Deconflict bookings automatically
     - Offers to book alternate facilities
-    - Offers to move users' previous bookings
+    - Offers to move users' own existing bookings
     - Directs users to contact POCs of existing bookings
-- Admins can make bookings as any user
-- Bookings are colour coded by user group on Google Calendar
-- Optionally record bookings in a separate Telegram channel
+- View all bookings on Google Calendar
+- Optionally log new / updated bookings in a Telegram channel
 
 ## Limitations
-- Hardcoded SG timezone (UTC+8)
-- Designed for use by SAF battalions; some syntax reflects this (e.g. 'rank and name', 'companies')
+- Does not support multiple timezones
+- Designed for SAF battalions; some syntax reflects this (e.g. 'rank and name', 'companies')
 
 ## Setup
 1. [Create a Telegram bot](https://core.telegram.org/bots#creating-a-new-bot) with @BotFather
