@@ -28,13 +28,14 @@ except HttpError as error:
 LIST BOOKINGS
 '''
 def find_bookings_for_facility_by_date(facility: str, date: str) -> list:
-
+    
+    utc_offset = datetime.now(config.TIMEZONE).isoformat()[26:]
     bookings = service.events().list(
         calendarId = config.CALENDAR_ID,
         orderBy = 'startTime', # assumed by list_available_slots()
         singleEvents = True, # requirement for ordering by start time
-        timeMin = f'{date}T00:00:00+08:00', # exclusive bound
-        timeMax = f'{date}T23:59:59+08:00', # exclusive bound
+        timeMin = f'{date}T00:00:00{utc_offset}', # exclusive bound
+        timeMax = f'{date}T23:59:59{utc_offset}', # exclusive bound
         sharedExtendedProperty = f'facility={facility}',
     ).execute()
 
@@ -83,6 +84,7 @@ def find_ongoing_or_next(bookings_today: list, current_time: datetime.time):
 def find_upcoming_bookings_by_user(user_id: int) -> list:
 
     now = datetime.now(config.TIMEZONE)
+    utc_offset = now.isoformat()[26:]
     current_date = now.strftime('%Y-%m-%d')
     current_time = now.time()
 
@@ -90,7 +92,7 @@ def find_upcoming_bookings_by_user(user_id: int) -> list:
         calendarId = config.CALENDAR_ID,
         orderBy = 'startTime',
         singleEvents = True,
-        timeMin = f'{current_date}T00:00:00+08:00',
+        timeMin = f'{current_date}T00:00:00{utc_offset}',
         sharedExtendedProperty = f'user_id={user_id}',
     ).execute()['items']
 
@@ -125,6 +127,7 @@ def find_upcoming_bookings_by_user(user_id: int) -> list:
 def find_upcoming_bookings_by_facility(facility: str) -> list:
 
     now = datetime.now(config.TIMEZONE)
+    utc_offset = now.isoformat()[26:]
     current_date = now.strftime('%Y-%m-%d')
     current_time = now.time()
 
@@ -132,7 +135,7 @@ def find_upcoming_bookings_by_facility(facility: str) -> list:
         calendarId = config.CALENDAR_ID,
         orderBy = 'startTime',
         singleEvents = True,
-        timeMin = f'{current_date}T00:00:00+08:00',
+        timeMin = f'{current_date}T00:00:00{utc_offset}',
         sharedExtendedProperty = f'facility={facility}'
     ).execute()['items']
 
@@ -198,7 +201,8 @@ def generate_event_colorid(company: str) -> int:
 
 
 def add_booking(user_id: int, user_data: dict, chat_data: dict, update_channel = True) -> str:
-
+    
+    utc_offset = datetime.now(config.TIMEZONE).isoformat()[26:]
     new_booking = service.events().insert(
         calendarId = config.CALENDAR_ID,
         body = {
@@ -207,12 +211,12 @@ def add_booking(user_id: int, user_data: dict, chat_data: dict, update_channel =
                 f"Activity: {chat_data['description']}\n"
                 f"POC: {user_data['rank_and_name']} ({user_data['company']})",
             "start": {
-                "dateTime": f"{chat_data['date']}T{chat_data['start_time']}:00+08:00",
-                "timeZone": "Asia/Singapore",
+                "dateTime": f"{chat_data['date']}T{chat_data['start_time']}:00{utc_offset}",
+                "timeZone": config.IANA_TIMEZONE_NAME,
             },
             "end": {
-                "dateTime": f"{chat_data['date']}T{chat_data['end_time']}:00+08:00",
-                "timeZone": "Asia/Singapore",
+                "dateTime": f"{chat_data['date']}T{chat_data['end_time']}:00{utc_offset}",
+                "timeZone": config.IANA_TIMEZONE_NAME,
             },
             "colorId": generate_event_colorid(user_data['company']),
             "extendedProperties": {
@@ -249,7 +253,9 @@ def add_booking(user_id: int, user_data: dict, chat_data: dict, update_channel =
 
 def patch_booking(user_id: int, user_data: dict, chat_data: dict) -> str:
     
-    patch_timestamp = datetime.now(config.TIMEZONE).strftime('%Y-%m-%d %H:%M:%S')
+    now = datetime.now(config.TIMEZONE)
+    utc_offset = now.isoformat()[26:]
+    patch_timestamp = now.strftime('%Y-%m-%d %H:%M:%S (UTC%z)')
     patched_booking = service.events().patch(
         calendarId = config.CALENDAR_ID,
         eventId = chat_data['event_id'],
@@ -258,14 +264,14 @@ def patch_booking(user_id: int, user_data: dict, chat_data: dict) -> str:
             "description":
                 f"Activity: {chat_data['description']}\n"
                 f"POC: {user_data['rank_and_name']} ({user_data['company']})\n\n"
-                f"Edited {patch_timestamp}",
+                f"Edited on {patch_timestamp}",
             "start": {
-                "dateTime": f"{chat_data['date']}T{chat_data['start_time']}:00+08:00",
-                "timeZone": "Asia/Singapore",
+                "dateTime": f"{chat_data['date']}T{chat_data['start_time']}:00{utc_offset}",
+                "timeZone": config.IANA_TIMEZONE_NAME,
             },
             "end": {
-                "dateTime": f"{chat_data['date']}T{chat_data['end_time']}:00+08:00",
-                "timeZone": "Asia/Singapore",
+                "dateTime": f"{chat_data['date']}T{chat_data['end_time']}:00{utc_offset}",
+                "timeZone": config.IANA_TIMEZONE_NAME,
             },
             "colorId": generate_event_colorid(user_data['company']),
             "extendedProperties": {
