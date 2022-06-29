@@ -36,4 +36,4 @@ COMPANIES = ujson.loads(os.environ['COMPANIES'])
 FACILITIES = ujson.loads(os.environ['FACILITIES'])
 ALT_FACILITIES = ujson.loads(os.getenv('ALT_FACILITIES') or '{}')
 IANA_TIMEZONE_NAME = os.getenv('IANA_TIMEZONE_NAME') or 'Asia/Singapore'
-TIMEZONE = ZoneInfo(IANA_TIMEZONE)
+TIMEZONE = ZoneInfo(IANA_TIMEZONE_NAME)
