@@ -120,7 +120,7 @@ def show_delete_prompt(update: Update, context: CallbackContext) -> int:
             f"*Date:* {context.chat_data['date']}\n"
             f"*Time:* {context.chat_data['start_time']} - {context.chat_data['end_time']}\n"
             f"*Description:* {context.chat_data['description']}\n\n"
-            "‼ Are you sure you want to delete it? This cannot be undone.",
+            "*‼️ Are you sure you want to delete it?* This cannot be undone.",
         parse_mode = ParseMode.MARKDOWN,
         reply_markup = keyboards.confirm_or_cancel
     )
