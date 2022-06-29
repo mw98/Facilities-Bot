@@ -237,7 +237,7 @@ def add_booking(user_id: int, user_data: dict, chat_data: dict, update_channel =
 
     if update_channel:
         if user_data['username'] == 'NULL':
-            if Bot(config.BOT_TOKEN).get_chat(user_id).has_private_forwards
+            if Bot(config.BOT_TOKEN).get_chat(user_id).has_private_forwards:
                 chat_link = " href=''"
             else:
                 chat_link = f" href='tg://user?id={user_id}'"
@@ -294,7 +294,7 @@ def patch_booking(user_id: int, user_data: dict, chat_data: dict) -> str:
     ).execute()
 
     if user_data['username'] == 'NULL':
-        if Bot(config.BOT_TOKEN).get_chat(user_id).has_private_forwards
+        if Bot(config.BOT_TOKEN).get_chat(user_id).has_private_forwards:
             chat_link = " href=''"
         else:
             chat_link = f" href='tg://user?id={user_id}'"
@@ -320,7 +320,7 @@ def delete_booking(user_id: int, user_data: dict, chat_data: dict) -> None:
     ).execute()
 
     if user_data['username'] == 'NULL':
-        if Bot(config.BOT_TOKEN).get_chat(user_id).has_private_forwards
+        if Bot(config.BOT_TOKEN).get_chat(user_id).has_private_forwards:
             chat_link = " href=''"
         else:
             chat_link = f" href='tg://user?id={user_id}'"
