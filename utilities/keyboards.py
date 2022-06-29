@@ -94,20 +94,17 @@ def facilities_minus(facility: str) -> InlineKeyboardMarkup:
 def contact_poc(booking_conflicts: list, effective_username: str) -> InlineKeyboardMarkup:
     
     buttons = set()
+    button_text = f'Message {conflict["extendedProperties"]["shared"]["name_and_company"]}'
     
     for conflict in booking_conflicts:
-        if (conflict['extendedProperties']['shared']['username'] != effective_username
-            and conflict['extendedProperties']['shared']['user_id'] != 'NULL' # admin bookings for unregistered users don't carry user ids
-        ):
-            if conflict['extendedProperties']['shared']['username'] != 'NULL': # some telegram users don't have usernames
-                url = f'https://t.me/{conflict["extendedProperties"]["shared"]["username"]}'
-            else:
-                if Bot(config.BOT_TOKEN).get_chat(conflict['extendedProperties']['shared']['user_id']).has_private_forwards:
-                    url = None
+        if conflict['extendedProperties']['shared']['username'] != effective_username:
+            if conflict['extendedProperties']['shared']['user_id'] != 'NULL': # admin bookings for unregistered users don't carry user ids
+                if conflict['extendedProperties']['shared']['username'] != 'NULL': # some telegram users don't have usernames
+                    buttons.add(InlineKeyboardButton(button_text, url = f'https://t.me/{conflict["extendedProperties"]["shared"]["username"]}'))
                 else:
-                    url = f'tg://user?id={conflict["extendedProperties"]["shared"]["user_id"]}'
-            buttons.add(InlineKeyboardButton(f'Message {conflict["extendedProperties"]["shared"]["name_and_company"]}', url=url))
-    
+                    if not Bot(config.BOT_TOKEN).get_chat(conflict['extendedProperties']['shared']['user_id']).has_private_forwards:
+                        buttons.add(InlineKeyboardButton(button_text, url = f'tg://user?id={conflict["extendedProperties"]["shared"]["user_id"]}'))
+        
     buttons = list(buttons)
     buttons = [[button] for button in buttons]
     return InlineKeyboardMarkup(buttons)
