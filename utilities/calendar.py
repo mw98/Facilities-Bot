@@ -255,7 +255,7 @@ def patch_booking(user_id: int, user_data: dict, chat_data: dict) -> str:
     
     now = datetime.now(config.TIMEZONE)
     utc_offset = now.isoformat()[26:]
-    patch_timestamp = now.strftime('%Y-%m-%d %H:%M:%S (UTC%z)')
+    patch_timestamp = now.strftime('%Y-%m-%d %H:%M:%S')
     patched_booking = service.events().patch(
         calendarId = config.CALENDAR_ID,
         eventId = chat_data['event_id'],
