@@ -3,6 +3,7 @@ import logging, sys
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
+from telegram import Bot
 from utilities import shared
 import config
 
@@ -235,17 +236,20 @@ def add_booking(user_id: int, user_data: dict, chat_data: dict, update_channel =
     ).execute()
 
     if update_channel:
-        if user_data['username'] != 'NULL':
-            chat_link = f"https://t.me/{user_data['username']}"
+        if user_data['username'] == 'NULL':
+            if Bot(config.BOT_TOKEN).get_chat(user_id).has_private_forwards
+                chat_link = " href=''"
+            else:
+                chat_link = f" href='tg://user?id={user_id}'"
         else:
-            chat_link = f"tg://user?id={user_id}"
+            chat_link = f" href='https://t.me/{user_data['username']}'"
         shared.update_facilities_channel(
             f'<b><a href="{new_booking["htmlLink"]}">New Booking</a></b>\n'
             f"<b>Facility</b>: {chat_data['facility']}\n"
             f"<b>Date</b>: {chat_data['date']}\n"
             f"<b>Time</b>: {chat_data['start_time']} - {chat_data['end_time']}\n"
             f"<b>Description</b>: {chat_data['description']}\n"
-            f"<b>POC</b>: <a href='{chat_link}'>{user_data['rank_and_name']} ({user_data['company']})</a>"
+            f"<b>POC</b>: <a{chat_link}>{user_data['rank_and_name']} ({user_data['company']})</a>"
         )
 
     return new_booking['htmlLink']
@@ -289,17 +293,20 @@ def patch_booking(user_id: int, user_data: dict, chat_data: dict) -> str:
         }
     ).execute()
 
-    if user_data['username'] != 'NULL':
-        chat_link = f"https://t.me/{user_data['username']}"
+    if user_data['username'] == 'NULL':
+        if Bot(config.BOT_TOKEN).get_chat(user_id).has_private_forwards
+            chat_link = " href=''"
+        else:
+            chat_link = f" href='tg://user?id={user_id}'"
     else:
-        chat_link = f"tg://user?id={user_id}"
+        chat_link = f" href='https://t.me/{user_data['username']}'"
     shared.update_facilities_channel(
         f'<b><a href="{patched_booking["htmlLink"]}">Booking Updated</a></b>\n'
         f"<b>Facility</b>: {chat_data['old_facility']}{chat_data['facility']}\n"
         f"<b>Date</b>: {chat_data['old_date']}{chat_data['date']}\n"
         f"<b>Time</b>: {chat_data['old_start_time']}{chat_data['old_end_time']}{chat_data['start_time']} - {chat_data['end_time']}\n"
         f"<b>Description</b>: {chat_data['old_description']}{chat_data['description']}\n"
-        f"<b>POC</b>: <a href='{chat_link}'>{user_data['rank_and_name']} ({user_data['company']})</a>"
+        f"<b>POC</b>: <a{chat_link}>{user_data['rank_and_name']} ({user_data['company']})</a>"
     )
 
     return patched_booking['htmlLink']
@@ -312,17 +319,20 @@ def delete_booking(user_id: int, user_data: dict, chat_data: dict) -> None:
         eventId = chat_data['event_id']
     ).execute()
 
-    if user_data['username'] != 'NULL':
-        chat_link = f"https://t.me/{user_data['username']}"
+    if user_data['username'] == 'NULL':
+        if Bot(config.BOT_TOKEN).get_chat(user_id).has_private_forwards
+            chat_link = " href=''"
+        else:
+            chat_link = f" href='tg://user?id={user_id}'"
     else:
-        chat_link = f"tg://user?id={user_id}"
+        chat_link = f" href='https://t.me/{user_data['username']}'"
     shared.update_facilities_channel(
         "<b>Booking Cancelled</b>\n"
         f"<b>Facility</b>: {chat_data['facility']}\n"
         f"<b>Date</b>: {chat_data['date']}\n"
         f"<b>Time</b>: {chat_data['start_time']} - {chat_data['end_time']}\n"
         f"<b>Description</b>: {chat_data['description']}\n"
-        f"<b>POC</b>: <a href='{chat_link}'>{user_data['rank_and_name']} ({user_data['company']})</a>"
+        f"<b>POC</b>: <a{chat_link}>{user_data['rank_and_name']} ({user_data['company']})</a>"
     )
 
     return

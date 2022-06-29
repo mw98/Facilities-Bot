@@ -1,5 +1,5 @@
 from itertools import zip_longest
-from telegram import InlineKeyboardMarkup, InlineKeyboardButton
+from telegram import Bot, InlineKeyboardMarkup, InlineKeyboardButton
 import config
 
 '''
@@ -102,7 +102,10 @@ def contact_poc(booking_conflicts: list, effective_username: str) -> InlineKeybo
             if conflict['extendedProperties']['shared']['username'] != 'NULL': # some telegram users don't have usernames
                 url = f'https://t.me/{conflict["extendedProperties"]["shared"]["username"]}'
             else:
-                url = f'tg://user?id={conflict["extendedProperties"]["shared"]["user_id"]}'
+                if Bot(config.BOT_TOKEN).get_chat(conflict['extendedProperties']['shared']['user_id']).has_private_forwards:
+                    url = None
+                else:
+                    url = f'tg://user?id={conflict["extendedProperties"]["shared"]["user_id"]}'
             buttons.add(InlineKeyboardButton(f'Message {conflict["extendedProperties"]["shared"]["name_and_company"]}', url=url))
     
     buttons = list(buttons)
