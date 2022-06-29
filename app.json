@@ -3,19 +3,19 @@
   "description": "Manages bn-level facility bookings via telegram bot",
   "env": {
     "BOT_TOKEN": {
-      "description": "Telegram bot token."
+      "description": "Telegram bot token"
     },
     "SERVICE_ACCOUNT_INFO": {
-      "description": "Google service account JSON public key."
+      "description": "Google service account JSON public key"
     },
     "CALENDAR_ID": {
-      "description": "Google calendar id."
+      "description": "Google calendar ID"
     },
     "CALENDAR_URL": {
-      "description": "Google calendar URL."
+      "description": "Google calendar URL"
     },
     "HEROKU_APP_URL": {
-      "description": "Heroku web app URL, include / at the end."
+      "description": "Heroku web app URL, include '/' at the end"
     },
     "ADMIN_USERS": {
       "description": "JSON array of Telegram user ids with admin rights. Format: [123456082, 227172364]",
@@ -23,32 +23,20 @@
       "required": false
     },
     "PORT": {
-      "description": "Port for Telegram webhook requests. Acceptable values: 443, 80, 88 or 8443.",
+      "description": "Port for Telegram webhook requests. Acceptable values: 443, 80, 88 or 8443",
       "value": "8443"
     },
-    "COMMANDS_BOOKING": {
-      "description": "JSON serialised list of commands for managing bookings. Format: {\"command\": \"description\"}",
-      "value": "{\n  \"book\": \"Make a new booking\",\n  \"change\": \"Change or cancel a booking\",\n  \"check\": \"Check facility availability\",\n  \"mybookings\": \"List your upcoming bookings\"\n}"
-    },
-    "COMMANDS_SETTING": {
-      "description": "JSON serialised list of commands for user settings. Format: {\"command\": \"description\"}",
-      "value": "{\n  \"profile\": \"Update your user profile\",\n  \"help\": \"Show this list of commands\"\n}"
-    },
-    "COMMANDS_ADMIN": {
-      "description": "JSON serialised list of admin-only commands. Format: {\"command\": \"description\"}",
-      "value": "{\n  \"admin\": \"Make a booking as any user\"\n}"
-    },
     "CHANNEL_USERNAME": {
-      "description": "Username of public telegram channel for logging bookings, exclude '@'.",
+      "description": "Username of public telegram channel for logging bookings, exclude '@'",
       "required": false
     },
     "CHANNEL_MUTED": {
-      "description": "Whether log channel updates are delivered silently (bool; case sensitive 'True' evaluates as True, all other values evaluate as False.)",
+      "description": "Whether log channel updates are delivered silently. Boolean; 'True' evaluates as True, all else evaluates as False.",
       "value": "True",
       "required": false
     },
     "ALT_FACILITIES": {
-      "description": "JSON serialised facility fallbacks. Format: {\"Facility\": \"Alt Facility\"}",
+      "description": "JSON serialised list of fallback facilities. Format: {\"Facility\": \"Alt Facility\"}",
       "value": "{\n  \"LT 1\": \"LT 2\",\n  \"LT 2\": \"LT 1\"\n}",
       "required": false
     },
@@ -59,6 +47,11 @@
     "COMPANIES": {
       "description": "JSON array of companies. Format: [\"Coy 1\", \"Coy 2\", \"Coy 3\"]",
       "value": "[\"ALPHA\", \"BRAVO\", \"CHARLIE\", \"SP\", \"MSC\", \"HQ\"]"
+    },
+    "IANA_TIMEZONE_NAME": {
+      "description": "Optionally specify IANA timezone for all booking requests; defaults to Asia/Singapore",
+      "value": "Asia/Singapore",
+      "required": false
     }
   },
   "addons": [
