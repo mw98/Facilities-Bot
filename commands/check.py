@@ -47,12 +47,13 @@ def show_bookings(update: Update, context: CallbackContext) -> int:
                 booking_details = booking['extendedProperties']['shared']
                 message += f"[{booking_details['start_time']}-{booking_details['end_time']}]({booking['htmlLink']}) {booking_details['name_and_company']}\n"
         
-        date = None
         if bookings['after_today']:
+            date = None
             for booking in bookings['after_today']:
                 booking_details = booking['extendedProperties']['shared']
                 if booking_details['date'] != date:
                     message += f"\n*{datetime.strptime(booking_details['date'], '%Y-%m-%d').strftime('%d %b %Y')}*\n"
+                    date = booking_details['date']
                 message += f"[{booking_details['start_time']}-{booking_details['end_time']}]({booking['htmlLink']}) {booking_details['name_and_company']}\n"
         
         message += '\nTap the link below to open the bookings calendar.'
