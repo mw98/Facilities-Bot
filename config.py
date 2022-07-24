@@ -14,7 +14,7 @@ CHANNEL_USERNAME = os.getenv('CHANNEL_USERNAME')
 CHANNEL_MUTED = (os.getenv('CHANNEL_MUTED') == 'True')
 COMMANDS_BOOKING = [
     ("book", "Make a new booking"), 
-    ("change", "Change or cancel a booking"), 
+    ("change", "Change or delete a booking"), 
     ("check", "Check facility availability"), 
     ("mybookings", "List your upcoming bookings")
 ]
