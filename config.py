@@ -2,8 +2,8 @@ import os
 from zoneinfo import ZoneInfo
 import ujson
 
-# HEROKU
-HEROKU_APP_URL = os.environ['HEROKU_APP_URL']
+# INFRASTRUCTURE
+APP_DOMAIN = os.environ['APP_DOMAIN']
 DATABASE_URL = os.environ['DATABASE_URL']
 
 # TELEGRAM
