@@ -3,7 +3,7 @@ from zoneinfo import ZoneInfo
 import ujson
 
 # INFRASTRUCTURE
-APP_DOMAIN = os.environ['APP_DOMAIN']
+WEBHOOK_URL = os.environ['WEKBOOK_URL']
 DATABASE_URL = os.environ['DATABASE_URL']
 
 # TELEGRAM
