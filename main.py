@@ -63,7 +63,7 @@ def main():
         listen = '0.0.0.0',
         port = int(config.WEBHOOK_PORT),
         url_path = config.BOT_TOKEN,
-        webhook_url = f'{config.APP_DOMAIN}/{config.BOT_TOKEN}'
+        webhook_url = config.WEBHOOK_URL
     )
     updater.idle()
 
